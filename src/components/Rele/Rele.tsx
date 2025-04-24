@@ -1,6 +1,6 @@
 import { h } from 'preact';
 
-export const Rele = ({ size = 100, color = '#ffffff', strokeWidth = 2 }) => {
+export const Rele = ({ size = 100, color = '#fef7cb', strokeWidth = 2 }) => {
   return (
     <svg
       width={size}

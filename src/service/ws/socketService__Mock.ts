@@ -7,6 +7,7 @@ interface MockSocketOptions {
 export class SocketService__Mock {
   private messageSubscribers: ((data: any) => void)[] = [];
   private statusSubscribers: ((status: any) => void)[] = [];
+  private testing = undefined;
 
   private isConnected = false;
 
@@ -38,6 +39,17 @@ export class SocketService__Mock {
 
     setTimeout(() => {
       // Обработка фейковых ответов
+      // Сообщение при окончании процедуры поиска драйверов (server->client):
+      // {
+      // ”driver”: “find”,
+      // “cmd”: “stop”,
+      // “count”: 0..63,
+      // }
+      if (data.driver === 'find' && data.cmd === 'start') {
+        this.emitMessage({ driver: 'find', cmd: 'stop', count: 64 });
+      }
+
+      // Пакет данных, передаваемый по окончании процедуры «обновления» драйверов (server->client):
       if (data.driver === 'update') {
         const types = [2, 4, 6, 7, 96, 98, 128];
         const drivers = Object.fromEntries(
@@ -48,6 +60,20 @@ export class SocketService__Mock {
         );
 
         this.emitMessage({ driver: 'update', count: 64, drivers });
+      }
+
+      // Запуск процедуры «Тест драйвера» (client->server):
+      if (data.driver === 'test' && data.cmd === 'start' && data.addres !== undefined) {
+        this.testing = data.addres;
+        // while (!!this.testing) {
+        //   this.emitMessage({ driver: 'test', cmd: 'on', addres: this.testing });
+        //   this.delay(1000);
+        // }
+      }
+
+      // Остановка процедуры «Тест драйвера» (client->server):
+      if (data.driver === 'test' && data.cmd === 'stop' && data.addres !== undefined) {
+        this.testing = null;
       }
 
       if (data.master === 'scan') {
@@ -174,11 +200,15 @@ export class SocketService__Mock {
       this.emitMessage({
         str: 'Ответ не обработан в тестовых данных, возвращаю строку для отработки лоадера',
       });
-    }, 1000);
+    }, 2000);
   }
 
   onMessage(cb: (data: any) => void) {
     this.messageSubscribers.push(cb);
+  }
+
+  delay(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   onStatus(cb: (status: any) => void) {

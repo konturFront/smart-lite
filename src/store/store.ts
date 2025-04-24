@@ -32,6 +32,8 @@ export interface AppState {
   updatedDevices: Record<string, string[]>;
   settingsDriver: number[];
   rooms: RoomsArr | [];
+  countDrivers: string | number;
+  testingDriverAddress: number | undefined;
 }
 
 export interface IStateUI {
@@ -48,6 +50,8 @@ export const state = signal<AppState>({
   updatedDevices: {},
   rooms: [],
   groups: Array(16).fill(false),
+  countDrivers: undefined,
+  testingDriverAddress: undefined,
 });
 export const stateUI = signal<IStateUI>({ isActiveMenu: false, isLoadingUI: false });
 
@@ -63,79 +67,79 @@ export const showLoadingStateUI = () => {
 };
 
 // Метод для добавления комнаты
-export const addRoom = (obj?: Room) => {
-  console.log('store');
-  state.value = {
-    ...state.value,
-    rooms: [...state.value.rooms, { ...obj }],
-  };
-};
+// export const addRoom = (obj?: Room) => {
+//   console.log('store');
+//   state.value = {
+//     ...state.value,
+//     rooms: [...state.value.rooms, { ...obj }],
+//   };
+// };
 
 // Метод для удаление комнаты
-export const deleteRoom = (idRoom: string) => {
-  console.log('store');
-  state.value = {
-    ...state.value,
-    rooms: [...state.value.rooms.filter(item => item.idRoom !== idRoom)],
-  };
-};
+// export const deleteRoom = (idRoom: string) => {
+//   console.log('store');
+//   state.value = {
+//     ...state.value,
+//     rooms: [...state.value.rooms.filter(item => item.idRoom !== idRoom)],
+//   };
+// };
 
 // Метод для добавление группы в текущую комнату
-export const addGroupItem = (idRoom: string, groupName: string) => {
-  const objGroup = {
-    idGroup: nanoid(),
-    groupName: groupName,
-    driverAddresses: {},
-  };
-
-  state.value = {
-    ...state.value,
-    rooms: state.value.rooms.map(room =>
-      room.idRoom === idRoom
-        ? {
-            ...room,
-            groups: [...(room.groups || []), objGroup],
-          }
-        : room
-    ),
-  };
-};
+// export const addGroupItem = (idRoom: string, groupName: string) => {
+//   const objGroup = {
+//     idGroup: nanoid(),
+//     groupName: groupName,
+//     driverAddresses: {},
+//   };
+//
+//   state.value = {
+//     ...state.value,
+//     rooms: state.value.rooms.map(room =>
+//       room.idRoom === idRoom
+//         ? {
+//             ...room,
+//             groups: [...(room.groups || []), objGroup],
+//           }
+//         : room
+//     ),
+//   };
+// };
 
 // Метод для редактирования группы в текущую комнату
-export const editGroupName = (idRoom: string, idGroup: string, newGroupName: string) => {
-  state.value = {
-    ...state.value,
-    rooms: state.value.rooms.map(room => {
-      if (room.idRoom !== idRoom) return room;
-
-      return {
-        ...room,
-        groups: (room.groups || []).map(group => {
-          if (group.idGroup !== idGroup) return group;
-
-          return {
-            ...group,
-            groupName: newGroupName,
-          };
-        }),
-      };
-    }),
-  };
-};
+// export const editGroupName = (idRoom: string, idGroup: string, newGroupName: string) => {
+//   state.value = {
+//     ...state.value,
+//     rooms: state.value.rooms.map(room => {
+//       if (room.idRoom !== idRoom) return room;
+//
+//       return {
+//         ...room,
+//         groups: (room.groups || []).map(group => {
+//           if (group.idGroup !== idGroup) return group;
+//
+//           return {
+//             ...group,
+//             groupName: newGroupName,
+//           };
+//         }),
+//       };
+//     }),
+//   };
+// };
 // Метод для удаление группы в текущую комнату
-export const deleteGroup = (idRoom: string, idGroup: string) => {
-  state.value = {
-    ...state.value,
-    rooms: state.value.rooms.map(room => {
-      if (room.idRoom !== idRoom) return room;
-
-      return {
-        ...room,
-        groups: (room.groups || []).filter(group => group.idGroup !== idGroup),
-      };
-    }),
-  };
-};
+// export const deleteGroup = (idRoom: string, idGroup: string) => {
+//   state.value = {
+//     ...state.value,
+//     rooms: state.value.rooms.map(room => {
+//       if (room.idRoom !== idRoom) return room;
+//
+//       return {
+//         ...room,
+//         groups: (room.groups || []).filter(group => group.idGroup !== idGroup),
+//       };
+//     }),
+//   };
+// };
 
 // Метод для скрытия лоадинг в шапке
 export const hiddenLoadingStateUI = () => {
@@ -154,6 +158,11 @@ export const setRooms = (rooms: RoomsArr) => {
   state.value = { ...state.value, rooms: rooms };
 };
 
+// Cеттим тестируемый драйвер
+export const setTestingDriverAddress = (testingDriverAddress?: number) => {
+  state.value = { ...state.value, testingDriverAddress: testingDriverAddress };
+};
+
 // Пример инициализации сокета с подпиской
 socketService.onStatus(status => {
   setConnectionStatus(status as socketStatusEnum);
@@ -164,9 +173,26 @@ export const sendMessageSocket = (data: Record<string | number, unknown>, withLo
   socketService.send(data);
 };
 
-//ЛОВИМ ответы от сервера для стора, для локального состояния используй sendAndWaiFor Response
+//ЛОВИМ//////// ответы от сервера для стора, для локального состояния используй sendAndWaiFor Response
 socketService.onMessage(data => {
-  hiddenLoadingStateUI();
+  // hiddenLoadingStateUI();
+
+  if (data.driver === 'find' && data.cmd === 'stop') {
+    state.value = { ...state.value, countDrivers: data.count ?? 0 };
+    hiddenLoadingStateUI();
+  }
+
+  //Пакет данных, передаваемый по окончании процедуры «обновления» драйверов (server->client):
+  if (data.driver === 'update' && data.count !== undefined) {
+    state.value = { ...state.value, updatedDevices: data.drivers };
+    hiddenLoadingStateUI();
+  }
+
+  // driver: 'test', cmd: 'on', addres: this.testing не доделал
+  if (data.driver === 'test' && data.cmd === 'on') {
+    state.value = { ...state.value, testingDriverAddress: data.addres };
+  }
+
   if (data.driver === 'settyngs' && data.cmd === 'download' && Array.isArray(data.dr_settyngs)) {
     state.value = { ...state.value, settingsDriver: data.dr_settyngs };
     hiddenLoadingStateUI();
@@ -174,12 +200,6 @@ socketService.onMessage(data => {
 
   // Ответное сообщение о перезагрузке «Мастера» (server->client):
   if (data.master === 'reset' && data.cmd === 'ok') {
-    hiddenLoadingStateUI();
-  }
-
-  //Пакет данных, передаваемый по окончании процедуры «обновления» драйверов (server->client):
-  if (data.driver === 'update' && data.count !== undefined) {
-    state.value = { ...state.value, updatedDevices: data.drivers };
     hiddenLoadingStateUI();
   }
 

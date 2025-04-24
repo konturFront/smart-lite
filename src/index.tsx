@@ -16,12 +16,9 @@ export function App() {
     <LocationProvider>
       <Layout>
         <Router>
-          <Route path="/" component={Home} />
-          <Route path="/service" component={ServicePage} />
+          {/*<Route path="/" component={Home} />*/}
           <Route path="/service/devices" component={DevicesPage} />
           <Route path="/service/devices/:id" component={DeviceCardPage} />
-          <Route path="/service/rooms" component={RoomsPage} />
-          <Route path="/service/sensors" component={SensorsPage} />
           <Route path="/settings" component={SettingsPage} />
           <Route default component={_404} />
         </Router>

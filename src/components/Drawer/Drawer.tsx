@@ -30,28 +30,10 @@ export const Drawer = () => {
     >
       <div className={styles.menu}>
         <div
-          className={url === '/' ? styles.activeLink : ''}
-          onClick={() => handlerChangeRoute('/')}
-        >
-          {'Главная'}
-        </div>
-        <div
           className={url === '/service/devices' ? styles.activeLink : ''}
           onClick={() => handlerChangeRoute('/service/devices')}
         >
           {'Драйверы'}
-        </div>
-        <div
-          className={url === '/service/sensors' ? styles.activeLink : ''}
-          onClick={() => handlerChangeRoute('/service/sensors')}
-        >
-          {'Сенсоры'}
-        </div>
-        <div
-          className={url === '/service/rooms' ? styles.activeLink : ''}
-          onClick={() => handlerChangeRoute('/service/rooms')}
-        >
-          {'Помещения и группы'}
         </div>
         <div
           className={url === '/settings' ? styles.activeLink : ''}

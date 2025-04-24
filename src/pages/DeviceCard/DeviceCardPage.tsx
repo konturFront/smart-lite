@@ -1,9 +1,11 @@
-import styles from './styles.module.scss';
 import { useLocation, useRoute } from 'preact-iso';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 import { groupsToMasks, parseGroupMasks } from '../../utils/parseGroupMask';
 import { sendMessageSocket, showLoadingStateUI, state } from '../../store/store';
 import { Button } from '../../components/Button/Button';
+import { LoadingDots } from '../../components/Loader/LoadingDots';
+import styles from './styles.module.scss';
+import { h } from 'preact';
 
 export function DeviceCardPage() {
   const { params } = useRoute();
@@ -41,20 +43,20 @@ export function DeviceCardPage() {
     }
   };
 
-  useEffect(() => {
-    const id = +params?.id;
-    if (!id) {
-      console.error('Неверный id', id);
-    }
-    showLoadingStateUI();
-
-    fetchSettings(id).then();
-    return () => {
-      if (isTestingDriver) {
-        sendMessageSocket({ driver: 'test', cmd: 'stop' }, false);
-      }
-    };
-  }, []);
+  // useEffect(() => {
+  //   const id = +params?.id;
+  //   if (!id) {
+  //     console.error('Неверный id', id);
+  //   }
+  //   showLoadingStateUI();
+  //
+  //   fetchSettings(id).then();
+  //   return () => {
+  //     if (isTestingDriver) {
+  //       sendMessageSocket({ driver: 'test', cmd: 'stop' }, false);
+  //     }
+  //   };
+  // }, []);
 
   useEffect(() => {
     if (Array.isArray(state.value.settingsDriver)) {
@@ -167,21 +169,25 @@ export function DeviceCardPage() {
   };
 
   return (
-    <div className={styles.deviceCardWrapper}>
-      <button
-        className={styles.backButton}
-        aria-label="Назад"
-        onClick={() => {
-          if (isTestingDriver) {
-            sendMessageSocket({ driver: 'test', cmd: 'stop' }, false);
-          }
-          route('/service/devices');
-        }}
-      >
-        <svg viewBox="0 0 24 24" width="24" height="24">
-          <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z" fill="currentColor" />
-        </svg>
-      </button>
+    <div className={styles.devices}>
+      <div className={styles.wrapperBtn}>
+        <Button
+          text="Обновить"
+          onClick={() => {}}
+          sx={{ visibility: false ? 'hidden' : 'visible', minWidth: '115px' }}
+        />
+        <Button
+          text="Сохранить "
+          onClick={() => {}}
+          sx={{ visibility: false ? 'hidden' : 'visible', minWidth: '115px' }}
+        />
+        {/*{false && (*/}
+        {/*  <div className={stylesMobile.loadingText}>*/}
+        {/*    <LoadingDots />*/}
+        {/*  </div>*/}
+        {/*)}*/}
+      </div>
+      <div id={'line'} className={styles.line}></div>
       <h2 className={styles.deviceCardTitle}>{`Настройка драйвера №${params?.id}`}</h2>
       <div className={styles.panel}>
         <div className={styles.sliderWrapper}>

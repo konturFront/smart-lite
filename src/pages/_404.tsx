@@ -5,7 +5,7 @@ export const _404 = () => {
   const route = useLocation();
   useEffect(() => {
     setTimeout(() => {
-      route.route('/');
+      route.route('/service/devices');
     }, 0);
   }, [route]);
   return null;

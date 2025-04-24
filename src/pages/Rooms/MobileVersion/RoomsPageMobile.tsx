@@ -112,7 +112,6 @@ export const RoomsPageMobile = () => {
 
     const allItems = [...groupsSelectRoom];
     setCountElementForPages(allItems?.length ?? 0);
-    console.log('пересчет');
     // 6) Пагинация
     if (allItems.length > 0) {
       const totalPages = Math.ceil(allItems.length / itemsPerPage);

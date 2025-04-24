@@ -3,14 +3,16 @@ import styles from './styles.module.scss';
 import { LedIndicator } from '../LedIndicator/LedIndicator';
 import { Rele } from '../Rele/Rele';
 import { GroupIcon } from '../Group/GroupIcon';
-import { EditIcon } from '../EditIcon/EditIcon';
+import { Button } from '../Button/Button';
+import { LightBulbIcon } from '../LightBulbIcon/LightBulbIcon';
 
 type Props = {
   address: string;
   type: string;
-  name: string;
-  onClick?: () => void;
+  onClickSettings?: () => void;
+  onClickTest?: () => void;
   editPencil?: boolean;
+  lampVisible?: boolean;
 } & JSX.HTMLAttributes<HTMLDivElement>;
 
 const lampColorsMap: Record<string, string[] | string> = {
@@ -28,15 +30,16 @@ export function DriverPreview({
   address,
   editPencil = false,
   type,
-  name = 'Комната спальная 12345678901234567890',
   onClick,
-
+  onClickTest,
+  onClickSettings,
+  lampVisible,
   ...rest
 }: Props) {
   const colors = lampColorsMap[`${type}`];
 
   return (
-    <div className={`${styles.container}`} onClick={onClick} {...rest}>
+    <div className={`${styles.container}`} {...rest}>
       <span className={styles.channelNumber}>{address}</span>
       <div className={styles.indicators}>
         {Array.isArray(colors) &&
@@ -48,23 +51,23 @@ export function DriverPreview({
         {colors === 'rele' && <Rele size={56} strokeWidth={5} />}
         {colors === 'group' && <GroupIcon />}
       </div>
-      <div className={styles.dashes}>
-        <span className={styles.name}>{name}</span>
-      </div>
-      {editPencil ? (
-        <div style={{ height: '100%', alignContent: 'center', padding: '0px 12px' }}>
-          <EditIcon />
-        </div>
-      ) : (
-        <button
-          className={styles.button}
-          onClick={event => {
-            event.stopPropagation();
-          }}
-        >
-          TEST
-        </button>
-      )}
+      <Button
+        text="Настройки"
+        sx={{ padding: '9px 7px' }}
+        onClick={event => {
+          onClickSettings();
+          event.stopPropagation();
+        }}
+      />
+      <Button
+        text="Тест"
+        lampVisible={lampVisible}
+        sx={{ padding: '9px 7px' }}
+        onClick={event => {
+          onClickTest?.();
+          event.stopPropagation();
+        }}
+      />
     </div>
   );
 }

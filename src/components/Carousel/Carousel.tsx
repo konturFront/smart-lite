@@ -38,7 +38,6 @@ export const RoomCarousel = ({
     scrollToActive();
   }, [activeIndex]);
 
-  console.log('');
   return (
     <div className={styles.roomCarouselWrapper} style={sx}>
       {rooms?.length > 1 && (
