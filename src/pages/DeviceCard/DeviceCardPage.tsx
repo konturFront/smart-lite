@@ -1,11 +1,15 @@
 import { useLocation, useRoute } from 'preact-iso';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 import { groupsToMasks, parseGroupMasks } from '../../utils/parseGroupMask';
-import { sendMessageSocket, showLoadingStateUI, state } from '../../store/store';
+import { sendMessageSocket, showLoadingStateUI, state, stateUI } from '../../store/store';
 import { Button } from '../../components/Button/Button';
 import { LoadingDots } from '../../components/Loader/LoadingDots';
 import styles from './styles.module.scss';
 import { h } from 'preact';
+import stylesMobile from '../Devices/MobileVersion/stylesMobile.module.scss';
+import { DriverPreview } from '../../components/DriverPreview/DriverPreview';
+import { DoubleArrowIcon } from '../../components/IconComponent/ArrowAction/DoubleArrowIcon';
+import { DoubleArrowTopIcon } from '../../components/IconComponent/DoubleArrowIcon/DoubleArrowTopIcon';
 
 export function DeviceCardPage() {
   const { params } = useRoute();
@@ -23,6 +27,8 @@ export function DeviceCardPage() {
   const [driverSettings, setDriverSettings] = useState<number[] | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const debounceAllBrightRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isLoading = stateUI.value.isLoadingUI;
+  const [isOpenRGB, setIsOpenRGB] = useState(false);
 
   const testingDriver = useCallback(() => {
     if (!isTestingDriver) {
@@ -170,29 +176,134 @@ export function DeviceCardPage() {
 
   return (
     <div className={styles.devices}>
-      <div className={styles.wrapperBtn}>
-        <Button
-          text="Обновить"
-          onClick={() => {}}
-          sx={{ visibility: false ? 'hidden' : 'visible', minWidth: '115px' }}
-        />
-        <Button
-          text="Сохранить "
-          onClick={() => {}}
-          sx={{ visibility: false ? 'hidden' : 'visible', minWidth: '115px' }}
-        />
-        {/*{false && (*/}
-        {/*  <div className={stylesMobile.loadingText}>*/}
-        {/*    <LoadingDots />*/}
-        {/*  </div>*/}
-        {/*)}*/}
-      </div>
       <div id={'line'} className={styles.line}></div>
-      <h2 className={styles.deviceCardTitle}>{`Настройка драйвера №${params?.id}`}</h2>
-      <div className={styles.panel}>
+      {/*<div className={styles.panel}>*/}
+      {/*  <div className={styles.sliderWrapper}>*/}
+      {/*    <div className={styles.sliderLabel}>Минимальный уровень яркости</div>*/}
+      {/*    <div className={styles.sliderItem}>*/}
+      {/*      <input*/}
+      {/*        type="range"*/}
+      {/*        min="1"*/}
+      {/*        max="254"*/}
+      {/*        value={minLevel}*/}
+      {/*        onInput={e => setMinLevel(Number((e.target as HTMLInputElement).value))}*/}
+      {/*      />*/}
+      {/*      <span className={styles.sliderValue}>{minLevel}</span>*/}
+      {/*    </div>*/}
+      {/*  </div>*/}
+
+      {/*  <div className={styles.sliderWrapper}>*/}
+      {/*    <div className={styles.sliderLabel}>Максимальный уровень яркости</div>*/}
+      {/*    <div className={styles.sliderItem}>*/}
+      {/*      <input*/}
+      {/*        type="range"*/}
+      {/*        min="1"*/}
+      {/*        max="254"*/}
+      {/*        value={maxLevel}*/}
+      {/*        onInput={e => setMaxLevel(Number((e.target as HTMLInputElement).value))}*/}
+      {/*      />*/}
+      {/*      <span className={styles.sliderValue}>{maxLevel}</span>*/}
+      {/*    </div>*/}
+      {/*  </div>*/}
+
+      {/*  <div className={styles.sliderWrapper}>*/}
+      {/*    <div className={styles.sliderLabel}>Уровень яркости при аварии</div>*/}
+      {/*    <div className={styles.sliderItem}>*/}
+      {/*      <input*/}
+      {/*        type="range"*/}
+      {/*        min="1"*/}
+      {/*        max="254"*/}
+      {/*        value={failureLevel}*/}
+      {/*        onInput={e => setFailureLevel(Number((e.target as HTMLInputElement).value))}*/}
+      {/*      />*/}
+      {/*      <span className={styles.sliderValue}>{failureLevel}</span>*/}
+      {/*    </div>*/}
+      {/*  </div>*/}
+
+      {/*  <div className={styles.sliderWrapper}>*/}
+      {/*    <div className={styles.sliderLabel}>Уровень яркости при подачи питания</div>*/}
+      {/*    <div className={styles.sliderItem}>*/}
+      {/*      <input*/}
+      {/*        type="range"*/}
+      {/*        min="1"*/}
+      {/*        max="254"*/}
+      {/*        value={poweronLevel}*/}
+      {/*        onInput={e => setPoweronLevel(Number((e.target as HTMLInputElement).value))}*/}
+      {/*      />*/}
+      {/*      <span className={styles.sliderValue}>{poweronLevel}</span>*/}
+      {/*    </div>*/}
+      {/*  </div>*/}
+
+      {/*  <div className={styles.fadeControls}>*/}
+      {/*    <div style={{ display: 'flex' }}>*/}
+      {/*      <div className={styles.sliderLabel}> Время затухания (сек.):</div>*/}
+      {/*      <div className={styles.sliderItem}>*/}
+      {/*        <input*/}
+      {/*          type="number"*/}
+      {/*          value={fadeTime}*/}
+      {/*          onInput={handleFadeTimeChange}*/}
+      {/*          inputMode="numeric"*/}
+      {/*        />*/}
+      {/*      </div>*/}
+      {/*    </div>*/}
+      {/*    <div style={{ display: 'flex' }}>*/}
+      {/*      <div className={styles.sliderLabel}>Скорость затухания (шаг/сек.):</div>*/}
+      {/*      <div className={styles.sliderItem}>*/}
+      {/*        <input*/}
+      {/*          type="number"*/}
+      {/*          value={fadeRate}*/}
+      {/*          onInput={handleFadeRateChange}*/}
+      {/*          inputMode="numeric"*/}
+      {/*        />*/}
+      {/*      </div>*/}
+      {/*    </div>*/}
+      {/*  </div>*/}
+
+      {/*  <div className={styles.testSection}>*/}
+      {/*    <div className={styles.sliderWrapper}>*/}
+      {/*      <div className={styles.sliderLabel}>Текущий уровень яркости</div>*/}
+      {/*      <div className={styles.sliderItem}>*/}
+      {/*        <input type="range" min="0" max="100" value={currentLevel} onInput={updateDebounce} />*/}
+      {/*        <span className={styles.sliderValue}>{currentLevel}</span>*/}
+      {/*      </div>*/}
+      {/*    </div>*/}
+      {/*  </div>*/}
+
+      {/*  <div className={styles.testSection}>*/}
+      {/*    <div className={styles.sliderWrapper}>*/}
+      {/*      <div className={styles.sliderLabel}>*/}
+      {/*        Установки яркости на &nbsp;*/}
+      {/*        <span style={{ fontWeight: 'bold', textTransform: 'uppercase' }}>всех</span> <br />*/}
+      {/*        устройствах*/}
+      {/*      </div>*/}
+      {/*      <div className={styles.sliderItem}>*/}
+      {/*        <input*/}
+      {/*          type="range"*/}
+      {/*          min="0"*/}
+      {/*          max="100"*/}
+      {/*          value={currentLevelAllDrivers}*/}
+      {/*          onInput={updateDebounceAllDriversBright}*/}
+      {/*        />*/}
+      {/*        <span className={styles.sliderValue}>{currentLevelAllDrivers}</span>*/}
+      {/*      </div>*/}
+      {/*    </div>*/}
+      {/*  </div>*/}
+      {/*  <div className={styles.groupSelect}>*/}
+      {/*    <div style={{ fontSize: '1.5rem', marginBottom: '10px' }}>Выбор групп</div>*/}
+      {/*    <div className={styles.groups}>*/}
+      {/*      {groups.map((isChecked, i) => (*/}
+      {/*        <label key={i}>*/}
+      {/*          <input type="checkbox" checked={isChecked} onChange={() => toggleGroup(i)} />*/}
+      {/*          Группа {i}*/}
+      {/*        </label>*/}
+      {/*      ))}*/}
+      {/*    </div>*/}
+      {/*  </div>*/}
+      {/*</div>*/}
+      <div id="drivers-list" className={styles.content}>
         <div className={styles.sliderWrapper}>
-          <div className={styles.sliderLabel}>Минимальный уровень яркости</div>
           <div className={styles.sliderItem}>
+            <span className={styles.sliderValue}>{`${minLevel ?? 0} %`}</span>
             <input
               type="range"
               min="1"
@@ -200,129 +311,33 @@ export function DeviceCardPage() {
               value={minLevel}
               onInput={e => setMinLevel(Number((e.target as HTMLInputElement).value))}
             />
-            <span className={styles.sliderValue}>{minLevel}</span>
           </div>
-        </div>
-
-        <div className={styles.sliderWrapper}>
-          <div className={styles.sliderLabel}>Максимальный уровень яркости</div>
-          <div className={styles.sliderItem}>
-            <input
-              type="range"
-              min="1"
-              max="254"
-              value={maxLevel}
-              onInput={e => setMaxLevel(Number((e.target as HTMLInputElement).value))}
-            />
-            <span className={styles.sliderValue}>{maxLevel}</span>
-          </div>
-        </div>
-
-        <div className={styles.sliderWrapper}>
-          <div className={styles.sliderLabel}>Уровень яркости при аварии</div>
-          <div className={styles.sliderItem}>
-            <input
-              type="range"
-              min="1"
-              max="254"
-              value={failureLevel}
-              onInput={e => setFailureLevel(Number((e.target as HTMLInputElement).value))}
-            />
-            <span className={styles.sliderValue}>{failureLevel}</span>
-          </div>
-        </div>
-
-        <div className={styles.sliderWrapper}>
-          <div className={styles.sliderLabel}>Уровень яркости при подачи питания</div>
-          <div className={styles.sliderItem}>
-            <input
-              type="range"
-              min="1"
-              max="254"
-              value={poweronLevel}
-              onInput={e => setPoweronLevel(Number((e.target as HTMLInputElement).value))}
-            />
-            <span className={styles.sliderValue}>{poweronLevel}</span>
-          </div>
-        </div>
-
-        <div className={styles.fadeControls}>
-          <div style={{ display: 'flex' }}>
-            <div className={styles.sliderLabel}> Время затухания (сек.):</div>
-            <div className={styles.sliderItem}>
-              <input
-                type="number"
-                value={fadeTime}
-                onInput={handleFadeTimeChange}
-                inputMode="numeric"
-              />
-            </div>
-          </div>
-          <div style={{ display: 'flex' }}>
-            <div className={styles.sliderLabel}>Скорость затухания (шаг/сек.):</div>
-            <div className={styles.sliderItem}>
-              <input
-                type="number"
-                value={fadeRate}
-                onInput={handleFadeRateChange}
-                inputMode="numeric"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className={styles.testSection}>
-          <div className={styles.sliderWrapper}>
-            <div className={styles.sliderLabel}>Текущий уровень яркости</div>
-            <div className={styles.sliderItem}>
-              <input type="range" min="0" max="100" value={currentLevel} onInput={updateDebounce} />
-              <span className={styles.sliderValue}>{currentLevel}</span>
-            </div>
-          </div>
-        </div>
-
-        <div className={styles.testSection}>
-          <div className={styles.sliderWrapper}>
-            <div className={styles.sliderLabel}>
-              Установки яркости на &nbsp;
-              <span style={{ fontWeight: 'bold', textTransform: 'uppercase' }}>всех</span> <br />
-              устройствах
-            </div>
-            <div className={styles.sliderItem}>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={currentLevelAllDrivers}
-                onInput={updateDebounceAllDriversBright}
-              />
-              <span className={styles.sliderValue}>{currentLevelAllDrivers}</span>
-            </div>
-          </div>
-        </div>
-        <div className={styles.groupSelect}>
-          <div style={{ fontSize: '1.5rem', marginBottom: '10px' }}>Выбор групп</div>
-          <div className={styles.groups}>
-            {groups.map((isChecked, i) => (
-              <label key={i}>
-                <input type="checkbox" checked={isChecked} onChange={() => toggleGroup(i)} />
-                Группа {i}
-              </label>
-            ))}
-          </div>
-        </div>
-        <div className={styles.buttons}>
-          <Button text={'Обновить'} onClick={pullDriverSettings} />
-          <button
-            className={`${styles.button} ${isTestingDriver ? styles.blinking : ''}`}
-            onClick={testingDriver}
+          <div
+            style={{ position: 'absolute', backgroundColor: '#525252' }}
+            onClick={() => setIsOpenRGB(!isOpenRGB)}
           >
-            Тест драйвера
-          </button>
-          <button className={styles.button} onClick={saveBtnSettings}>
-            Сохранить
-          </button>
+            <DoubleArrowTopIcon
+              width={30}
+              height={20}
+              gap={0}
+              isOpen={isOpenRGB}
+              // onClick={() => setIsOpenRGB(!isOpenRGB)}
+            />
+          </div>
         </div>
+      </div>
+      <div className={styles.wrapperBtn}>
+        {isLoading ? (
+          <div className={styles.loadingText}>
+            <LoadingDots />
+          </div>
+        ) : (
+          <>
+            {/*<Loader />*/}
+            <Button text="Обновить" onClick={() => {}} />
+            <Button text="Поиск " onClick={() => {}} />
+          </>
+        )}
       </div>
     </div>
   );

@@ -17,7 +17,7 @@ import { Button } from '../../../components/Button/Button';
 import { RoomCarousel } from '../../../components/Carousel/Carousel';
 import { nanoid } from 'nanoid';
 import stylesMobile from '../../Home/MobileVersion/stylesMobile.module.scss';
-import { ArrowIcon } from '../../../components/ArrowAction/ArrowAction';
+import { ArrowIcon } from '../../../components/IconComponent/ArrowAction/ArrowAction';
 import { h } from 'preact';
 
 export const RoomsPageMobile = () => {

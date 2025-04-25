@@ -2,10 +2,10 @@ import { Drawer } from '../Drawer/Drawer';
 import styles from './styles.module.scss';
 import { state, stateUI } from '../../store/store';
 import { Loader } from '../Loader/Loader';
-import { WifiIcon } from '../Wifi/Wifi';
+import { WifiIcon } from '../IconComponent/Wifi/Wifi';
 import { useLocation, useRoute } from 'preact-iso';
 import { getTitle } from './utils/getTitlePage';
-import { InfoIcon } from '../IconInfo/InfoIcon';
+import { InfoIcon } from '../IconComponent/IconInfo/InfoIcon';
 
 export function Header() {
   const socketStatus = state.value.socketStatus;

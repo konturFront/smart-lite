@@ -1,10 +1,51 @@
 .devices {
   display: flex;
   flex-direction: column;
-  //height: calc(100dvh - 46px);
+  height: calc(100dvh - 46px);
 }
 
-.line{
+.wrapperBtn {
+  width: 100%;
+  display: flex;
+  margin: 0 auto;
+  padding: 12px 20px;
+  justify-content: flex-end;
+  background: #141414;
+  gap: 20px;
+  height: 76px;
+  position: relative;
+  align-items: center;
+  align-content: center;
+}
+
+.sliderWrapper{
+  width: 100%;
+  border-top: 1px solid #7c7c7c;
+  background-color: #3a3a3a;
+  padding: 24px 0 ;
+  position: relative;
+}
+
+.content {
+  flex: 1 1 auto;
+  display: flex;
+  padding: 0 20px;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 10px;
+  overflow-y: auto;
+}
+
+.loadingText {
+  font-size: 18px;
+  font-weight: 600;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.line {
   width: 100%;
   border-bottom: 1px solid white;
 }
@@ -15,73 +56,84 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  margin: 0 22px;
 
   input[type="range"] {
     flex: 1;
     height: 10px;
     appearance: none;
     -webkit-appearance: none;
-    background: #333;
+    background: #707070; // Фон всего трека (неактивная часть)
     border-radius: 5px;
     outline: none;
 
+    /* Для WebKit (Chrome, Safari, Edge) */
+    &::-webkit-slider-runnable-track {
+      height: 10px;
+      background: #707070; // Неактивная часть трека
+      border-radius: 5px;
+    }
+
     &::-webkit-slider-thumb {
       -webkit-appearance: none;
-      height: 24px;
-      width: 24px;
-      background: #aaaaaa;
+      height: 30px;
+      width: 30px;
+      background: #424242;
       border-radius: 50%;
-      border: none;
-      margin-top: 0px;
+      margin-top: -11px;    // Центрируем по вертикали
       cursor: pointer;
+      border: 2px solid #707070;
+    }
+
+    /* Для Firefox */
+    &::-moz-range-track {
+      height: 10px;
+      background: #333; // Неактивная часть трека
+      border-radius: 5px;
+    }
+
+    &::-moz-range-progress {
+      height: 10px;
+      background: #16e41a; // Активная (заполненная) часть трека
+      border-radius: 5px;
     }
 
     &::-moz-range-thumb {
-      height: 20px;
-      width: 20px;
-      background: white;
+      height: 24px;
+      width: 24px;
+      background: #d12525;
       border-radius: 50%;
       border: none;
       cursor: pointer;
     }
-
-    &::-moz-range-track {
-      height: 10px;
-      background: black;
-      border-radius: 5px;
-    }
   }
+
+  //.sliderValue {
+  //  min-width: 30px;
+  //  text-align: center;
+  //}
 }
 
 .sliderValue {
-  position: absolute;
-  left: -20px;
-  transform: translateX(-50%);
-  background: #444;
   color: #fff;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 14px;
+
+  font-size: 22px;
 }
 
 @keyframes blink {
-  0% { background-color: #feff96; }
-  30% { background-color: #f0f07e; }
-  100% { background-color: #333; }
+  0% {
+    background-color: #feff96;
+  }
+  30% {
+    background-color: #f0f07e;
+  }
+  100% {
+    background-color: #333;
+  }
 }
 
 .blinking {
   animation: blink 1s ease-out infinite;
 }
 
-.wrapperBtn {
-  width: calc(100% - 40px);
-  display: flex;
-  margin: 10px auto;
-  padding: 10px 0;
-  justify-content: center;
-  background-color: #3a3a3a;
-  gap: 36px;
-  position: relative;
-}
 

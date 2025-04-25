@@ -1,10 +1,10 @@
 import { h, JSX } from 'preact';
 import styles from './styles.module.scss';
-import { LedIndicator } from '../LedIndicator/LedIndicator';
-import { Rele } from '../Rele/Rele';
+import { LedIndicator } from '../IconComponent/LedIndicator/LedIndicator';
+import { Rele } from '../IconComponent/Rele/Rele';
 import { GroupIcon } from '../Group/GroupIcon';
 import { Button } from '../Button/Button';
-import { LightBulbIcon } from '../LightBulbIcon/LightBulbIcon';
+import { LightBulbIcon } from '../IconComponent/LightBulbIcon/LightBulbIcon';
 
 type Props = {
   address: string;

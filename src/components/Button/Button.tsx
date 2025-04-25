@@ -1,7 +1,7 @@
 import { h } from 'preact';
 import styles from './styles.module.scss';
 import React from 'react';
-import { LightBulbIcon } from '../LightBulbIcon/LightBulbIcon';
+import { LightBulbIcon } from '../IconComponent/LightBulbIcon/LightBulbIcon';
 
 type ButtonProps = {
   text?: string;

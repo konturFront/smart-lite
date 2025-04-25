@@ -7,7 +7,7 @@ interface DoubleArrowIconProps {
   scale?: number;
   color?: string;
   className?: string;
-  direction?: 'left' | 'right';
+  direction?: 'left' | 'right' | 'up' | 'down';
   gap?: number; // Расстояние между стрелками
 }
 

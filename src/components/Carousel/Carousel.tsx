@@ -1,7 +1,7 @@
 import { h } from 'preact';
 import { useRef, useEffect } from 'preact/hooks';
 import styles from './styles.module.scss';
-import { ArrowIcon } from '../ArrowAction/ArrowAction';
+import { ArrowIcon } from '../IconComponent/ArrowAction/ArrowAction';
 
 interface RoomCarouselProps {
   rooms: Array<{ idRoom: string; roomName: string }>;

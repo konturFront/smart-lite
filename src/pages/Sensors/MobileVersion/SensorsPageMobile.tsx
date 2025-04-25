@@ -4,7 +4,7 @@ import { useLocation } from 'preact-iso';
 import { DriverPreview } from '../../../components/DriverPreview/DriverPreview';
 import stylesMobile from './stylesMobile.module.scss';
 import { Button } from '../../../components/Button/Button';
-import { ArrowIcon } from '../../../components/ArrowAction/ArrowAction';
+import { ArrowIcon } from '../../../components/IconComponent/ArrowAction/ArrowAction';
 import { h } from 'preact';
 
 export function SensorsPageMobile() {

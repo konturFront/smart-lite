@@ -6,7 +6,7 @@ import stylesMobile from './stylesMobile.module.scss';
 import { Modal } from '../../../components/Modal/Modal';
 import { useCalculateItemsPerPage } from '../../../hooks/useCalculateItemsPerPage';
 import { RoomCarousel } from '../../../components/Carousel/Carousel';
-import { ArrowIcon } from '../../../components/ArrowAction/ArrowAction';
+import { ArrowIcon } from '../../../components/IconComponent/ArrowAction/ArrowAction';
 import { h } from 'preact';
 
 export function HomePageMobile() {

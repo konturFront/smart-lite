@@ -4,7 +4,7 @@ import { useLocation } from 'preact-iso';
 import { DriverPreview } from '../../../components/DriverPreview/DriverPreview';
 import stylesMobile from './stylesMobile.module.scss';
 import { Button } from '../../../components/Button/Button';
-import { ArrowIcon } from '../../../components/ArrowAction/ArrowAction';
+import { ArrowIcon } from '../../../components/IconComponent/ArrowAction/ArrowAction';
 import { h } from 'preact';
 import { LoadingDots } from '../../../components/Loader/LoadingDots';
 import styles from '../../Rooms/MobileVersion/stylesMobile.module.scss';
@@ -13,7 +13,7 @@ import { delay } from 'rxjs';
 import { delayPreact } from '../../../utils/delay';
 import { RoomCarousel } from '../../../components/Carousel/Carousel';
 import { Loader } from '../../../components/Loader/Loader';
-import { DoubleArrowIcon } from '../../../components/ArrowAction/DoubleArrowIcon';
+import { DoubleArrowIcon } from '../../../components/IconComponent/ArrowAction/DoubleArrowIcon';
 
 export function DevicesPageMobile() {
   const refTest = useRef<HTMLDivElement>(null);
