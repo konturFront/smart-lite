@@ -84,10 +84,15 @@
 
 .title {
    font-size: 22px; color: white;
+    text-align: center;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
     line-height: 22px;
   @media (max-width: 380px) {
      font-size: 20px;
   }
 }
+
 
 

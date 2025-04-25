@@ -5,6 +5,7 @@ import { Loader } from '../Loader/Loader';
 import { WifiIcon } from '../Wifi/Wifi';
 import { useLocation, useRoute } from 'preact-iso';
 import { getTitle } from './utils/getTitlePage';
+import { InfoIcon } from '../IconInfo/InfoIcon';
 
 export function Header() {
   const socketStatus = state.value.socketStatus;
@@ -18,9 +19,9 @@ export function Header() {
           style={{
             display: 'flex',
             alignItems: 'center',
-            flex: '0 0 auto',
             justifyContent: 'flex-start',
-            gap: '10px',
+            gap: '14px',
+            flex: '0 0 auto',
           }}
         >
           <div
@@ -36,17 +37,17 @@ export function Header() {
             <div className={styles.burgerBtnItem} />
             <div className={styles.burgerBtnItem} />
           </div>
+          <WifiIcon size={30} rate={2} />
         </div>
         <div className={styles.title}>{currentTitle}</div>
-        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-          <div style={{ textAlign: 'center' }}>
-            <WifiIcon size={40} rate={2} />
-          </div>
-          <div
-            id="socket-indicator"
-            className={`${styles.status} ${styles[socketStatus]}`}
-            style={{ display: 'flex', height: '100%' }}
-          ></div>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            flex: '0 0 auto',
+          }}
+        >
+          <InfoIcon />
         </div>
       </div>
       <Drawer />

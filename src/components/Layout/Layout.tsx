@@ -6,7 +6,7 @@ import { state } from '../../store/store';
 import styles from './styles.module.scss';
 import { useDeviceDetect } from '../../hooks/useDeviceDetect';
 export const Layout = ({ children }: { children?: preact.ComponentChildren }) => {
-  const { isMobile } = useDeviceDetect();
+  const { isMobile, isMobile1100 } = useDeviceDetect();
   useEffect(() => {
     socketService.connect(state.value.socketURL);
     return () => {
@@ -14,7 +14,7 @@ export const Layout = ({ children }: { children?: preact.ComponentChildren }) =>
     };
   }, []);
 
-  if (isMobile) {
+  if (isMobile1100) {
     return (
       <div>
         <Header />

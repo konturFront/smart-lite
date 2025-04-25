@@ -11,6 +11,9 @@ import styles from '../../Rooms/MobileVersion/stylesMobile.module.scss';
 import { Modal } from '../../../components/Modal/Modal';
 import { delay } from 'rxjs';
 import { delayPreact } from '../../../utils/delay';
+import { RoomCarousel } from '../../../components/Carousel/Carousel';
+import { Loader } from '../../../components/Loader/Loader';
+import { DoubleArrowIcon } from '../../../components/ArrowAction/DoubleArrowIcon';
 
 export function DevicesPageMobile() {
   const refTest = useRef<HTMLDivElement>(null);
@@ -96,18 +99,6 @@ export function DevicesPageMobile() {
   const totalDrivers = Object.keys(state.value.updatedDevices).length;
   return (
     <div className={stylesMobile.devices}>
-      <div className={stylesMobile.wrapperBtn}>
-        {isLoading ? (
-          <div className={stylesMobile.loadingText}>
-            <LoadingDots />
-          </div>
-        ) : (
-          <>
-            <Button text="Обновить" onClick={updateDrivers} />
-            <Button text="Поиск " onClick={handleUpdateDrivers} />
-          </>
-        )}
-      </div>
       <div id={'line'} className={stylesMobile.line}></div>
       <div id="drivers-list" className={stylesMobile.driversList} ref={refTest}>
         {currentItems.map(key => (
@@ -124,7 +115,7 @@ export function DevicesPageMobile() {
         ))}
       </div>
       {/*ПАГИНАЦИЯ*/}
-      <div className={stylesMobile.paginationBar}>
+      <div className={stylesMobile.paginationBar2}>
         <div
           style={{
             marginRight: '5px',
@@ -136,7 +127,7 @@ export function DevicesPageMobile() {
           className={stylesMobile.arrowPagination}
           onClick={() => setPage(p => Math.max(p - 1, 1))}
         >
-          <ArrowIcon direction={'right'} />
+          <DoubleArrowIcon direction={'right'} />
         </div>
         <div
           style={{
@@ -149,7 +140,7 @@ export function DevicesPageMobile() {
           className={stylesMobile.arrowPagination}
           onClick={() => setPage(p => Math.min(p + 1, countPages))}
         >
-          <ArrowIcon direction={'left'} />
+          <DoubleArrowIcon direction={'left'} />
         </div>
 
         <div className={stylesMobile.totalCount}>{totalDrivers}</div>
@@ -166,6 +157,19 @@ export function DevicesPageMobile() {
             </div>
           )}
         </div>
+      </div>
+      <div className={stylesMobile.wrapperBtn}>
+        {isLoading ? (
+          <div className={stylesMobile.loadingText}>
+            <LoadingDots />
+          </div>
+        ) : (
+          <>
+            {/*<Loader />*/}
+            <Button text="Обновить" onClick={updateDrivers} />
+            <Button text="Поиск " onClick={handleUpdateDrivers} />
+          </>
+        )}
       </div>
       <Modal
         maxWidth="md"
@@ -184,7 +188,8 @@ export function DevicesPageMobile() {
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'center',
-              gap: '60px',
+              gap: '40px',
+              padding: '16px 0',
               marginBottom: '20px',
             }}
           >
