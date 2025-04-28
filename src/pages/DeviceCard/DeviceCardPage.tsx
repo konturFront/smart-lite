@@ -8,8 +8,10 @@ import styles from './styles.module.scss';
 import { h } from 'preact';
 import stylesMobile from '../Devices/MobileVersion/stylesMobile.module.scss';
 import { DriverPreview } from '../../components/DriverPreview/DriverPreview';
-import { DoubleArrowIcon } from '../../components/IconComponent/ArrowAction/DoubleArrowIcon';
+import { ArrowIcon } from '../../components/IconComponent/ArrowAction/ArrowIcon';
 import { DoubleArrowTopIcon } from '../../components/IconComponent/DoubleArrowIcon/DoubleArrowTopIcon';
+import classNames from 'classnames';
+import { useDeviceDetect } from '../../hooks/useDeviceDetect';
 
 export function DeviceCardPage() {
   const { params } = useRoute();
@@ -29,7 +31,8 @@ export function DeviceCardPage() {
   const debounceAllBrightRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isLoading = stateUI.value.isLoadingUI;
   const [isOpenRGB, setIsOpenRGB] = useState(false);
-
+  const [tab, setTab] = useState<'settings' | 'group'>('settings');
+  const { isMobile340 } = useDeviceDetect();
   const testingDriver = useCallback(() => {
     if (!isTestingDriver) {
       setTestingDriver(!isTestingDriver);
@@ -173,7 +176,7 @@ export function DeviceCardPage() {
     showLoadingStateUI();
     fetchSettings(+params.id);
   };
-
+  console.log('tab', tab);
   return (
     <div className={styles.devices}>
       <div id={'line'} className={styles.line}></div>
@@ -191,7 +194,6 @@ export function DeviceCardPage() {
       {/*      <span className={styles.sliderValue}>{minLevel}</span>*/}
       {/*    </div>*/}
       {/*  </div>*/}
-
       {/*  <div className={styles.sliderWrapper}>*/}
       {/*    <div className={styles.sliderLabel}>Максимальный уровень яркости</div>*/}
       {/*    <div className={styles.sliderItem}>*/}
@@ -205,7 +207,6 @@ export function DeviceCardPage() {
       {/*      <span className={styles.sliderValue}>{maxLevel}</span>*/}
       {/*    </div>*/}
       {/*  </div>*/}
-
       {/*  <div className={styles.sliderWrapper}>*/}
       {/*    <div className={styles.sliderLabel}>Уровень яркости при аварии</div>*/}
       {/*    <div className={styles.sliderItem}>*/}
@@ -219,7 +220,6 @@ export function DeviceCardPage() {
       {/*      <span className={styles.sliderValue}>{failureLevel}</span>*/}
       {/*    </div>*/}
       {/*  </div>*/}
-
       {/*  <div className={styles.sliderWrapper}>*/}
       {/*    <div className={styles.sliderLabel}>Уровень яркости при подачи питания</div>*/}
       {/*    <div className={styles.sliderItem}>*/}
@@ -233,7 +233,6 @@ export function DeviceCardPage() {
       {/*      <span className={styles.sliderValue}>{poweronLevel}</span>*/}
       {/*    </div>*/}
       {/*  </div>*/}
-
       {/*  <div className={styles.fadeControls}>*/}
       {/*    <div style={{ display: 'flex' }}>*/}
       {/*      <div className={styles.sliderLabel}> Время затухания (сек.):</div>*/}
@@ -258,7 +257,6 @@ export function DeviceCardPage() {
       {/*      </div>*/}
       {/*    </div>*/}
       {/*  </div>*/}
-
       {/*  <div className={styles.testSection}>*/}
       {/*    <div className={styles.sliderWrapper}>*/}
       {/*      <div className={styles.sliderLabel}>Текущий уровень яркости</div>*/}
@@ -268,7 +266,6 @@ export function DeviceCardPage() {
       {/*      </div>*/}
       {/*    </div>*/}
       {/*  </div>*/}
-
       {/*  <div className={styles.testSection}>*/}
       {/*    <div className={styles.sliderWrapper}>*/}
       {/*      <div className={styles.sliderLabel}>*/}
@@ -325,7 +322,166 @@ export function DeviceCardPage() {
             />
           </div>
         </div>
+        <div className={styles.settingsAndGroupWrapper}>
+          <div className={styles.buttonTabs}>
+            <div
+              className={classNames(
+                tab === 'settings'
+                  ? styles.buttonTabItemActiveSettings
+                  : styles.buttonTabItemSettings
+              )}
+              onClick={() => setTab('settings')}
+            >
+              Настройки
+            </div>
+            <div
+              className={classNames(
+                tab === 'group' ? styles.buttonTabItemActiveGroup : styles.buttonTabItemGroup
+              )}
+              onClick={() => setTab('group')}
+            >
+              Группы
+            </div>
+          </div>
+          {/* Настройки */}
+          <div
+            className={styles.contentBody}
+            style={
+              tab == 'settings'
+                ? { padding: ' 0 12px 12px 20px' }
+                : { padding: ' 0 12px 12px 12px' }
+            }
+          >
+            {tab === 'settings' && (
+              <>
+                <div className={styles.element}>
+                  <div className={styles.valueName}>Яркость максимальная</div>
+                  <div className={styles.valueWrapper}>
+                    <ArrowIcon
+                      direction={'right'}
+                      double={false}
+                      width={isMobile340 ? 28 : 32}
+                      height={isMobile340 ? 28 : 32}
+                    />
+                    <div className={styles.value}>12</div>
+                    <ArrowIcon
+                      direction={'left'}
+                      double={false}
+                      width={isMobile340 ? 28 : 32}
+                      height={isMobile340 ? 28 : 32}
+                    />
+                  </div>
+                </div>
+                <div className={styles.element}>
+                  <div className={styles.valueName}>Яркость минимальная</div>
+                  <div className={styles.valueWrapper}>
+                    <ArrowIcon
+                      direction={'right'}
+                      double={false}
+                      width={isMobile340 ? 28 : 32}
+                      height={isMobile340 ? 28 : 32}
+                    />
+                    <div className={styles.value}>12</div>
+                    <ArrowIcon
+                      direction={'left'}
+                      double={false}
+                      width={isMobile340 ? 28 : 32}
+                      height={isMobile340 ? 28 : 32}
+                    />
+                  </div>
+                </div>
+                <div className={styles.element}>
+                  <div className={styles.valueName}>Яркость при запуске</div>
+                  <div className={styles.valueWrapper}>
+                    <ArrowIcon
+                      direction={'right'}
+                      double={false}
+                      width={isMobile340 ? 28 : 32}
+                      height={isMobile340 ? 28 : 32}
+                    />
+                    <div className={styles.value}>12</div>
+                    <ArrowIcon
+                      direction={'left'}
+                      double={false}
+                      width={isMobile340 ? 28 : 32}
+                      height={isMobile340 ? 28 : 32}
+                    />
+                  </div>
+                </div>
+                <div className={styles.element}>
+                  <div className={styles.valueName}>Яркость при аварии</div>
+                  <div className={styles.valueWrapper}>
+                    <ArrowIcon
+                      direction={'right'}
+                      double={false}
+                      width={isMobile340 ? 28 : 32}
+                      height={isMobile340 ? 28 : 32}
+                    />
+                    <div className={styles.value}>12</div>
+                    <ArrowIcon
+                      direction={'left'}
+                      double={false}
+                      width={isMobile340 ? 28 : 32}
+                      height={isMobile340 ? 28 : 32}
+                    />
+                  </div>
+                </div>
+                <div className={styles.element}>
+                  <div className={styles.valueName}>Плавное вкл/выкл</div>
+                  <div className={styles.valueWrapper}>
+                    <ArrowIcon
+                      direction={'right'}
+                      double={false}
+                      width={isMobile340 ? 28 : 32}
+                      height={isMobile340 ? 28 : 32}
+                    />
+                    <div className={styles.value}>12</div>
+                    <ArrowIcon
+                      direction={'left'}
+                      double={false}
+                      width={isMobile340 ? 28 : 32}
+                      height={isMobile340 ? 28 : 32}
+                    />
+                  </div>
+                </div>
+                <div className={styles.element}>
+                  <div className={styles.valueName}>Шаг димирования</div>
+                  <div className={styles.valueWrapper}>
+                    <ArrowIcon
+                      direction={'right'}
+                      double={false}
+                      width={isMobile340 ? 28 : 32}
+                      height={isMobile340 ? 28 : 32}
+                    />
+                    <div className={styles.value}>12</div>
+                    <ArrowIcon
+                      direction={'left'}
+                      double={false}
+                      width={isMobile340 ? 28 : 32}
+                      height={isMobile340 ? 28 : 32}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+            {tab === 'group' && (
+              <div className={styles.groupFlex}>
+                {groups.map((isChecked, index) => (
+                  <div key={index} className={styles.groupItem} onClick={() => toggleGroup(index)}>
+                    {index}
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      readOnly // важно, чтобы React не ругался
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
+      {/*//КНОПКИ управления*/}
       <div className={styles.wrapperBtn}>
         {isLoading ? (
           <div className={styles.loadingText}>

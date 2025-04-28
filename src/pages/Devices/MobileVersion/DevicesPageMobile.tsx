@@ -4,7 +4,6 @@ import { useLocation } from 'preact-iso';
 import { DriverPreview } from '../../../components/DriverPreview/DriverPreview';
 import stylesMobile from './stylesMobile.module.scss';
 import { Button } from '../../../components/Button/Button';
-import { ArrowIcon } from '../../../components/IconComponent/ArrowAction/ArrowAction';
 import { h } from 'preact';
 import { LoadingDots } from '../../../components/Loader/LoadingDots';
 import styles from '../../Rooms/MobileVersion/stylesMobile.module.scss';
@@ -13,7 +12,7 @@ import { delay } from 'rxjs';
 import { delayPreact } from '../../../utils/delay';
 import { RoomCarousel } from '../../../components/Carousel/Carousel';
 import { Loader } from '../../../components/Loader/Loader';
-import { DoubleArrowIcon } from '../../../components/IconComponent/ArrowAction/DoubleArrowIcon';
+import { ArrowIcon } from '../../../components/IconComponent/ArrowAction/ArrowIcon';
 
 export function DevicesPageMobile() {
   const refTest = useRef<HTMLDivElement>(null);
@@ -128,7 +127,7 @@ export function DevicesPageMobile() {
           className={stylesMobile.arrowPagination}
           onClick={() => setPage(p => Math.max(p - 1, 1))}
         >
-          <DoubleArrowIcon direction={'right'} />
+          <ArrowIcon direction={'right'} />
         </div>
         <div
           style={{
@@ -141,7 +140,7 @@ export function DevicesPageMobile() {
           className={stylesMobile.arrowPagination}
           onClick={() => setPage(p => Math.min(p + 1, countPages))}
         >
-          <DoubleArrowIcon direction={'left'} />
+          <ArrowIcon direction={'left'} />
         </div>
 
         <div className={stylesMobile.totalCount}>{totalDrivers}</div>
