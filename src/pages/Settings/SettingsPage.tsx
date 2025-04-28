@@ -83,21 +83,21 @@ export const SettingsPage = () => {
           <div className={styles.wrapperBtn}>
             <Button text="Сохранить настройки Wi-Fi" onClick={saveSettingsWifi} />
           </div>
-          {/*<label style={{ marginTop: '20px' }}>*/}
-          {/*  URL WebSocket-сервера:*/}
-          {/*  <div className={styles.wsUrlWrapper}>*/}
-          {/*    <input*/}
-          {/*      type="text"*/}
-          {/*      value={reUrl}*/}
-          {/*      onInput={e => {*/}
-          {/*        setReUrl((e.target as HTMLInputElement).value);*/}
-          {/*      }}*/}
-          {/*    />*/}
-          {/*    <div className={styles.wrapperBtn}>*/}
-          {/*      <Button text=" Переподключить сокет" onClick={reConnectWS} />*/}
-          {/*    </div>*/}
-          {/*  </div>*/}
-          {/*</label>*/}
+          <label style={{ marginTop: '20px' }}>
+            URL WebSocket-сервера:
+            <div className={styles.wsUrlWrapper}>
+              <input
+                type="text"
+                value={reUrl}
+                onInput={e => {
+                  setReUrl((e.target as HTMLInputElement).value);
+                }}
+              />
+              <div className={styles.wrapperBtn}>
+                <Button text=" Переподключить сокет" onClick={reConnectWS} />
+              </div>
+            </div>
+          </label>
         </div>
 
         <div className={styles.wrapperBtn}>

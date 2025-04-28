@@ -24,6 +24,7 @@ export function DevicesPageMobile() {
   const [countPages, setCountPages] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(8);
   const isLoading = stateUI.value.isLoadingUI;
+  const socketStatus = state.value.socketStatus;
 
   const handleUpdateDrivers = useCallback(() => {
     setOpenModalSearch(true);
@@ -159,7 +160,7 @@ export function DevicesPageMobile() {
         </div>
       </div>
       <div className={stylesMobile.wrapperBtn}>
-        {isLoading ? (
+        {isLoading && socketStatus === 'connected' ? (
           <div className={stylesMobile.loadingText}>
             <LoadingDots />
           </div>
