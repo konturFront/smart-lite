@@ -2,6 +2,7 @@ import { h } from 'preact';
 import styles from './styles.module.scss';
 import React from 'react';
 import { LightBulbIcon } from '../IconComponent/LightBulbIcon/LightBulbIcon';
+import { useDeviceDetect } from '../../hooks/useDeviceDetect';
 
 type ButtonProps = {
   text?: string;
@@ -16,6 +17,19 @@ type ButtonProps = {
 };
 
 export const Button = ({ text = 'Кнопка', onClick, sx, lampVisible = false }: ButtonProps) => {
+  const { isMobile380, isMobile360, isMobile340 } = useDeviceDetect();
+  const size = () => {
+    if (isMobile340) {
+      return 28;
+    }
+    if (isMobile360) {
+      return 30;
+    }
+    if (isMobile380) {
+      return 36;
+    }
+    return 36;
+  };
   return (
     <div
       className={styles.btn}
@@ -27,8 +41,13 @@ export const Button = ({ text = 'Кнопка', onClick, sx, lampVisible = false
     >
       <span style={{ visibility: lampVisible ? 'hidden' : 'visible' }}> {`${text}`}</span>
       {lampVisible && (
-        <div style={{ position: 'absolute', top: '0', left: '0', transform: 'translate(86%,6%)' }}>
-          <LightBulbIcon animateStripes={true} height={36} width={36} animationSpeed={1000} />
+        <div className={styles.lampWrapper}>
+          <LightBulbIcon
+            animateStripes={true}
+            height={size()}
+            width={size()}
+            animationSpeed={1000}
+          />
         </div>
       )}
     </div>

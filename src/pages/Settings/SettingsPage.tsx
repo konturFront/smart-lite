@@ -4,7 +4,7 @@ import { reconnectWS, sendMessageSocket, state } from '../../store/store';
 import { Button } from '../../components/Button/Button';
 
 export const SettingsPage = () => {
-  const [mode, setMode] = useState<'host' | 'ap'>('host');
+  const [mode, setMode] = useState<'host' | 'up'>('up');
   const [ssid, setSsid] = useState('');
   const [password, setPassword] = useState('');
   const [reUrl, setReUrl] = useState('');
@@ -38,33 +38,33 @@ export const SettingsPage = () => {
     sendMessageSocket({ master: 'scan', cmd: 'start' });
   }, []);
 
+  console.log('mode', mode);
   return (
     <div className={styles.settings}>
       <div className={styles.settingsPanel}>
-        <div className={styles.wrapperBtn}>
-          <Button text=" Перезагрузка Мастера" onClick={resetMaster} />
-        </div>
-        <h2 style={{ textAlign: 'center' }}>Настройки Wi-Fi</h2>
+        {/*<div className={styles.wrapperBtn}>*/}
+        {/*  <Button text=" Перезагрузка Мастера" onClick={resetMaster} />*/}
+        {/*</div>*/}
         <div className={styles.panel}>
           <label>
             Режим подключения:
             <select
               value={mode}
               onChange={e => {
-                setMode((e.target as HTMLSelectElement).value as 'host' | 'ap');
+                setMode((e.target as HTMLSelectElement).value as 'host' | 'up');
               }}
             >
-              <option value="host">host</option>
-              <option value="ap">ap</option>
+              <option value="host">Создать точку доступа</option>
+              <option value="up">Подключиться к сети</option>
             </select>
           </label>
           <label>
-            SSID:
+            Имя сети:
             <input
               autoComplete="off"
               type="text"
               id="wifi-ssid"
-              placeholder="Введите SSID"
+              placeholder="Введите имя сети"
               value={ssid}
               onInput={e => setSsid((e.target as HTMLInputElement).value)}
             />
@@ -83,24 +83,23 @@ export const SettingsPage = () => {
           <div className={styles.wrapperBtn}>
             <Button text="Сохранить настройки Wi-Fi" onClick={saveSettingsWifi} />
           </div>
-          <label style={{ marginTop: '20px' }}>
-            URL WebSocket-сервера:
-            <div className={styles.wsUrlWrapper}>
-              <input
-                type="text"
-                value={reUrl}
-                onInput={e => {
-                  setReUrl((e.target as HTMLInputElement).value);
-                }}
-              />
-              <div className={styles.wrapperBtn}>
-                <Button text=" Переподключить сокет" onClick={reConnectWS} />
-              </div>
-            </div>
-          </label>
+          {/*<label style={{ marginTop: '20px' }}>*/}
+          {/*  URL WebSocket-сервера:*/}
+          {/*  <div className={styles.wsUrlWrapper}>*/}
+          {/*    <input*/}
+          {/*      type="text"*/}
+          {/*      value={reUrl}*/}
+          {/*      onInput={e => {*/}
+          {/*        setReUrl((e.target as HTMLInputElement).value);*/}
+          {/*      }}*/}
+          {/*    />*/}
+          {/*    <div className={styles.wrapperBtn}>*/}
+          {/*      <Button text=" Переподключить сокет" onClick={reConnectWS} />*/}
+          {/*    </div>*/}
+          {/*  </div>*/}
+          {/*</label>*/}
         </div>
 
-        <h2 style={{ textAlign: 'center' }}>Сканирование сетей Wi-Fi</h2>
         <div className={styles.wrapperBtn}>
           <Button text="    Сканировать сети" onClick={scanWifiNet} />
         </div>

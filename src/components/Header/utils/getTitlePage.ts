@@ -20,7 +20,7 @@ export const getTitle = (pathname: string) => {
 
   // Страница «Помещения»
   if (pathname === '/service/rooms') return 'Помещения и группы';
-  if (pathname === '/settings') return 'Wi-Fi';
+  if (pathname === '/settings') return 'Настройки Wi-Fi';
 
   // Если ничего не подошло
   return 'Страница';

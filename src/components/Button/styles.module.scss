@@ -31,8 +31,46 @@
     //box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
     transform: scale(0.98);
   }
+
+  @media (max-width: 380px) {
+    padding: 10px 10px;  /* Уменьшенные отступы */
+    font-size: 14px;    /* Уменьшенный размер шрифта */
+    min-width: 80px;    /* Уменьшенная минимальная ширина */
+  }
+
+  @media (max-width: 360px) {
+    padding: 10px 8px;  /* Уменьшенные отступы */
+    font-size: 12px;    /* Уменьшенный размер шрифта */
+    min-width: 68px;    /* Уменьшенная минимальная ширина */
+  }
+
+  @media (max-width: 340px) {
+    padding: 10px 6px;  /* Уменьшенные отступы */
+    font-size: 12px;    /* Уменьшенный размер шрифта */
+    min-width: 50px;    /* Уменьшенная минимальная ширина */
+  }
+
 }
 
+.lampWrapper {
+  position: absolute;
+  top:0 ;
+  left: 0;
+  transform: translate(86%,6%);
+
+  @media (max-width: 380px) {
+    transform: translate(60%,2%);
+  }
+
+  @media (max-width: 360px) {
+    transform: translate(64%,6%);
+  }
+
+  @media (max-width: 340px) {
+    transform: translate(36%,6%);
+  }
+
+}
 .wrapperBtn {
   display: flex;
   width: 100%;

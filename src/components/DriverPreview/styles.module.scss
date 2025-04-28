@@ -18,20 +18,10 @@
   -ms-user-select: none;       /* IE 10+ */
   box-shadow: 0 2px 4px -1px rgba(0, 0, 0, .8); /* тень */
 
-  //@media (min-width: 990px) {
-  //  width: calc(33.333% - 12px);
-  //  padding: 9px 12px;
-  //}
-  //
-  //@media (max-width: 990px) and (min-width: 600px) {
-  //  width: calc(50% - 12px);
-  //  padding: 9px 6px;
-  //}
-  //
-  //@media (max-width: 675px) {
-  //  padding: 9px 6px;
-  //  min-width: unset;
-  //}
+  @media (max-width: 675px) {
+    padding: 9px 6px;
+    min-width: unset;
+  }
 }
 
 
@@ -44,6 +34,21 @@
   overflow: hidden;
   text-align: center;
   flex-shrink: 0;
+
+  @media (max-width: 380px) {
+    font-size: 24px;
+    min-width: 32px;
+  }
+
+  @media (max-width: 360px) {
+    font-size: 22px;
+    min-width: 30px;
+  }
+
+  @media (max-width: 340px) {
+    font-size: 20px;
+    min-width: 35px;
+  }
 }
 
 .indicators {
