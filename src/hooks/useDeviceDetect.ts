@@ -7,6 +7,7 @@ export function useDeviceDetect() {
   const [isMobile380, setIsMobile380] = useState(false);
   const [isMobile360, setIsMobile360] = useState(false);
   const [isMobile340, setIsMobile340] = useState(false);
+  const [isMobile400, setIsMobile400] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -15,6 +16,7 @@ export function useDeviceDetect() {
       setIsMobile380(window.innerWidth <= 380);
       setIsMobile360(window.innerWidth <= 360);
       setIsMobile340(window.innerWidth <= 340);
+      setIsMobile400(window.innerWidth <= 400);
     };
 
     checkMobile();
@@ -23,5 +25,5 @@ export function useDeviceDetect() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  return { isMobile, isMobile1100, isMobile380, isMobile360, isMobile340 };
+  return { isMobile, isMobile1100, isMobile380, isMobile360, isMobile340, isMobile400 };
 }

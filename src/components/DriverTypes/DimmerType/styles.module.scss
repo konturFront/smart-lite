@@ -1,0 +1,82 @@
+.sliderItem {
+  position: relative;
+  flex: 1 1 50%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 12px;
+  z-index: 9;
+
+  input[type="range"] {
+    flex: 1;
+    height: 10px;
+    appearance: none;
+    -webkit-appearance: none;
+    background: #707070;
+    border-radius: 5px;
+    outline: none;
+
+    &::-webkit-slider-runnable-track {
+      height: 10px;
+      background: #707070;
+      border-radius: 5px;
+    }
+
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 30px;
+      width: 30px;
+      background: #424242;
+      border-radius: 50%;
+      margin-top: -11px;
+      cursor: pointer;
+      border: 2px solid #707070;
+    }
+
+    &::-moz-range-track {
+      height: 10px;
+      background: #333;
+      border-radius: 5px;
+    }
+
+    &::-moz-range-progress {
+      height: 10px;
+      background: #16e41a;
+      border-radius: 5px;
+    }
+
+    &::-moz-range-thumb {
+      height: 24px;
+      width: 24px;
+      background: #d12525;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+    }
+  }
+}
+
+.buttonOnOff {
+  border: 2px solid #2b2b2b;
+  background-color: #525252;
+  padding: 10px 16px;
+  display: flex;
+  border-radius: 4px;
+
+  &:active {
+    transform: translateY(2px); /* Эффект "вдавливания" */
+    background-color: #424242;
+    border-color: #1a1a1a;
+  }
+
+}
+
+.sliderValue {
+  color: #fff;
+  font-size: 22px;
+}
+
+.sliderValueInactive {
+  color: #aeaeae;
+  font-size: 22px;
+}

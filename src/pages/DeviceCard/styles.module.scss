@@ -8,6 +8,7 @@ $font-size-xlarge: 24px;
   display: flex;
   flex-direction: column;
   height: calc(100dvh - 46px);
+  position: relative;  z-index: 7;
 }
 
 .wrapperBtn {
@@ -15,21 +16,27 @@ $font-size-xlarge: 24px;
   display: flex;
   margin: 0 auto;
   padding: 12px 20px;
-  justify-content: flex-end;
+  justify-content: space-between;
   background: #141414;
   gap: 20px;
   height: 76px;
   position: relative;
   align-items: center;
   align-content: center;
+  @media (max-width: 390px) {
+    gap: 4px;
+  }
 }
 
 .sliderWrapper {
   width: 100%;
   border-top: 1px solid #7c7c7c;
   background-color: #3a3a3a;
-  padding: 24px 0;
+  padding: 10px 0;
   position: relative;
+  height: 75px;
+  align-content: center;
+  z-index: 9;
 }
 
 .settingsAndGroupWrapper {
@@ -126,6 +133,16 @@ $font-size-xlarge: 24px;
   }
 }
 
+.backdrop {
+  position: fixed;
+  top: 46px; // если верхняя панель высотой 46px
+  left: 0;
+  width: 100%;
+  height: calc(100vh - 46px); // покрывает всё, кроме верхней панели
+  background-color: rgba(0, 0, 0, 0.8); // полупрозрачное затемнение
+  z-index: 8;
+}
+
 .content {
   flex: 1 1 auto;
   display: flex;
@@ -134,6 +151,7 @@ $font-size-xlarge: 24px;
   gap: 16px;
   margin-top: 10px;
   overflow-y: auto;
+
 }
 
 .loadingText {
@@ -279,6 +297,62 @@ $font-size-xlarge: 24px;
       font-size: 14px;
     }
   }
+}
+
+.rgbPanel {
+  flex-direction: column;
+  display: flex;
+  gap: 22px;
+  align-content: center;
+  align-items: center;
+  position: absolute;
+  padding: 20px 12px 36px 12px;
+  background-color: #3a3a3a;
+  width: 100%;
+
+  border-top: none;
+  z-index: 9;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+
+  &.open {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+}
+
+.buttonOnOff {
+  border: 2px solid #2b2b2b;
+  background-color: #525252;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  height: 50px;
+  width: 60px;
+  border-radius: 4px;
+
+  &:active {
+    transform: translateY(2px); /* Эффект "вдавливания" */
+    background-color: #424242;
+    border-color: #1a1a1a;
+  }
+
+}
+
+@keyframes rotate360 {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.spin {
+  animation: rotate360 .5s linear 3; // два оборота
 }
 
 @media (max-width: 357px) {
