@@ -10,6 +10,7 @@ interface DoubleArrowIconProps {
   direction?: 'left' | 'right' | 'up' | 'down';
   gap?: number; // Расстояние между стрелками
   double?: boolean;
+  onClick?: () => void;
 }
 
 export const ArrowIcon: FunctionalComponent<DoubleArrowIconProps> = ({
@@ -20,6 +21,7 @@ export const ArrowIcon: FunctionalComponent<DoubleArrowIconProps> = ({
   className = '',
   direction = 'right',
   double = true,
+  onClick,
   gap = 8, // Значение по умолчанию для расстояния между стрелками
 }) => {
   const scaledWidth = typeof width === 'number' ? width * scale : width;
@@ -34,12 +36,19 @@ export const ArrowIcon: FunctionalComponent<DoubleArrowIconProps> = ({
 
   return (
     <svg
+      onClick={() => {
+        onClick?.();
+      }}
       width={scaledWidth}
       height={scaledHeight}
       viewBox="0 0 125.6 188.6" // Ширина = 62.8 * 2 + gap
       class={`double-arrow-icon ${className}`}
       xmlns="http://www.w3.org/2000/svg"
-      style={{ transform: transformStyle, transformOrigin: 'center', flexShrink: 0 }}
+      style={{
+        transform: transformStyle,
+        transformOrigin: 'center',
+        flexShrink: 0,
+      }}
     >
       <defs>
         <style>{`.cls-1{fill:${color};}`}</style>

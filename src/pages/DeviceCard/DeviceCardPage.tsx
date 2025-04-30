@@ -31,6 +31,14 @@ export type ColorState = {
   light: number;
 };
 
+const dimmingSteps = [
+  2.8, 4.0, 5.6, 7.9, 11.2, 15.8, 22.4, 31.6, 44.7, 63.3, 89.4, 127, 179, 253, 358,
+];
+
+const dimmingStepsTime = [
+  0, 0.7, 1.0, 1.4, 2.0, 2.8, 4.0, 5.7, 8.0, 11.3, 16.0, 22.6, 32.0, 45.3, 64.0, 90.5,
+];
+
 export function DeviceCardPage() {
   const { params } = useRoute();
   const { route } = useLocation();
@@ -39,8 +47,8 @@ export function DeviceCardPage() {
   const [maxLevel, setMaxLevel] = useState(1);
   const [failureLevel, setFailureLevel] = useState(1);
   const [poweronLevel, setPoweronLevel] = useState(1);
-  const [fadeTime, setFadeTime] = useState('0');
-  const [fadeRate, setFadeRate] = useState('0');
+  const [fadeRate, setFadeRate] = useState<number>(2.8);
+  const [fadeTime, setFadeTime] = useState<number>(0);
   const [currentLevel, setCurrentLevel] = useState(0);
   const [currentLevelAllDrivers, setCurrentLevelAllDrivers] = useState(0);
   const [groups, setGroups] = useState<boolean[]>(Array(16).fill(false));
@@ -132,8 +140,8 @@ export function DeviceCardPage() {
       setMaxLevel(max);
       setFailureLevel(fail);
       setPoweronLevel(power);
-      setFadeTime(String(fadeT));
-      setFadeRate(String(fadeR));
+      // setFadeTime(String(fadeT));
+      // setFadeRate(String(fadeR));
       setCurrentLevel(level);
       setGroups(updatedGroups);
       setDriverSettings(state.value.settingsDriver);
@@ -191,12 +199,35 @@ export function DeviceCardPage() {
 
   const handleFadeTimeChange = (e: Event) => {
     const value = (e.target as HTMLInputElement).value.replace(/\D/g, '');
-    setFadeTime(value);
+    // setFadeTime(value);
   };
 
-  const handleFadeRateChange = (e: Event) => {
-    const value = (e.target as HTMLInputElement).value.replace(/\D/g, '');
-    setFadeRate(value);
+  const handleIncreaseFadeRate = () => {
+    const currentIndex = dimmingSteps.findIndex(step => step === fadeRate);
+    if (currentIndex < dimmingSteps.length - 1) {
+      setFadeRate(dimmingSteps[currentIndex + 1]);
+    }
+  };
+
+  const handleDecreaseFadeRate = () => {
+    const currentIndex = dimmingSteps.findIndex(step => step === fadeRate);
+    if (currentIndex > 0) {
+      setFadeRate(dimmingSteps[currentIndex - 1]);
+    }
+  };
+
+  const handleIncreaseFadeTime = () => {
+    const currentIndex = dimmingStepsTime.findIndex(step => step === fadeTime);
+    if (currentIndex < dimmingStepsTime.length - 1) {
+      setFadeTime(dimmingStepsTime[currentIndex + 1]);
+    }
+  };
+
+  const handleDecreaseFadeTime = () => {
+    const currentIndex = dimmingStepsTime.findIndex(step => step === fadeTime);
+    if (currentIndex > 0) {
+      setFadeTime(dimmingStepsTime[currentIndex - 1]);
+    }
   };
 
   const saveBtnSettings = useCallback(() => {
@@ -217,19 +248,18 @@ export function DeviceCardPage() {
         maxLevel,
         failureLevel,
         poweronLevel,
-        +fadeTime,
-        +fadeRate,
+        // +fadeTime,
+        // +fadeRate,
         currentLevel,
       ],
     });
-  }, [groups, minLevel, maxLevel, failureLevel, poweronLevel, fadeTime, fadeRate, currentLevel]);
+  }, [groups, minLevel, maxLevel, failureLevel, poweronLevel, currentLevel]);
 
   const pullDriverSettings = () => {
     showLoadingStateUI();
     fetchSettings(+params.id);
   };
 
-  console.log('colors', colors);
   return (
     <div className={styles.devices}>
       {isOpenRGB && <div className={styles.backdrop} />}
@@ -677,13 +707,15 @@ export function DeviceCardPage() {
                       double={false}
                       width={isMobile340 ? 28 : 32}
                       height={isMobile340 ? 28 : 32}
+                      onClick={handleDecreaseFadeTime}
                     />
-                    <div className={styles.value}>12</div>
+                    <div className={styles.value}>{fadeTime}</div>
                     <ArrowIcon
                       direction={'left'}
                       double={false}
                       width={isMobile340 ? 28 : 32}
                       height={isMobile340 ? 28 : 32}
+                      onClick={handleIncreaseFadeTime}
                     />
                   </div>
                 </div>
@@ -695,13 +727,15 @@ export function DeviceCardPage() {
                       double={false}
                       width={isMobile340 ? 28 : 32}
                       height={isMobile340 ? 28 : 32}
+                      onClick={handleDecreaseFadeRate}
                     />
-                    <div className={styles.value}>12</div>
+                    <div className={styles.value}>{fadeRate}</div>
                     <ArrowIcon
                       direction={'left'}
                       double={false}
                       width={isMobile340 ? 28 : 32}
                       height={isMobile340 ? 28 : 32}
+                      onClick={handleIncreaseFadeRate}
                     />
                   </div>
                 </div>
@@ -721,6 +755,20 @@ export function DeviceCardPage() {
                 ))}
               </div>
             )}
+
+            {/*Удалить только для теста изменения*/}
+            <div style={{ display: 'flex', gap: '20px' }}>
+              {[4, 7, 2, 96, 98, 128].map(type => (
+                <div
+                  key={type}
+                  className={typeDriver === type ? styles.activeType : ''}
+                  onClick={() => setTypeDriver(type)}
+                >
+                  {type}
+                </div>
+              ))}
+            </div>
+            {/*Удалить только для теста изменения*/}
           </div>
         </div>
       </div>
