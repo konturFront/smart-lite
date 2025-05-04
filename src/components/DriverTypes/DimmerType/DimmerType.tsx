@@ -21,9 +21,7 @@ interface DimmerTypeProps {
 export const DimmerType = ({ value, setValue }: DimmerTypeProps) => {
   return (
     <div className={styles.sliderItem}>
-      <span
-        className={value.generalRange > 0 ? styles.sliderValue : styles.sliderValueInactive}
-      >{`${value.generalRange} %`}</span>
+      <span className={styles.sliderValue}>{`${value.generalRange} %`}</span>
       <input
         type="range"
         min="0"
