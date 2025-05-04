@@ -21,6 +21,7 @@ import { ButtonOnOff } from '../../components/IconComponent/ButtonOnOff/ButtonOn
 import { RGBType } from '../../components/DriverTypes/RGBType/RGBType';
 import { RGBWType } from '../../components/DriverTypes/RGBWType/RGBWType';
 import { RGBTWType } from '../../components/DriverTypes/RGBTWType/RGBTWType';
+import { ColorSliderGeneral } from '../../components/ColorSliderGeneral/ColorSliderGeneral';
 
 export type ColorState = {
   generalRange: number;
@@ -60,7 +61,7 @@ export function DeviceCardPage() {
   const [tab, setTab] = useState<'settings' | 'group'>('settings');
   const { isMobile340, isMobile380, isMobile400 } = useDeviceDetect();
   const [shouldAnimate, setShouldAnimate] = useState(false);
-  const [typeDriver, setTypeDriver] = useState<number>(4);
+  const [typeDriver, setTypeDriver] = useState<number>(128);
   const [colors, setColors] = useState({
     generalRange: 0,
     r: 0,
@@ -269,28 +270,29 @@ export function DeviceCardPage() {
 
       <div id="drivers-list" className={styles.content}>
         <div className={styles.sliderWrapper}>
-          {typeDriver === 4 && (
+          {(typeDriver === 4 || typeDriver === 6) && (
             <>
-              <DimmerType value={colors} setValue={setColors} />
-            </>
-          )}
-          {typeDriver === 2 && (
-            <>
-              <TWType value={colors} setValue={setColors} />
+              <div style={{ display: 'flex', justifyContent: 'flex-end', margin: '0 12px' }}>
+                <div
+                  className={`${styles.buttonOnOff} ${colors.generalRange > 0 ? styles.buttonOnOffActive : ''}`}
+                  onClick={() => {
+                    setColors(prevState => ({
+                      ...prevState,
+                      generalRange: prevState.generalRange > 0 ? 0 : 100,
+                    }));
+                  }}
+                >
+                  <ButtonOnOff color={colors.generalRange > 0 ? 'white' : 'grey'} />
+                </div>
+              </div>
               <div className={`${styles.rgbPanel} ${isOpenRGB ? styles.open : ''}`}>
-                <div style={{ display: 'flex', width: '100%' }}>
-                  <ColorSlider
-                    fromColor={'#cbe9fd'}
-                    toColor={'#fef7cb'}
+                <div style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
+                  <ColorSliderGeneral
+                    fromColor={'#fff584'}
                     value={colors}
                     setValue={setColors}
                     field={'light'}
-                    minValue={2000}
-                    maxValue={6000}
                   />
-                  <div className={styles.buttonOnOff} style={{ visibility: 'hidden' }}>
-                    <ButtonOnOff />
-                  </div>
                 </div>
                 <div
                   style={{ position: 'absolute', backgroundColor: '#525252', bottom: 0, left: 0 }}
@@ -304,12 +306,88 @@ export function DeviceCardPage() {
               </div>
             </>
           )}
-          {typeDriver === 7 && <ReleType setValue={setColors} value={colors} />}
+          {typeDriver === 2 && (
+            <>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', margin: '0 12px' }}>
+                <div
+                  className={`${styles.buttonOnOff} ${colors.generalRange > 0 ? styles.buttonOnOffActive : ''}`}
+                  onClick={() => {
+                    setColors(prevState => ({
+                      ...prevState,
+                      generalRange: prevState.generalRange > 0 ? 0 : 100,
+                    }));
+                  }}
+                >
+                  <ButtonOnOff color={colors.generalRange > 0 ? 'white' : 'grey'} />
+                </div>
+              </div>
+              <div className={`${styles.rgbPanel} ${isOpenRGB ? styles.open : ''}`}>
+                <div style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
+                  <ColorSlider
+                    withOutValue={true}
+                    fromColor={'#cbe9fd'}
+                    toColor={'#fef7cb'}
+                    value={colors}
+                    setValue={setColors}
+                    field={'light'}
+                    minValue={2000}
+                    maxValue={6000}
+                  />
+                </div>
+                <div
+                  style={{ position: 'absolute', backgroundColor: '#525252', bottom: 0, left: 0 }}
+                  onClick={e => {
+                    e.stopPropagation(); // чтобы не срабатывал клик по родителю
+                    setIsOpenRGB(!isOpenRGB);
+                  }}
+                >
+                  <DoubleArrowTopIcon width={30} height={20} gap={0} isOpen={isOpenRGB} />
+                </div>
+              </div>
+            </>
+          )}
+          {typeDriver === 7 && (
+            <>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', margin: '0 12px' }}>
+                <div
+                  className={`${styles.buttonOnOff} ${colors.generalRange > 0 ? styles.buttonOnOffActive : ''}`}
+                  onClick={() => {
+                    setColors(prevState => ({
+                      ...prevState,
+                      generalRange: prevState.generalRange > 0 ? 0 : 100,
+                    }));
+                  }}
+                >
+                  <ButtonOnOff color={colors.generalRange > 0 ? 'white' : 'grey'} />
+                </div>
+              </div>
+            </>
+          )}
 
           {typeDriver === 96 && (
             <>
-              <RGBType value={colors} setValue={setColors} />
+              <div style={{ display: 'flex', justifyContent: 'flex-end', margin: '0 12px' }}>
+                <div
+                  className={`${styles.buttonOnOff} ${colors.generalRange > 0 ? styles.buttonOnOffActive : ''}`}
+                  onClick={() => {
+                    setColors(prevState => ({
+                      ...prevState,
+                      generalRange: prevState.generalRange > 0 ? 0 : 100,
+                    }));
+                  }}
+                >
+                  <ButtonOnOff color={colors.generalRange > 0 ? 'white' : 'grey'} />
+                </div>
+              </div>
               <div className={`${styles.rgbPanel} ${isOpenRGB ? styles.open : ''}`}>
+                <div style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
+                  <ColorSliderGeneral
+                    fromColor={'#fff584'}
+                    value={colors}
+                    setValue={setColors}
+                    field={'light'}
+                  />
+                </div>
                 <div style={{ display: 'flex', width: '100%' }}>
                   <ColorSlider
                     fromColor={'#ff113a'}
@@ -317,19 +395,6 @@ export function DeviceCardPage() {
                     setValue={setColors}
                     field={'r'}
                   />
-                  <div
-                    className={styles.buttonOnOff}
-                    style={colors.r > 0 ? { border: ' 2px solid #ffffff' } : {}}
-                    onClick={() => {
-                      setColors(prevState => ({ ...prevState, r: colors.r > 0 ? 0 : 100 }));
-                    }}
-                  >
-                    {colors.r > 0 ? (
-                      <div>{`${colors.r} %`}</div>
-                    ) : (
-                      <ButtonOnOff color={colors.r > 0 ? 'white' : 'grey'} />
-                    )}
-                  </div>
                 </div>
                 <div style={{ display: 'flex', width: '100%' }}>
                   <ColorSlider
@@ -338,19 +403,6 @@ export function DeviceCardPage() {
                     setValue={setColors}
                     field={'g'}
                   />
-                  <div
-                    className={styles.buttonOnOff}
-                    style={colors.g > 0 ? { border: ' 2px solid #ffffff' } : {}}
-                    onClick={() => {
-                      setColors(prevState => ({ ...prevState, g: colors.g > 0 ? 0 : 100 }));
-                    }}
-                  >
-                    {colors.g > 0 ? (
-                      <div>{`${colors.g} %`}</div>
-                    ) : (
-                      <ButtonOnOff color={colors.g > 0 ? 'white' : 'grey'} />
-                    )}
-                  </div>
                 </div>
                 <div style={{ display: 'flex', width: '100%' }}>
                   <ColorSlider
@@ -359,19 +411,6 @@ export function DeviceCardPage() {
                     setValue={setColors}
                     field={'b'}
                   />
-                  <div
-                    className={styles.buttonOnOff}
-                    style={colors.b > 0 ? { border: ' 2px solid #ffffff' } : {}}
-                    onClick={() => {
-                      setColors(prevState => ({ ...prevState, b: colors.b > 0 ? 0 : 100 }));
-                    }}
-                  >
-                    {colors.b > 0 ? (
-                      <div>{`${colors.b} %`}</div>
-                    ) : (
-                      <ButtonOnOff color={colors.b > 0 ? 'white' : 'grey'} />
-                    )}
-                  </div>
                 </div>
                 <div
                   style={{ position: 'absolute', backgroundColor: '#525252', bottom: 0, left: 0 }}
@@ -387,8 +426,28 @@ export function DeviceCardPage() {
           )}
           {typeDriver === 98 && (
             <>
-              <RGBWType value={colors} setValue={setColors} />
+              <div style={{ display: 'flex', justifyContent: 'flex-end', margin: '0 12px' }}>
+                <div
+                  className={`${styles.buttonOnOff} ${colors.generalRange > 0 ? styles.buttonOnOffActive : ''}`}
+                  onClick={() => {
+                    setColors(prevState => ({
+                      ...prevState,
+                      generalRange: prevState.generalRange > 0 ? 0 : 100,
+                    }));
+                  }}
+                >
+                  <ButtonOnOff color={colors.generalRange > 0 ? 'white' : 'grey'} />
+                </div>
+              </div>
               <div className={`${styles.rgbPanel} ${isOpenRGB ? styles.open : ''}`}>
+                <div style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
+                  <ColorSliderGeneral
+                    fromColor={'#fff584'}
+                    value={colors}
+                    setValue={setColors}
+                    field={'light'}
+                  />
+                </div>
                 <div style={{ display: 'flex', width: '100%' }}>
                   <ColorSlider
                     fromColor={'white'}
@@ -396,19 +455,6 @@ export function DeviceCardPage() {
                     setValue={setColors}
                     field={'w'}
                   />
-                  <div
-                    className={styles.buttonOnOff}
-                    style={colors.w > 0 ? { border: ' 2px solid #ffffff' } : {}}
-                    onClick={() => {
-                      setColors(prevState => ({ ...prevState, w: colors.w > 0 ? 0 : 100 }));
-                    }}
-                  >
-                    {colors.w > 0 ? (
-                      <div>{`${colors.w} %`}</div>
-                    ) : (
-                      <ButtonOnOff color={colors.w > 0 ? 'white' : 'grey'} />
-                    )}
-                  </div>
                 </div>
                 <div style={{ display: 'flex', width: '100%' }}>
                   <ColorSlider
@@ -417,19 +463,6 @@ export function DeviceCardPage() {
                     setValue={setColors}
                     field={'r'}
                   />
-                  <div
-                    className={styles.buttonOnOff}
-                    style={colors.r > 0 ? { border: ' 2px solid #ffffff' } : {}}
-                    onClick={() => {
-                      setColors(prevState => ({ ...prevState, r: colors.r > 0 ? 0 : 100 }));
-                    }}
-                  >
-                    {colors.r > 0 ? (
-                      <div>{`${colors.r} %`}</div>
-                    ) : (
-                      <ButtonOnOff color={colors.r > 0 ? 'white' : 'grey'} />
-                    )}
-                  </div>
                 </div>
                 <div style={{ display: 'flex', width: '100%' }}>
                   <ColorSlider
@@ -438,19 +471,6 @@ export function DeviceCardPage() {
                     setValue={setColors}
                     field={'g'}
                   />
-                  <div
-                    className={styles.buttonOnOff}
-                    style={colors.g > 0 ? { border: ' 2px solid #ffffff' } : {}}
-                    onClick={() => {
-                      setColors(prevState => ({ ...prevState, g: colors.g > 0 ? 0 : 100 }));
-                    }}
-                  >
-                    {colors.g > 0 ? (
-                      <div>{`${colors.g} %`}</div>
-                    ) : (
-                      <ButtonOnOff color={colors.g > 0 ? 'white' : 'grey'} />
-                    )}
-                  </div>
                 </div>
                 <div style={{ display: 'flex', width: '100%' }}>
                   <ColorSlider
@@ -459,21 +479,7 @@ export function DeviceCardPage() {
                     setValue={setColors}
                     field={'b'}
                   />
-                  <div
-                    className={styles.buttonOnOff}
-                    style={colors.b > 0 ? { border: ' 2px solid #ffffff' } : {}}
-                    onClick={() => {
-                      setColors(prevState => ({ ...prevState, b: colors.b > 0 ? 0 : 100 }));
-                    }}
-                  >
-                    {colors.b > 0 ? (
-                      <div>{`${colors.b} %`}</div>
-                    ) : (
-                      <ButtonOnOff color={colors.b > 0 ? 'white' : 'grey'} />
-                    )}
-                  </div>
                 </div>
-
                 <div
                   style={{ position: 'absolute', backgroundColor: '#525252', bottom: 0, left: 0 }}
                   onClick={e => {
@@ -488,10 +494,32 @@ export function DeviceCardPage() {
           )}
           {typeDriver === 128 && (
             <>
-              <RGBTWType value={colors} setValue={setColors} />
+              <div style={{ display: 'flex', justifyContent: 'flex-end', margin: '0 12px' }}>
+                <div
+                  className={`${styles.buttonOnOff} ${colors.generalRange > 0 ? styles.buttonOnOffActive : ''}`}
+                  onClick={() => {
+                    setColors(prevState => ({
+                      ...prevState,
+                      generalRange: prevState.generalRange > 0 ? 0 : 100,
+                    }));
+                  }}
+                >
+                  <ButtonOnOff color={colors.generalRange > 0 ? 'white' : 'grey'} />
+                </div>
+              </div>
+
               <div className={`${styles.rgbPanel} ${isOpenRGB ? styles.open : ''}`}>
+                <div style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
+                  <ColorSliderGeneral
+                    fromColor={'#fff584'}
+                    value={colors}
+                    setValue={setColors}
+                    field={'light'}
+                  />
+                </div>
                 <div style={{ display: 'flex', width: '100%' }}>
                   <ColorSlider
+                    withOutValue={true}
                     fromColor={'#cbe9fd'}
                     toColor={'#fef7cb'}
                     value={colors}
@@ -500,9 +528,6 @@ export function DeviceCardPage() {
                     minValue={2000}
                     maxValue={6000}
                   />
-                  <div className={styles.buttonOnOff} style={{ visibility: 'hidden' }}>
-                    <ButtonOnOff />
-                  </div>
                 </div>
                 <div style={{ display: 'flex', width: '100%' }}>
                   <ColorSlider
@@ -511,19 +536,6 @@ export function DeviceCardPage() {
                     setValue={setColors}
                     field={'r'}
                   />
-                  <div
-                    className={styles.buttonOnOff}
-                    style={colors.r > 0 ? { border: ' 2px solid #ffffff' } : {}}
-                    onClick={() => {
-                      setColors(prevState => ({ ...prevState, r: colors.r > 0 ? 0 : 100 }));
-                    }}
-                  >
-                    {colors.r > 0 ? (
-                      <div>{`${colors.r} %`}</div>
-                    ) : (
-                      <ButtonOnOff color={colors.r > 0 ? 'white' : 'grey'} />
-                    )}
-                  </div>
                 </div>
                 <div style={{ display: 'flex', width: '100%' }}>
                   <ColorSlider
@@ -532,19 +544,6 @@ export function DeviceCardPage() {
                     setValue={setColors}
                     field={'g'}
                   />
-                  <div
-                    className={styles.buttonOnOff}
-                    style={colors.g > 0 ? { border: ' 2px solid #ffffff' } : {}}
-                    onClick={() => {
-                      setColors(prevState => ({ ...prevState, g: colors.g > 0 ? 0 : 100 }));
-                    }}
-                  >
-                    {colors.g > 0 ? (
-                      <div>{`${colors.g} %`}</div>
-                    ) : (
-                      <ButtonOnOff color={colors.g > 0 ? 'white' : 'grey'} />
-                    )}
-                  </div>
                 </div>
                 <div style={{ display: 'flex', width: '100%' }}>
                   <ColorSlider
@@ -553,19 +552,6 @@ export function DeviceCardPage() {
                     setValue={setColors}
                     field={'b'}
                   />
-                  <div
-                    className={styles.buttonOnOff}
-                    style={colors.b > 0 ? { border: ' 2px solid #ffffff' } : {}}
-                    onClick={() => {
-                      setColors(prevState => ({ ...prevState, b: colors.b > 0 ? 0 : 100 }));
-                    }}
-                  >
-                    {colors.b > 0 ? (
-                      <div>{`${colors.b} %`}</div>
-                    ) : (
-                      <ButtonOnOff color={colors.b > 0 ? 'white' : 'grey'} />
-                    )}
-                  </div>
                 </div>
 
                 <div
@@ -581,19 +567,13 @@ export function DeviceCardPage() {
             </>
           )}
 
-          {/*Не показывать стрелку разворота*/}
-          {typeDriver !== 4 && typeDriver !== 7 && (
+          {/*показывать стрелку разворота*/}
+          {isOpenRGB || typeDriver === 7 ? null : (
             <div
               style={{ position: 'absolute', backgroundColor: '#525252' }}
               onClick={() => setIsOpenRGB(true)}
             >
-              <DoubleArrowTopIcon
-                width={30}
-                height={20}
-                gap={0}
-                isOpen={isOpenRGB}
-                // onClick={() => setIsOpenRGB(!isOpenRGB)}
-              />
+              <DoubleArrowTopIcon width={30} height={20} gap={0} isOpen={isOpenRGB} />
             </div>
           )}
         </div>

@@ -1,5 +1,5 @@
 import { h } from 'preact';
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { useEffect, useRef } from 'preact/hooks';
 import styles from './styles.module.scss';
 import { ColorState } from '../../pages/DeviceCard/DeviceCardPage';
 
@@ -7,7 +7,6 @@ interface ColorSliderProps {
   fromColor?: string; // цвет до ползунка
   toColor?: string; // цвет после ползунка
   maxValue?: number;
-  withOutValue?: boolean;
   minValue?: number;
   value: ColorState;
   field: keyof ColorState;
@@ -23,10 +22,9 @@ interface ColorSliderProps {
   >;
 }
 
-export const ColorSlider = ({
+export const ColorSliderGeneral = ({
   fromColor = '#ff4757',
   toColor = '#525252',
-  withOutValue = false,
   value,
   setValue,
   maxValue,
@@ -39,30 +37,34 @@ export const ColorSlider = ({
     if (sliderRef.current) {
       const min = minValue ?? 0;
       const max = maxValue ?? 100;
-      const val = value[field];
+      const val = value.generalRange;
       const percent = ((val - min) / (max - min)) * 100;
+      if (percent > 0) {
+        sliderRef.current.style.setProperty('--thumb-color', '#f7e13e'); // яркий жёлтый
+      } else {
+        sliderRef.current.style.setProperty('--thumb-color', '#424242'); // серый (по умолчанию)
+      }
       sliderRef.current.style.setProperty('--value', `${percent}%`);
       sliderRef.current.style.setProperty('--track-from', fromColor);
       sliderRef.current.style.setProperty('--track-to', toColor);
     }
-  }, [value, fromColor, toColor, field]);
+  }, [value]);
 
   const handleInput = (e: Event) => {
     const newValue = Number((e.target as HTMLInputElement).value);
-    setValue(prev => ({ ...prev, [field]: newValue }));
+    setValue(prev => ({ ...prev, generalRange: newValue }));
   };
 
   return (
     <div className={styles.sliderItem}>
-      <></>
-      <span className={styles.sliderValue}>{!withOutValue ? `${value[field]}%` : null}</span>
+      <span className={styles.sliderValue}>{value.generalRange}%</span>
 
       <input
         ref={sliderRef}
         type="range"
         min={minValue ?? 0}
         max={maxValue ?? 100}
-        value={value[field]}
+        value={value.generalRange}
         onInput={handleInput}
       />
     </div>
