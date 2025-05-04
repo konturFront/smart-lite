@@ -290,11 +290,6 @@ $font-size-xlarge: 24px;
   border-radius: 4px;
   transition: background-color 0.3s ease, box-shadow 0.3s ease, border 0.3s ease;
 
-  &:active {
-    //transform: translateY(2px); /* Эффект "вдавливания" */
-    background-color: #424242;
-    border-color: #1a1a1a;
-  }
 }
 
 // Состояние ВКЛ (например, когда colors.generalRange > 0)
