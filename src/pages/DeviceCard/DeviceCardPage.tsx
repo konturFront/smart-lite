@@ -71,7 +71,6 @@ export function DeviceCardPage() {
     light: 0,
   });
 
-  // кнопка включение переработать в красивый
   // желтый движок на главном
   // 4 - диммер триак; готово   4 и 6 это диммер
   // 6 - светодиодный диммер; ЧТОЭТО!!!!
@@ -80,6 +79,10 @@ export function DeviceCardPage() {
   // 96 - RGB; готово
   // 98 - RGBW; готово
   // 128 - RGB + Tunable White;
+
+  // samsung galaxy s8+
+  // ==========
+  // в центре только сам свг серого на желтый  это про свг
 
   const testingDriver = useCallback(() => {
     if (!isTestingDriver) {
