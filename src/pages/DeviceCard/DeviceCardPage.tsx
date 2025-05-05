@@ -61,6 +61,7 @@ export function DeviceCardPage() {
   const [tab, setTab] = useState<'settings' | 'group'>('settings');
   const { isMobile340, isMobile380, isMobile400 } = useDeviceDetect();
   const [shouldAnimate, setShouldAnimate] = useState(false);
+  const [flagPull, setFlagPull] = useState(false);
 
   const [typeDriver, setTypeDriver] = useState<number>(undefined);
   const [colors, setColors] = useState({
@@ -241,6 +242,14 @@ export function DeviceCardPage() {
       setFadeTime(dimmingStepsTime[currentIndex - 1]);
     }
   };
+  useEffect(() => {
+    if (flagPull && !isLoading) {
+      setTimeout(() => {
+        fetchSettings(+params.id).then();
+        setFlagPull(false);
+      }, 0);
+    }
+  }, [flagPull, isLoading]);
 
   const saveBtnSettings = useCallback(() => {
     const activeGroups = groups
@@ -264,11 +273,13 @@ export function DeviceCardPage() {
         // currentLevel,
       ],
     });
-  }, [groups, minLevel, maxLevel, failureLevel, poweronLevel, currentLevel]);
+    setFlagPull(true);
+  }, [groups, minLevel, maxLevel, failureLevel, poweronLevel, currentLevel, typeDriver, flagPull]);
 
   const pullDriverSettings = () => {
     fetchSettings(+params.id);
   };
+
   return (
     <div className={styles.devices}>
       {isOpenRGB && <div className={styles.backdrop} />}
@@ -322,7 +333,7 @@ export function DeviceCardPage() {
                         }
                       }}
                     />
-                    <div className={styles.value}>{maxLevel}</div>
+                    <div className={styles.value}>{`${maxLevel ?? 0}%`}</div>
                     <ArrowIcon
                       direction={'left'}
                       double={false}
@@ -350,7 +361,7 @@ export function DeviceCardPage() {
                         }
                       }}
                     />
-                    <div className={styles.value}>{minLevel}</div>
+                    <div className={styles.value}>{`${minLevel ?? 0}%`}</div>
                     <ArrowIcon
                       direction={'left'}
                       double={false}
@@ -378,7 +389,7 @@ export function DeviceCardPage() {
                         }
                       }}
                     />
-                    <div className={styles.value}>{poweronLevel}</div>
+                    <div className={styles.value}>{`${poweronLevel ?? 0}%`}</div>
                     <ArrowIcon
                       direction={'left'}
                       double={false}
@@ -406,7 +417,7 @@ export function DeviceCardPage() {
                         }
                       }}
                     />
-                    <div className={styles.value}>{failureLevel}</div>
+                    <div className={styles.value}>{`${failureLevel ?? 0}%`}</div>
                     <ArrowIcon
                       direction={'left'}
                       double={false}
@@ -431,7 +442,7 @@ export function DeviceCardPage() {
                         height={isMobile340 ? 28 : 32}
                         onClick={handleDecreaseFadeTime}
                       />
-                      <div className={styles.value}>{fadeTime}</div>
+                      <div className={styles.value}>{fadeTime ?? 0}</div>
                       <ArrowIcon
                         direction={'left'}
                         double={false}
@@ -453,7 +464,7 @@ export function DeviceCardPage() {
                         height={isMobile340 ? 28 : 32}
                         onClick={handleDecreaseFadeRate}
                       />
-                      <div className={styles.value}>{fadeRate}</div>
+                      <div className={styles.value}>{fadeRate ?? 0}</div>
                       <ArrowIcon
                         direction={'left'}
                         double={false}
@@ -499,7 +510,7 @@ export function DeviceCardPage() {
       </div>
       {/*//КНОПКИ управления*/}
       <div className={styles.wrapperBtn}>
-        {isLoading ? (
+        {isLoading || flagPull ? (
           <div className={styles.loadingText}>
             <LoadingDots />
           </div>

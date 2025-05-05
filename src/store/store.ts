@@ -176,7 +176,7 @@ export const sendMessageSocket = (data: Record<string | number, unknown>, withLo
 //ЛОВИМ//////// ответы от сервера для стора, для локального состояния используй sendAndWaiFor Response
 socketService.onMessage(data => {
   // hiddenLoadingStateUI();
-  console.log('ловим', data);
+  console.log('onMessage', data);
 
   if (data.driver === 'find' && data.cmd === 'stop') {
     state.value = { ...state.value, countDrivers: data.count ?? 0 };

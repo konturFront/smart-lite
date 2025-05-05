@@ -22,36 +22,46 @@
 
   label {
     display: flex;
-    flex-direction: column;
-    font-size: 18px;
+    flex-direction: column ;
+    font-size: 20px;
     color: #ffffff;
   }
 
   input,
   select {
+    /* Общие стили */
     margin-top: 6px;
-    padding: 10px 12px;
-    font-size: 16px;
+    width: 100%;
+    max-width: 240px;
+    padding: 12px 36px 12px 12px;
+    font-size: 20px;
     border: 2px solid #444;
     border-radius: 6px;
     background-color: #2d2d2d;
     color: #ffffff;
-    max-width: 240px;
+    cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 
-    &:focus {
-      outline: none;
-      border-color: #4a90e2;
-      box-shadow: 0 0 0 3px rgba(74,144,226,0.2);
-    }
-    &::placeholder {
-      color: #888888; /* Светло-серый цвет для плейсхолдера */
-      opacity: 1; /* Для полной видимости в Firefox */
-    }
+    /* Фиксированная высота */
+    height: 48px;
+    min-height: 48px;
+    line-height: normal;
 
-    &:hover {
-      border-color: #555;
+    /* Убираем стандартный вид */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    /* Кастомная стрелка */
+    //background-image: url("data:image/svg+xml,%3Csvg...");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+
+    @media (max-width: 768px) {
+      font-size: 16px;
+      height: 44px;
+      min-height: 44px;
     }
   }
 }
@@ -138,14 +148,14 @@
     gap: 12px;
 
     label {
-      font-size: 16px;
+      font-size: 20px;
     }
 
     input,
     select {
       width: 100%;
       max-width: unset;
-      font-size: 16px;
+      font-size: 18px;
     }
   }
 

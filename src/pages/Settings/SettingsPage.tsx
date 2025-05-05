@@ -2,12 +2,17 @@ import styles from './styles.module.scss';
 import { useCallback, useState } from 'preact/hooks';
 import { reconnectWS, sendMessageSocket, state } from '../../store/store';
 import { Button } from '../../components/Button/Button';
+import { Modal } from '../../components/Modal/Modal';
+import { h } from 'preact';
+import { useDeviceDetect } from '../../hooks/useDeviceDetect';
 
 export const SettingsPage = () => {
   const [mode, setMode] = useState<'host' | 'up'>('up');
   const [ssid, setSsid] = useState('');
   const [password, setPassword] = useState('');
   const [reUrl, setReUrl] = useState('');
+  const [isOpenModalSearch, setOpenModalSearch] = useState(false);
+  const { isMobile340 } = useDeviceDetect();
 
   const resetMaster = useCallback(() => {
     sendMessageSocket({ master: 'reset', cmd: 'start' });
@@ -41,21 +46,19 @@ export const SettingsPage = () => {
   return (
     <div className={styles.settings}>
       <div className={styles.settingsPanel}>
-        {/*<div className={styles.wrapperBtn}>*/}
-        {/*  <Button text=" Перезагрузка Мастера" onClick={resetMaster} />*/}
-        {/*</div>*/}
         <div className={styles.panel}>
           <label>
             Режим подключения:
-            <select
-              value={mode}
-              onChange={e => {
-                setMode((e.target as HTMLSelectElement).value as 'host' | 'up');
+            <input
+              onClick={() => {
+                setOpenModalSearch(true);
               }}
-            >
-              <option value="host">Создать точку доступа</option>
-              <option value="up">Подключиться к сети</option>
-            </select>
+              autoComplete="off"
+              type="text"
+              readOnly={true}
+              value={mode === 'host' ? 'Создать точку доступа' : 'Подключиться к сети'}
+              onInput={e => setSsid((e.target as HTMLInputElement).value)}
+            />
           </label>
           <label>
             Имя сети:
@@ -110,6 +113,51 @@ export const SettingsPage = () => {
           ))}
         </div>
       </div>
+      <Modal
+        maxWidth="md"
+        open={isOpenModalSearch}
+        onClose={() => {}}
+        buttonsType="single"
+        singleButtonText="Отмена"
+        showCloseButton={false}
+        singleButtonAction={() => {
+          setOpenModalSearch(false);
+        }}
+      >
+        <>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              gap: '40px',
+              padding: '16px 0',
+              marginBottom: '20px',
+            }}
+          >
+            <div className={styles.wrapperBtn}>
+              <Button
+                sx={{ minWidth: isMobile340 ? '240px' : '270px' }}
+                text="Создать точку доступа"
+                onClick={() => {
+                  setMode('host');
+                  setOpenModalSearch(false);
+                }}
+              />
+            </div>
+            <div className={styles.wrapperBtn}>
+              <Button
+                sx={{ minWidth: isMobile340 ? '240px' : '270px' }}
+                text="Подключиться к сети"
+                onClick={() => {
+                  setMode('up');
+                  setOpenModalSearch(false);
+                }}
+              />
+            </div>
+          </div>
+        </>
+      </Modal>
     </div>
   );
 };

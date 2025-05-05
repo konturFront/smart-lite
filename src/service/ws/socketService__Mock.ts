@@ -93,12 +93,11 @@ export class SocketService__Mock {
         this.emitMessage({
           driver: 'settyngs',
           cmd: 'download',
-          dr_settyngs: [data.addres, 7, 156, 156, 30, 50, 30, 50, 5.7, 5.6, 55],
+          dr_settyngs: [data.addres, 98, 156, 156, 30, 50, 30, 50, 5.7, 5.6, 55],
         });
       }
 
       if (data.driver === 'settyngs' && data.cmd === 'save') {
-        console.log('data', data);
         this.emitMessage({
           driver: 'settyngs',
           cmd: 'save',
