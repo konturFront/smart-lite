@@ -38,7 +38,6 @@ export const SettingsPage = () => {
     sendMessageSocket({ master: 'scan', cmd: 'start' });
   }, []);
 
-  console.log('mode', mode);
   return (
     <div className={styles.settings}>
       <div className={styles.settingsPanel}>

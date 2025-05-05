@@ -13,6 +13,8 @@ import { delayPreact } from '../../../utils/delay';
 import { RoomCarousel } from '../../../components/Carousel/Carousel';
 import { Loader } from '../../../components/Loader/Loader';
 import { ArrowIcon } from '../../../components/IconComponent/ArrowAction/ArrowIcon';
+import { AroundIcon } from '../../../components/IconComponent/AroundIcon/AroundIcon';
+import { useDeviceDetect } from '../../../hooks/useDeviceDetect';
 
 export function DevicesPageMobile() {
   const refTest = useRef<HTMLDivElement>(null);
@@ -22,6 +24,8 @@ export function DevicesPageMobile() {
   const [currentItems, setCurrentItems] = useState<string[]>([]);
   const [countPages, setCountPages] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(8);
+  const { isMobile340, isMobile380, isMobile400 } = useDeviceDetect();
+  const [shouldAnimate, setShouldAnimate] = useState(false);
   const isLoading = stateUI.value.isLoadingUI;
   const socketStatus = state.value.socketStatus;
 
@@ -96,6 +100,21 @@ export function DevicesPageMobile() {
     };
   }, []);
 
+  useEffect(() => {
+    const stateStatus = state.value.socketStatus;
+
+    if (stateStatus === 'connected') {
+      // Если соединение есть, выключаем анимацию через 2 секунды
+      const timer = setTimeout(() => {
+        setShouldAnimate(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    } else {
+      // Если соединения нет, включаем бесконечную анимацию
+      setShouldAnimate(true);
+    }
+  }, [state.value.socketStatus]); // Зависимость от статуса соединения
+
   const totalDrivers = Object.keys(state.value.updatedDevices).length;
   return (
     <div className={stylesMobile.devices}>
@@ -165,7 +184,12 @@ export function DevicesPageMobile() {
           </div>
         ) : (
           <>
-            {/*<Loader />*/}
+            <AroundIcon
+              height={isMobile400 ? 52 : 56}
+              width={isMobile400 ? 52 : 56}
+              className={shouldAnimate ? styles.spin : ''}
+              color={state.value.socketStatus === 'connected' ? '#1FFF1B' : '#FF2A16'}
+            />
             <Button text="Обновить" onClick={updateDrivers} />
             <Button text="Поиск " onClick={handleUpdateDrivers} />
           </>

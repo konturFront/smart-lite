@@ -28,6 +28,16 @@ $font-size-xlarge: 24px;
   }
 }
 
+
+.loadingText {
+  font-size: $font-size-medium;
+  font-weight: 600;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
 .sliderWrapper {
   width: 100%;
   border-top: 1px solid #7c7c7c;
@@ -156,14 +166,6 @@ $font-size-xlarge: 24px;
 
 }
 
-.loadingText {
-  font-size: $font-size-medium;
-  font-weight: 600;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
 
 .line {
   width: 100%;
@@ -387,7 +389,7 @@ $font-size-xlarge: 24px;
 }
 
 .spin {
-  animation: rotate360 .5s linear 3; // два оборота
+  animation: rotate360 1s linear infinite; // два оборота
 }
 
 @media (max-width: 357px) {

@@ -176,6 +176,7 @@ export const sendMessageSocket = (data: Record<string | number, unknown>, withLo
 //ЛОВИМ//////// ответы от сервера для стора, для локального состояния используй sendAndWaiFor Response
 socketService.onMessage(data => {
   // hiddenLoadingStateUI();
+  console.log('ловим', data);
 
   if (data.driver === 'find' && data.cmd === 'stop') {
     state.value = { ...state.value, countDrivers: data.count ?? 0 };
@@ -195,6 +196,10 @@ socketService.onMessage(data => {
 
   if (data.driver === 'settyngs' && data.cmd === 'download' && Array.isArray(data.dr_settyngs)) {
     state.value = { ...state.value, settingsDriver: data.dr_settyngs };
+    hiddenLoadingStateUI();
+  }
+
+  if (data.driver === 'settyngs' && data.cmd === 'save' && data.state === 'ok') {
     hiddenLoadingStateUI();
   }
 

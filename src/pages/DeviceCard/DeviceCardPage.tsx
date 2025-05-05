@@ -61,7 +61,8 @@ export function DeviceCardPage() {
   const [tab, setTab] = useState<'settings' | 'group'>('settings');
   const { isMobile340, isMobile380, isMobile400 } = useDeviceDetect();
   const [shouldAnimate, setShouldAnimate] = useState(false);
-  const [typeDriver, setTypeDriver] = useState<number>(128);
+
+  const [typeDriver, setTypeDriver] = useState<number>(undefined);
   const [colors, setColors] = useState({
     generalRange: 0,
     r: 0,
@@ -84,6 +85,11 @@ export function DeviceCardPage() {
   // ==========
   // в центре только сам свг серого на желтый  это про свг
 
+  // ============
+  // тона выранвить по цвету  где оттенки одинаковые там их и лепить
+  // на тесте лампочка мегает чтобы луче полностью пропдаали
+  // крестик давбтиь в крутилку
+
   const testingDriver = useCallback(() => {
     if (!isTestingDriver) {
       setTestingDriver(!isTestingDriver);
@@ -103,52 +109,52 @@ export function DeviceCardPage() {
     }
   };
 
-  // useEffect(() => {
-  //   const id = +params?.id;
-  //   if (!id) {
-  //     console.error('Неверный id', id);
-  //   }
-  //   showLoadingStateUI();
-  //
-  //   fetchSettings(id).then();
-  //   return () => {
-  //     if (isTestingDriver) {
-  //       sendMessageSocket({ driver: 'test', cmd: 'stop' }, false);
-  //     }
-  //   };
-  // }, []);
+  useEffect(() => {
+    const id = +params?.id;
+    if (!id) {
+      console.error('Неверный id', id);
+    }
+    showLoadingStateUI();
+
+    fetchSettings(id).then();
+    return () => {
+      if (isTestingDriver) {
+        sendMessageSocket({ driver: 'test', cmd: 'stop' }, false);
+      }
+    };
+  }, []);
 
   useEffect(() => {
-    if (shouldAnimate) {
-      const timer = setTimeout(() => {
-        setShouldAnimate(false);
-      }, 3000); // после 2 секунд (две анимации по 1с)
-      return () => clearTimeout(timer);
-    }
-  }, [shouldAnimate]);
-
-  effect(() => {
     const stateStatus = state.value.socketStatus;
 
-    setShouldAnimate(true);
-  });
+    if (stateStatus === 'connected') {
+      // Если соединение есть, выключаем анимацию через 2 секунды
+      const timer = setTimeout(() => {
+        setShouldAnimate(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    } else {
+      // Если соединения нет, включаем бесконечную анимацию
+      setShouldAnimate(true);
+    }
+  }, [state.value.socketStatus]); // Зависимость от статуса соединения
 
   useEffect(() => {
     if (Array.isArray(state.value.settingsDriver)) {
-      const [addressId, g07, g815, min, max, fail, power, fadeT, fadeR, level] =
+      const [addressId, type, g07, g815, min, max, fail, power, fadeT, fadeR, level] =
         state.value.settingsDriver;
+      setTypeDriver(type);
       const activeGroups = parseGroupMasks(g07, g815);
       const updatedGroups = Array(16)
         .fill(false)
         .map((_, i) => activeGroups.includes(i));
-
-      setMinLevel(min);
-      setMaxLevel(max);
-      setFailureLevel(fail);
-      setPoweronLevel(power);
-      // setFadeTime(String(fadeT));
-      // setFadeRate(String(fadeR));
-      setCurrentLevel(level);
+      setMaxLevel(max); //Яркость максимальная
+      setMinLevel(min); //Яркость минимальная
+      setPoweronLevel(power); //Яркость при запуске
+      setFailureLevel(fail); //Яркость при аварии
+      setFadeTime(fadeT);
+      setFadeRate(fadeR);
+      // setCurrentLevel(level);
       setGroups(updatedGroups);
       setDriverSettings(state.value.settingsDriver);
     }
@@ -240,7 +246,6 @@ export function DeviceCardPage() {
     const activeGroups = groups
       .map((isActive, index) => (isActive ? index : -1))
       .filter(index => index !== -1);
-
     const { g07, g815 } = groupsToMasks(activeGroups);
     showLoadingStateUI();
     sendMessageSocket({
@@ -248,338 +253,29 @@ export function DeviceCardPage() {
       cmd: 'save',
       dr_settyngs: [
         Number(params?.id),
+        typeDriver,
         g07,
         g815,
         minLevel,
         maxLevel,
         failureLevel,
         poweronLevel,
-        // +fadeTime,
-        // +fadeRate,
-        currentLevel,
+        ...(typeDriver !== 7 ? [+fadeTime, +fadeRate] : []), // Добавляем только если typeDriver не 7
+        // currentLevel,
       ],
     });
   }, [groups, minLevel, maxLevel, failureLevel, poweronLevel, currentLevel]);
 
   const pullDriverSettings = () => {
-    showLoadingStateUI();
     fetchSettings(+params.id);
   };
-
   return (
     <div className={styles.devices}>
       {isOpenRGB && <div className={styles.backdrop} />}
       <div id={'line'} className={styles.line}></div>
 
       <div id="drivers-list" className={styles.content}>
-        <div className={styles.sliderWrapper}>
-          {(typeDriver === 4 || typeDriver === 6) && (
-            <>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', margin: '0 12px' }}>
-                <div
-                  className={`${styles.buttonOnOff} ${colors.generalRange > 0 ? styles.buttonOnOffActive : ''}`}
-                  onClick={() => {
-                    setColors(prevState => ({
-                      ...prevState,
-                      generalRange: prevState.generalRange > 0 ? 0 : 100,
-                    }));
-                  }}
-                >
-                  <ButtonOnOff color={colors.generalRange > 0 ? 'white' : 'grey'} />
-                </div>
-              </div>
-              <div className={`${styles.rgbPanel} ${isOpenRGB ? styles.open : ''}`}>
-                <div style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
-                  <ColorSliderGeneral
-                    fromColor={'#fff584'}
-                    value={colors}
-                    setValue={setColors}
-                    field={'light'}
-                  />
-                </div>
-                <div
-                  style={{ position: 'absolute', backgroundColor: '#525252', bottom: 0, left: 0 }}
-                  onClick={e => {
-                    e.stopPropagation(); // чтобы не срабатывал клик по родителю
-                    setIsOpenRGB(!isOpenRGB);
-                  }}
-                >
-                  <DoubleArrowTopIcon width={30} height={20} gap={0} isOpen={isOpenRGB} />
-                </div>
-              </div>
-            </>
-          )}
-          {typeDriver === 2 && (
-            <>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', margin: '0 12px' }}>
-                <div
-                  className={`${styles.buttonOnOff} ${colors.generalRange > 0 ? styles.buttonOnOffActive : ''}`}
-                  onClick={() => {
-                    setColors(prevState => ({
-                      ...prevState,
-                      generalRange: prevState.generalRange > 0 ? 0 : 100,
-                    }));
-                  }}
-                >
-                  <ButtonOnOff color={colors.generalRange > 0 ? 'white' : 'grey'} />
-                </div>
-              </div>
-              <div className={`${styles.rgbPanel} ${isOpenRGB ? styles.open : ''}`}>
-                <div style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
-                  <ColorSlider
-                    withOutValue={true}
-                    fromColor={'#cbe9fd'}
-                    toColor={'#fef7cb'}
-                    value={colors}
-                    setValue={setColors}
-                    field={'light'}
-                    minValue={2000}
-                    maxValue={6000}
-                  />
-                </div>
-                <div
-                  style={{ position: 'absolute', backgroundColor: '#525252', bottom: 0, left: 0 }}
-                  onClick={e => {
-                    e.stopPropagation(); // чтобы не срабатывал клик по родителю
-                    setIsOpenRGB(!isOpenRGB);
-                  }}
-                >
-                  <DoubleArrowTopIcon width={30} height={20} gap={0} isOpen={isOpenRGB} />
-                </div>
-              </div>
-            </>
-          )}
-          {typeDriver === 7 && (
-            <>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', margin: '0 12px' }}>
-                <div
-                  className={`${styles.buttonOnOff} ${colors.generalRange > 0 ? styles.buttonOnOffActive : ''}`}
-                  onClick={() => {
-                    setColors(prevState => ({
-                      ...prevState,
-                      generalRange: prevState.generalRange > 0 ? 0 : 100,
-                    }));
-                  }}
-                >
-                  <ButtonOnOff color={colors.generalRange > 0 ? 'white' : 'grey'} />
-                </div>
-              </div>
-            </>
-          )}
-
-          {typeDriver === 96 && (
-            <>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', margin: '0 12px' }}>
-                <div
-                  className={`${styles.buttonOnOff} ${colors.generalRange > 0 ? styles.buttonOnOffActive : ''}`}
-                  onClick={() => {
-                    setColors(prevState => ({
-                      ...prevState,
-                      generalRange: prevState.generalRange > 0 ? 0 : 100,
-                    }));
-                  }}
-                >
-                  <ButtonOnOff color={colors.generalRange > 0 ? 'white' : 'grey'} />
-                </div>
-              </div>
-              <div className={`${styles.rgbPanel} ${isOpenRGB ? styles.open : ''}`}>
-                <div style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
-                  <ColorSliderGeneral
-                    fromColor={'#fff584'}
-                    value={colors}
-                    setValue={setColors}
-                    field={'light'}
-                  />
-                </div>
-                <div style={{ display: 'flex', width: '100%' }}>
-                  <ColorSlider
-                    fromColor={'#ff113a'}
-                    value={colors}
-                    setValue={setColors}
-                    field={'r'}
-                  />
-                </div>
-                <div style={{ display: 'flex', width: '100%' }}>
-                  <ColorSlider
-                    fromColor={'#26ff43'}
-                    value={colors}
-                    setValue={setColors}
-                    field={'g'}
-                  />
-                </div>
-                <div style={{ display: 'flex', width: '100%' }}>
-                  <ColorSlider
-                    fromColor={'#0466FF'}
-                    value={colors}
-                    setValue={setColors}
-                    field={'b'}
-                  />
-                </div>
-                <div
-                  style={{ position: 'absolute', backgroundColor: '#525252', bottom: 0, left: 0 }}
-                  onClick={e => {
-                    e.stopPropagation(); // чтобы не срабатывал клик по родителю
-                    setIsOpenRGB(!isOpenRGB);
-                  }}
-                >
-                  <DoubleArrowTopIcon width={30} height={20} gap={0} isOpen={isOpenRGB} />
-                </div>
-              </div>
-            </>
-          )}
-          {typeDriver === 98 && (
-            <>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', margin: '0 12px' }}>
-                <div
-                  className={`${styles.buttonOnOff} ${colors.generalRange > 0 ? styles.buttonOnOffActive : ''}`}
-                  onClick={() => {
-                    setColors(prevState => ({
-                      ...prevState,
-                      generalRange: prevState.generalRange > 0 ? 0 : 100,
-                    }));
-                  }}
-                >
-                  <ButtonOnOff color={colors.generalRange > 0 ? 'white' : 'grey'} />
-                </div>
-              </div>
-              <div className={`${styles.rgbPanel} ${isOpenRGB ? styles.open : ''}`}>
-                <div style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
-                  <ColorSliderGeneral
-                    fromColor={'#fff584'}
-                    value={colors}
-                    setValue={setColors}
-                    field={'light'}
-                  />
-                </div>
-                <div style={{ display: 'flex', width: '100%' }}>
-                  <ColorSlider
-                    fromColor={'white'}
-                    value={colors}
-                    setValue={setColors}
-                    field={'w'}
-                  />
-                </div>
-                <div style={{ display: 'flex', width: '100%' }}>
-                  <ColorSlider
-                    fromColor={'#ff113a'}
-                    value={colors}
-                    setValue={setColors}
-                    field={'r'}
-                  />
-                </div>
-                <div style={{ display: 'flex', width: '100%' }}>
-                  <ColorSlider
-                    fromColor={'#26ff43'}
-                    value={colors}
-                    setValue={setColors}
-                    field={'g'}
-                  />
-                </div>
-                <div style={{ display: 'flex', width: '100%' }}>
-                  <ColorSlider
-                    fromColor={'#0466FF'}
-                    value={colors}
-                    setValue={setColors}
-                    field={'b'}
-                  />
-                </div>
-                <div
-                  style={{ position: 'absolute', backgroundColor: '#525252', bottom: 0, left: 0 }}
-                  onClick={e => {
-                    e.stopPropagation(); // чтобы не срабатывал клик по родителю
-                    setIsOpenRGB(!isOpenRGB);
-                  }}
-                >
-                  <DoubleArrowTopIcon width={30} height={20} gap={0} isOpen={isOpenRGB} />
-                </div>
-              </div>
-            </>
-          )}
-          {typeDriver === 128 && (
-            <>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', margin: '0 12px' }}>
-                <div
-                  className={`${styles.buttonOnOff} ${colors.generalRange > 0 ? styles.buttonOnOffActive : ''}`}
-                  onClick={() => {
-                    setColors(prevState => ({
-                      ...prevState,
-                      generalRange: prevState.generalRange > 0 ? 0 : 100,
-                    }));
-                  }}
-                >
-                  <ButtonOnOff color={colors.generalRange > 0 ? 'white' : 'grey'} />
-                </div>
-              </div>
-
-              <div className={`${styles.rgbPanel} ${isOpenRGB ? styles.open : ''}`}>
-                <div style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
-                  <ColorSliderGeneral
-                    fromColor={'#fff584'}
-                    value={colors}
-                    setValue={setColors}
-                    field={'light'}
-                  />
-                </div>
-                <div style={{ display: 'flex', width: '100%' }}>
-                  <ColorSlider
-                    withOutValue={true}
-                    fromColor={'#cbe9fd'}
-                    toColor={'#fef7cb'}
-                    value={colors}
-                    setValue={setColors}
-                    field={'light'}
-                    minValue={2000}
-                    maxValue={6000}
-                  />
-                </div>
-                <div style={{ display: 'flex', width: '100%' }}>
-                  <ColorSlider
-                    fromColor={'#ff113a'}
-                    value={colors}
-                    setValue={setColors}
-                    field={'r'}
-                  />
-                </div>
-                <div style={{ display: 'flex', width: '100%' }}>
-                  <ColorSlider
-                    fromColor={'#26ff43'}
-                    value={colors}
-                    setValue={setColors}
-                    field={'g'}
-                  />
-                </div>
-                <div style={{ display: 'flex', width: '100%' }}>
-                  <ColorSlider
-                    fromColor={'#0466FF'}
-                    value={colors}
-                    setValue={setColors}
-                    field={'b'}
-                  />
-                </div>
-
-                <div
-                  style={{ position: 'absolute', backgroundColor: '#525252', bottom: 0, left: 0 }}
-                  onClick={e => {
-                    e.stopPropagation(); // чтобы не срабатывал клик по родителю
-                    setIsOpenRGB(!isOpenRGB);
-                  }}
-                >
-                  <DoubleArrowTopIcon width={30} height={20} gap={0} isOpen={isOpenRGB} />
-                </div>
-              </div>
-            </>
-          )}
-
-          {/*показывать стрелку разворота*/}
-          {isOpenRGB || typeDriver === 7 ? null : (
-            <div
-              style={{ position: 'absolute', backgroundColor: '#525252' }}
-              onClick={() => setIsOpenRGB(true)}
-            >
-              <DoubleArrowTopIcon width={30} height={20} gap={0} isOpen={isOpenRGB} />
-            </div>
-          )}
-        </div>
+        {/*вот сюда враппер который внизу закомичен*/}
         <div className={styles.settingsAndGroupWrapper}>
           <div className={styles.buttonTabs}>
             <div
@@ -620,13 +316,23 @@ export function DeviceCardPage() {
                       double={false}
                       width={isMobile340 ? 28 : 32}
                       height={isMobile340 ? 28 : 32}
+                      onClick={() => {
+                        if (maxLevel > 1) {
+                          setMaxLevel(prevState => prevState - 1);
+                        }
+                      }}
                     />
-                    <div className={styles.value}>12</div>
+                    <div className={styles.value}>{maxLevel}</div>
                     <ArrowIcon
                       direction={'left'}
                       double={false}
                       width={isMobile340 ? 28 : 32}
                       height={isMobile340 ? 28 : 32}
+                      onClick={() => {
+                        if (maxLevel < 100) {
+                          setMaxLevel(prevState => prevState + 1);
+                        }
+                      }}
                     />
                   </div>
                 </div>
@@ -638,13 +344,23 @@ export function DeviceCardPage() {
                       double={false}
                       width={isMobile340 ? 28 : 32}
                       height={isMobile340 ? 28 : 32}
+                      onClick={() => {
+                        if (minLevel > 1) {
+                          setMinLevel(prevState => prevState - 1);
+                        }
+                      }}
                     />
-                    <div className={styles.value}>12</div>
+                    <div className={styles.value}>{minLevel}</div>
                     <ArrowIcon
                       direction={'left'}
                       double={false}
                       width={isMobile340 ? 28 : 32}
                       height={isMobile340 ? 28 : 32}
+                      onClick={() => {
+                        if (minLevel < 100) {
+                          setMinLevel(prevState => prevState + 1);
+                        }
+                      }}
                     />
                   </div>
                 </div>
@@ -656,13 +372,23 @@ export function DeviceCardPage() {
                       double={false}
                       width={isMobile340 ? 28 : 32}
                       height={isMobile340 ? 28 : 32}
+                      onClick={() => {
+                        if (poweronLevel > 1) {
+                          setPoweronLevel(prevState => prevState - 1);
+                        }
+                      }}
                     />
-                    <div className={styles.value}>12</div>
+                    <div className={styles.value}>{poweronLevel}</div>
                     <ArrowIcon
                       direction={'left'}
                       double={false}
                       width={isMobile340 ? 28 : 32}
                       height={isMobile340 ? 28 : 32}
+                      onClick={() => {
+                        if (poweronLevel < 100) {
+                          setPoweronLevel(prevState => prevState + 1);
+                        }
+                      }}
                     />
                   </div>
                 </div>
@@ -674,56 +400,70 @@ export function DeviceCardPage() {
                       double={false}
                       width={isMobile340 ? 28 : 32}
                       height={isMobile340 ? 28 : 32}
+                      onClick={() => {
+                        if (failureLevel > 1) {
+                          setFailureLevel(prevState => prevState - 1);
+                        }
+                      }}
                     />
-                    <div className={styles.value}>12</div>
+                    <div className={styles.value}>{failureLevel}</div>
                     <ArrowIcon
                       direction={'left'}
                       double={false}
                       width={isMobile340 ? 28 : 32}
                       height={isMobile340 ? 28 : 32}
+                      onClick={() => {
+                        if (failureLevel < 100) {
+                          setFailureLevel(prevState => prevState + 1);
+                        }
+                      }}
                     />
                   </div>
                 </div>
-                <div className={styles.element}>
-                  <div className={styles.valueName}>Плавное вкл/выкл</div>
-                  <div className={styles.valueWrapper}>
-                    <ArrowIcon
-                      direction={'right'}
-                      double={false}
-                      width={isMobile340 ? 28 : 32}
-                      height={isMobile340 ? 28 : 32}
-                      onClick={handleDecreaseFadeTime}
-                    />
-                    <div className={styles.value}>{fadeTime}</div>
-                    <ArrowIcon
-                      direction={'left'}
-                      double={false}
-                      width={isMobile340 ? 28 : 32}
-                      height={isMobile340 ? 28 : 32}
-                      onClick={handleIncreaseFadeTime}
-                    />
+                {!!typeDriver && typeDriver !== 7 && (
+                  <div className={styles.element}>
+                    <div className={styles.valueName}>Плавное вкл/выкл</div>
+                    <div className={styles.valueWrapper}>
+                      <ArrowIcon
+                        direction={'right'}
+                        double={false}
+                        width={isMobile340 ? 28 : 32}
+                        height={isMobile340 ? 28 : 32}
+                        onClick={handleDecreaseFadeTime}
+                      />
+                      <div className={styles.value}>{fadeTime}</div>
+                      <ArrowIcon
+                        direction={'left'}
+                        double={false}
+                        width={isMobile340 ? 28 : 32}
+                        height={isMobile340 ? 28 : 32}
+                        onClick={handleIncreaseFadeTime}
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className={styles.element}>
-                  <div className={styles.valueName}>Шаг димирования</div>
-                  <div className={styles.valueWrapper}>
-                    <ArrowIcon
-                      direction={'right'}
-                      double={false}
-                      width={isMobile340 ? 28 : 32}
-                      height={isMobile340 ? 28 : 32}
-                      onClick={handleDecreaseFadeRate}
-                    />
-                    <div className={styles.value}>{fadeRate}</div>
-                    <ArrowIcon
-                      direction={'left'}
-                      double={false}
-                      width={isMobile340 ? 28 : 32}
-                      height={isMobile340 ? 28 : 32}
-                      onClick={handleIncreaseFadeRate}
-                    />
+                )}
+                {!!typeDriver && typeDriver !== 7 && (
+                  <div className={styles.element}>
+                    <div className={styles.valueName}>Шаг димирования</div>
+                    <div className={styles.valueWrapper}>
+                      <ArrowIcon
+                        direction={'right'}
+                        double={false}
+                        width={isMobile340 ? 28 : 32}
+                        height={isMobile340 ? 28 : 32}
+                        onClick={handleDecreaseFadeRate}
+                      />
+                      <div className={styles.value}>{fadeRate}</div>
+                      <ArrowIcon
+                        direction={'left'}
+                        double={false}
+                        width={isMobile340 ? 28 : 32}
+                        height={isMobile340 ? 28 : 32}
+                        onClick={handleIncreaseFadeRate}
+                      />
+                    </div>
                   </div>
-                </div>
+                )}
               </>
             )}
             {tab === 'group' && (
@@ -742,17 +482,17 @@ export function DeviceCardPage() {
             )}
 
             {/*Удалить только для теста изменения*/}
-            <div style={{ display: 'flex', gap: '20px' }}>
-              {[4, 7, 2, 96, 98, 128].map(type => (
-                <div
-                  key={type}
-                  className={typeDriver === type ? styles.activeType : ''}
-                  onClick={() => setTypeDriver(type)}
-                >
-                  {type}
-                </div>
-              ))}
-            </div>
+            {/*<div style={{ display: 'flex', gap: '20px' }}>*/}
+            {/*  {[4, 7, 2, 96, 98, 128].map(type => (*/}
+            {/*    <div*/}
+            {/*      key={type}*/}
+            {/*      className={typeDriver === type ? styles.activeType : ''}*/}
+            {/*      onClick={() => setTypeDriver(type)}*/}
+            {/*    >*/}
+            {/*      {type}*/}
+            {/*    </div>*/}
+            {/*  ))}*/}
+            {/*</div>*/}
             {/*Удалить только для теста изменения*/}
           </div>
         </div>
@@ -777,13 +517,941 @@ export function DeviceCardPage() {
               height={isMobile400 ? 52 : 56}
               width={isMobile400 ? 52 : 56}
               className={shouldAnimate ? styles.spin : ''}
-              color={state.value.socketStatus === 'connected' ? '#1FFF1B' : '#FF2A16'}
+              // color={state.value.socketStatus === 'connected' ? '#1FFF1B' : '#FF2A16'}
+              color={state.value.socketStatus === 'connected' ? '#1FFF1B' : '#ac2015'}
             />
-            <Button text="Обновить" onClick={() => {}} />
-            <Button text="Поиск " onClick={() => {}} />
+            <Button
+              text="Обновить"
+              onClick={() => {
+                pullDriverSettings();
+              }}
+            />
+            <Button
+              text="Сохранить"
+              onClick={() => {
+                saveBtnSettings();
+              }}
+            />
           </>
         )}
       </div>
     </div>
   );
+}
+
+{
+  /*<div className={styles.sliderWrapper}>*/
+}
+{
+  /*  {(typeDriver === 4 || typeDriver === 6) && (*/
+}
+{
+  /*    <>*/
+}
+{
+  /*      <div style={{ display: 'flex', justifyContent: 'flex-end', margin: '0 12px' }}>*/
+}
+{
+  /*        <div*/
+}
+{
+  /*          className={`${styles.buttonOnOff} ${colors.generalRange > 0 ? styles.buttonOnOffActive : ''}`}*/
+}
+{
+  /*          onClick={() => {*/
+}
+{
+  /*            setColors(prevState => ({*/
+}
+{
+  /*              ...prevState,*/
+}
+{
+  /*              generalRange: prevState.generalRange > 0 ? 0 : 100,*/
+}
+{
+  /*            }));*/
+}
+{
+  /*          }}*/
+}
+{
+  /*        >*/
+}
+{
+  /*          <ButtonOnOff color={colors.generalRange > 0 ? 'white' : 'grey'} />*/
+}
+{
+  /*        </div>*/
+}
+{
+  /*      </div>*/
+}
+{
+  /*      <div className={`${styles.rgbPanel} ${isOpenRGB ? styles.open : ''}`}>*/
+}
+{
+  /*        <div style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>*/
+}
+{
+  /*          <ColorSliderGeneral*/
+}
+{
+  /*            fromColor={'#fff584'}*/
+}
+{
+  /*            value={colors}*/
+}
+{
+  /*            setValue={setColors}*/
+}
+{
+  /*            field={'light'}*/
+}
+{
+  /*          />*/
+}
+{
+  /*        </div>*/
+}
+{
+  /*        <div*/
+}
+{
+  /*          style={{ position: 'absolute', backgroundColor: '#525252', bottom: 0, left: 0 }}*/
+}
+{
+  /*          onClick={e => {*/
+}
+{
+  /*            e.stopPropagation(); // чтобы не срабатывал клик по родителю*/
+}
+{
+  /*            setIsOpenRGB(!isOpenRGB);*/
+}
+{
+  /*          }}*/
+}
+{
+  /*        >*/
+}
+{
+  /*          <DoubleArrowTopIcon width={30} height={20} gap={0} isOpen={isOpenRGB} />*/
+}
+{
+  /*        </div>*/
+}
+{
+  /*      </div>*/
+}
+{
+  /*    </>*/
+}
+{
+  /*  )}*/
+}
+{
+  /*  {typeDriver === 2 && (*/
+}
+{
+  /*    <>*/
+}
+{
+  /*      <div style={{ display: 'flex', justifyContent: 'flex-end', margin: '0 12px' }}>*/
+}
+{
+  /*        <div*/
+}
+{
+  /*          className={`${styles.buttonOnOff} ${colors.generalRange > 0 ? styles.buttonOnOffActive : ''}`}*/
+}
+{
+  /*          onClick={() => {*/
+}
+{
+  /*            setColors(prevState => ({*/
+}
+{
+  /*              ...prevState,*/
+}
+{
+  /*              generalRange: prevState.generalRange > 0 ? 0 : 100,*/
+}
+{
+  /*            }));*/
+}
+{
+  /*          }}*/
+}
+{
+  /*        >*/
+}
+{
+  /*          <ButtonOnOff color={colors.generalRange > 0 ? 'white' : 'grey'} />*/
+}
+{
+  /*        </div>*/
+}
+{
+  /*      </div>*/
+}
+{
+  /*      <div className={`${styles.rgbPanel} ${isOpenRGB ? styles.open : ''}`}>*/
+}
+{
+  /*        <div style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>*/
+}
+{
+  /*          <ColorSlider*/
+}
+{
+  /*            withOutValue={true}*/
+}
+{
+  /*            fromColor={'#cbe9fd'}*/
+}
+{
+  /*            toColor={'#fef7cb'}*/
+}
+{
+  /*            value={colors}*/
+}
+{
+  /*            setValue={setColors}*/
+}
+{
+  /*            field={'light'}*/
+}
+{
+  /*            minValue={2000}*/
+}
+{
+  /*            maxValue={6000}*/
+}
+{
+  /*          />*/
+}
+{
+  /*        </div>*/
+}
+{
+  /*        <div*/
+}
+{
+  /*          style={{ position: 'absolute', backgroundColor: '#525252', bottom: 0, left: 0 }}*/
+}
+{
+  /*          onClick={e => {*/
+}
+{
+  /*            e.stopPropagation(); // чтобы не срабатывал клик по родителю*/
+}
+{
+  /*            setIsOpenRGB(!isOpenRGB);*/
+}
+{
+  /*          }}*/
+}
+{
+  /*        >*/
+}
+{
+  /*          <DoubleArrowTopIcon width={30} height={20} gap={0} isOpen={isOpenRGB} />*/
+}
+{
+  /*        </div>*/
+}
+{
+  /*      </div>*/
+}
+{
+  /*    </>*/
+}
+{
+  /*  )}*/
+}
+{
+  /*  {typeDriver === 7 && (*/
+}
+{
+  /*    <>*/
+}
+{
+  /*      <div style={{ display: 'flex', justifyContent: 'flex-end', margin: '0 12px' }}>*/
+}
+{
+  /*        <div*/
+}
+{
+  /*          className={`${styles.buttonOnOff} ${colors.generalRange > 0 ? styles.buttonOnOffActive : ''}`}*/
+}
+{
+  /*          onClick={() => {*/
+}
+{
+  /*            setColors(prevState => ({*/
+}
+{
+  /*              ...prevState,*/
+}
+{
+  /*              generalRange: prevState.generalRange > 0 ? 0 : 100,*/
+}
+{
+  /*            }));*/
+}
+{
+  /*          }}*/
+}
+{
+  /*        >*/
+}
+{
+  /*          <ButtonOnOff color={colors.generalRange > 0 ? 'white' : 'grey'} />*/
+}
+{
+  /*        </div>*/
+}
+{
+  /*      </div>*/
+}
+{
+  /*    </>*/
+}
+{
+  /*  )}*/
+}
+
+{
+  /*  {typeDriver === 96 && (*/
+}
+{
+  /*    <>*/
+}
+{
+  /*      <div style={{ display: 'flex', justifyContent: 'flex-end', margin: '0 12px' }}>*/
+}
+{
+  /*        <div*/
+}
+{
+  /*          className={`${styles.buttonOnOff} ${colors.generalRange > 0 ? styles.buttonOnOffActive : ''}`}*/
+}
+{
+  /*          onClick={() => {*/
+}
+{
+  /*            setColors(prevState => ({*/
+}
+{
+  /*              ...prevState,*/
+}
+{
+  /*              generalRange: prevState.generalRange > 0 ? 0 : 100,*/
+}
+{
+  /*            }));*/
+}
+{
+  /*          }}*/
+}
+{
+  /*        >*/
+}
+{
+  /*          <ButtonOnOff color={colors.generalRange > 0 ? 'white' : 'grey'} />*/
+}
+{
+  /*        </div>*/
+}
+{
+  /*      </div>*/
+}
+{
+  /*      <div className={`${styles.rgbPanel} ${isOpenRGB ? styles.open : ''}`}>*/
+}
+{
+  /*        <div style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>*/
+}
+{
+  /*          <ColorSliderGeneral*/
+}
+{
+  /*            fromColor={'#fff584'}*/
+}
+{
+  /*            value={colors}*/
+}
+{
+  /*            setValue={setColors}*/
+}
+{
+  /*            field={'light'}*/
+}
+{
+  /*          />*/
+}
+{
+  /*        </div>*/
+}
+{
+  /*        <div style={{ display: 'flex', width: '100%' }}>*/
+}
+{
+  /*          <ColorSlider*/
+}
+{
+  /*            fromColor={'#ff113a'}*/
+}
+{
+  /*            value={colors}*/
+}
+{
+  /*            setValue={setColors}*/
+}
+{
+  /*            field={'r'}*/
+}
+{
+  /*          />*/
+}
+{
+  /*        </div>*/
+}
+{
+  /*        <div style={{ display: 'flex', width: '100%' }}>*/
+}
+{
+  /*          <ColorSlider*/
+}
+{
+  /*            fromColor={'#26ff43'}*/
+}
+{
+  /*            value={colors}*/
+}
+{
+  /*            setValue={setColors}*/
+}
+{
+  /*            field={'g'}*/
+}
+{
+  /*          />*/
+}
+{
+  /*        </div>*/
+}
+{
+  /*        <div style={{ display: 'flex', width: '100%' }}>*/
+}
+{
+  /*          <ColorSlider*/
+}
+{
+  /*            fromColor={'#0466FF'}*/
+}
+{
+  /*            value={colors}*/
+}
+{
+  /*            setValue={setColors}*/
+}
+{
+  /*            field={'b'}*/
+}
+{
+  /*          />*/
+}
+{
+  /*        </div>*/
+}
+{
+  /*        <div*/
+}
+{
+  /*          style={{ position: 'absolute', backgroundColor: '#525252', bottom: 0, left: 0 }}*/
+}
+{
+  /*          onClick={e => {*/
+}
+{
+  /*            e.stopPropagation(); // чтобы не срабатывал клик по родителю*/
+}
+{
+  /*            setIsOpenRGB(!isOpenRGB);*/
+}
+{
+  /*          }}*/
+}
+{
+  /*        >*/
+}
+{
+  /*          <DoubleArrowTopIcon width={30} height={20} gap={0} isOpen={isOpenRGB} />*/
+}
+{
+  /*        </div>*/
+}
+{
+  /*      </div>*/
+}
+{
+  /*    </>*/
+}
+{
+  /*  )}*/
+}
+{
+  /*  {typeDriver === 98 && (*/
+}
+{
+  /*    <>*/
+}
+{
+  /*      <div style={{ display: 'flex', justifyContent: 'flex-end', margin: '0 12px' }}>*/
+}
+{
+  /*        <div*/
+}
+{
+  /*          className={`${styles.buttonOnOff} ${colors.generalRange > 0 ? styles.buttonOnOffActive : ''}`}*/
+}
+{
+  /*          onClick={() => {*/
+}
+{
+  /*            setColors(prevState => ({*/
+}
+{
+  /*              ...prevState,*/
+}
+{
+  /*              generalRange: prevState.generalRange > 0 ? 0 : 100,*/
+}
+{
+  /*            }));*/
+}
+{
+  /*          }}*/
+}
+{
+  /*        >*/
+}
+{
+  /*          <ButtonOnOff color={colors.generalRange > 0 ? 'white' : 'grey'} />*/
+}
+{
+  /*        </div>*/
+}
+{
+  /*      </div>*/
+}
+{
+  /*      <div className={`${styles.rgbPanel} ${isOpenRGB ? styles.open : ''}`}>*/
+}
+{
+  /*        <div style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>*/
+}
+{
+  /*          <ColorSliderGeneral*/
+}
+{
+  /*            fromColor={'#fff584'}*/
+}
+{
+  /*            value={colors}*/
+}
+{
+  /*            setValue={setColors}*/
+}
+{
+  /*            field={'light'}*/
+}
+{
+  /*          />*/
+}
+{
+  /*        </div>*/
+}
+{
+  /*        <div style={{ display: 'flex', width: '100%' }}>*/
+}
+{
+  /*          <ColorSlider*/
+}
+{
+  /*            fromColor={'white'}*/
+}
+{
+  /*            value={colors}*/
+}
+{
+  /*            setValue={setColors}*/
+}
+{
+  /*            field={'w'}*/
+}
+{
+  /*          />*/
+}
+{
+  /*        </div>*/
+}
+{
+  /*        <div style={{ display: 'flex', width: '100%' }}>*/
+}
+{
+  /*          <ColorSlider*/
+}
+{
+  /*            fromColor={'#ff113a'}*/
+}
+{
+  /*            value={colors}*/
+}
+{
+  /*            setValue={setColors}*/
+}
+{
+  /*            field={'r'}*/
+}
+{
+  /*          />*/
+}
+{
+  /*        </div>*/
+}
+{
+  /*        <div style={{ display: 'flex', width: '100%' }}>*/
+}
+{
+  /*          <ColorSlider*/
+}
+{
+  /*            fromColor={'#26ff43'}*/
+}
+{
+  /*            value={colors}*/
+}
+{
+  /*            setValue={setColors}*/
+}
+{
+  /*            field={'g'}*/
+}
+{
+  /*          />*/
+}
+{
+  /*        </div>*/
+}
+{
+  /*        <div style={{ display: 'flex', width: '100%' }}>*/
+}
+{
+  /*          <ColorSlider*/
+}
+{
+  /*            fromColor={'#0466FF'}*/
+}
+{
+  /*            value={colors}*/
+}
+{
+  /*            setValue={setColors}*/
+}
+{
+  /*            field={'b'}*/
+}
+{
+  /*          />*/
+}
+{
+  /*        </div>*/
+}
+{
+  /*        <div*/
+}
+{
+  /*          style={{ position: 'absolute', backgroundColor: '#525252', bottom: 0, left: 0 }}*/
+}
+{
+  /*          onClick={e => {*/
+}
+{
+  /*            e.stopPropagation(); // чтобы не срабатывал клик по родителю*/
+}
+{
+  /*            setIsOpenRGB(!isOpenRGB);*/
+}
+{
+  /*          }}*/
+}
+{
+  /*        >*/
+}
+{
+  /*          <DoubleArrowTopIcon width={30} height={20} gap={0} isOpen={isOpenRGB} />*/
+}
+{
+  /*        </div>*/
+}
+{
+  /*      </div>*/
+}
+{
+  /*    </>*/
+}
+{
+  /*  )}*/
+}
+{
+  /*  {typeDriver === 128 && (*/
+}
+{
+  /*    <>*/
+}
+{
+  /*      <div style={{ display: 'flex', justifyContent: 'flex-end', margin: '0 12px' }}>*/
+}
+{
+  /*        <div*/
+}
+{
+  /*          className={`${styles.buttonOnOff} ${colors.generalRange > 0 ? styles.buttonOnOffActive : ''}`}*/
+}
+{
+  /*          onClick={() => {*/
+}
+{
+  /*            setColors(prevState => ({*/
+}
+{
+  /*              ...prevState,*/
+}
+{
+  /*              generalRange: prevState.generalRange > 0 ? 0 : 100,*/
+}
+{
+  /*            }));*/
+}
+{
+  /*          }}*/
+}
+{
+  /*        >*/
+}
+{
+  /*          <ButtonOnOff color={colors.generalRange > 0 ? 'white' : 'grey'} />*/
+}
+{
+  /*        </div>*/
+}
+{
+  /*      </div>*/
+}
+
+{
+  /*      <div className={`${styles.rgbPanel} ${isOpenRGB ? styles.open : ''}`}>*/
+}
+{
+  /*        <div style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>*/
+}
+{
+  /*          <ColorSliderGeneral*/
+}
+{
+  /*            fromColor={'#fff584'}*/
+}
+{
+  /*            value={colors}*/
+}
+{
+  /*            setValue={setColors}*/
+}
+{
+  /*            field={'light'}*/
+}
+{
+  /*          />*/
+}
+{
+  /*        </div>*/
+}
+{
+  /*        <div style={{ display: 'flex', width: '100%' }}>*/
+}
+{
+  /*          <ColorSlider*/
+}
+{
+  /*            withOutValue={true}*/
+}
+{
+  /*            fromColor={'#cbe9fd'}*/
+}
+{
+  /*            toColor={'#fef7cb'}*/
+}
+{
+  /*            value={colors}*/
+}
+{
+  /*            setValue={setColors}*/
+}
+{
+  /*            field={'light'}*/
+}
+{
+  /*            minValue={2000}*/
+}
+{
+  /*            maxValue={6000}*/
+}
+{
+  /*          />*/
+}
+{
+  /*        </div>*/
+}
+{
+  /*        <div style={{ display: 'flex', width: '100%' }}>*/
+}
+{
+  /*          <ColorSlider*/
+}
+{
+  /*            fromColor={'#ff113a'}*/
+}
+{
+  /*            value={colors}*/
+}
+{
+  /*            setValue={setColors}*/
+}
+{
+  /*            field={'r'}*/
+}
+{
+  /*          />*/
+}
+{
+  /*        </div>*/
+}
+{
+  /*        <div style={{ display: 'flex', width: '100%' }}>*/
+}
+{
+  /*          <ColorSlider*/
+}
+{
+  /*            fromColor={'#26ff43'}*/
+}
+{
+  /*            value={colors}*/
+}
+{
+  /*            setValue={setColors}*/
+}
+{
+  /*            field={'g'}*/
+}
+{
+  /*          />*/
+}
+{
+  /*        </div>*/
+}
+{
+  /*        <div style={{ display: 'flex', width: '100%' }}>*/
+}
+{
+  /*          <ColorSlider*/
+}
+{
+  /*            fromColor={'#0466FF'}*/
+}
+{
+  /*            value={colors}*/
+}
+{
+  /*            setValue={setColors}*/
+}
+{
+  /*            field={'b'}*/
+}
+{
+  /*          />*/
+}
+{
+  /*        </div>*/
+}
+
+{
+  /*        <div*/
+}
+{
+  /*          style={{ position: 'absolute', backgroundColor: '#525252', bottom: 0, left: 0 }}*/
+}
+{
+  /*          onClick={e => {*/
+}
+{
+  /*            e.stopPropagation(); // чтобы не срабатывал клик по родителю*/
+}
+{
+  /*            setIsOpenRGB(!isOpenRGB);*/
+}
+{
+  /*          }}*/
+}
+{
+  /*        >*/
+}
+{
+  /*          <DoubleArrowTopIcon width={30} height={20} gap={0} isOpen={isOpenRGB} />*/
+}
+{
+  /*        </div>*/
+}
+{
+  /*      </div>*/
+}
+{
+  /*    </>*/
+}
+{
+  /*  )}*/
+}
+
+{
+  /*  /!*показывать стрелку разворота*!/*/
+}
+{
+  /*  {isOpenRGB || typeDriver === 7 ? null : (*/
+}
+{
+  /*    <div*/
+}
+{
+  /*      style={{ position: 'absolute', backgroundColor: '#525252' }}*/
+}
+{
+  /*      onClick={() => setIsOpenRGB(true)}*/
+}
+{
+  /*    >*/
+}
+{
+  /*      <DoubleArrowTopIcon width={30} height={20} gap={0} isOpen={isOpenRGB} />*/
+}
+{
+  /*    </div>*/
+}
+{
+  /*  )}*/
+}
+{
+  /*</div>*/
 }

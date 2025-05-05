@@ -31,7 +31,7 @@ export const LightBulbIcon: FunctionalComponent<LightBulbIconProps> = ({
     if (!animateStripes) return;
 
     const interval = setInterval(() => {
-      setOpacity(prev => (prev === 1 ? 0.2 : 1));
+      setOpacity(prev => (prev === 1 ? 0 : 1));
     }, animationSpeed);
 
     return () => clearInterval(interval);
