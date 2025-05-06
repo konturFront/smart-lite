@@ -43,7 +43,7 @@ export interface IStateUI {
 
 // Начальное состояние
 export const state = signal<AppState>({
-  socketURL: GLOBAL_WS_URL,
+  socketURL: window.location.hostname,
   socketStatus: socketStatusEnum.DISCONNECTED,
   wifiNetworks: [],
   settingsDriver: [],
@@ -180,7 +180,7 @@ socketService.onMessage(data => {
 
   if (data.driver === 'find' && data.cmd === 'stop') {
     state.value = { ...state.value, countDrivers: data.count ?? 0 };
-    hiddenLoadingStateUI();
+    sendMessageSocket({ driver: 'update', cmd: 'start' });
   }
 
   //Пакет данных, передаваемый по окончании процедуры «обновления» драйверов (server->client):

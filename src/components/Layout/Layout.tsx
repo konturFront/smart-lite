@@ -5,8 +5,10 @@ import { Wrapper } from '../Wrapper/Wrapper';
 import { state } from '../../store/store';
 import styles from './styles.module.scss';
 import { useDeviceDetect } from '../../hooks/useDeviceDetect';
+import { useLocation, useRoute } from 'preact-iso';
 export const Layout = ({ children }: { children?: preact.ComponentChildren }) => {
   const { isMobile, isMobile1100 } = useDeviceDetect();
+
   useEffect(() => {
     socketService.connect(state.value.socketURL);
     return () => {
