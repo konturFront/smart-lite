@@ -15,6 +15,7 @@ import { Loader } from '../../../components/Loader/Loader';
 import { ArrowIcon } from '../../../components/IconComponent/ArrowAction/ArrowIcon';
 import { AroundIcon } from '../../../components/IconComponent/AroundIcon/AroundIcon';
 import { useDeviceDetect } from '../../../hooks/useDeviceDetect';
+import { toastService } from '../../../components/Toast/Toast';
 
 export function DevicesPageMobile() {
   const refTest = useRef<HTMLDivElement>(null);
@@ -95,6 +96,17 @@ export function DevicesPageMobile() {
   }, [state.value.updatedDevices, page, itemsPerPage]);
 
   useEffect(() => {
+    setTimeout(() => {
+      toastService.showSuccess('Первое событие', 4000);
+    }, 3000);
+
+    setTimeout(() => {
+      toastService.showSuccess('Второе событие', 4000);
+    }, 7000);
+
+    setTimeout(() => {
+      toastService.showSuccess('Третье событие', 4000);
+    }, 8000);
     return () => {
       stopTestDriver();
     };
