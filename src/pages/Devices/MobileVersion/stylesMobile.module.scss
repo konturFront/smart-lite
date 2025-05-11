@@ -33,23 +33,6 @@
   transform: translate(-50%, -50%);
 }
 
-.wrapperBtn {
-  width: 100%;
-  display: flex;
-  margin: 0 auto;
-  padding: 12px 20px;
-  justify-content: space-between;
-  background: #141414;
-  gap: 20px;
-  height: 76px;
-  position: relative;
-  align-items: center;
-  align-content: center;
-  @media (max-width: 390px) {
-    gap: 4px;
-  }
-}
-
 .driverItem:active {
   background-color: #d2d2d2;
   transform: scale(0.98);
@@ -69,17 +52,20 @@
 }
 
 .wrapperBtn {
-  width:100%;
+  width: 100%;
   display: flex;
   margin: 0 auto;
   padding: 12px 20px;
-  justify-content: flex-end;
+  justify-content: space-between;
   background: #141414;
   gap: 20px;
   height: 76px;
   position: relative;
   align-items: center;
   align-content: center;
+  @media (max-width: 390px) {
+    gap: 4px;
+  }
 }
 
 .btn {

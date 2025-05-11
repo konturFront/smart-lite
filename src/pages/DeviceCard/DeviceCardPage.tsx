@@ -28,6 +28,7 @@ import { RGBWType } from '../../components/DriverTypes/RGBWType/RGBWType';
 import { RGBTWType } from '../../components/DriverTypes/RGBTWType/RGBTWType';
 import { ColorSliderGeneral } from '../../components/ColorSliderGeneral/ColorSliderGeneral';
 import { state, stateUI } from '../../store/initialState';
+import { ButtonNavigation } from '../../components/ButtonNavigation/ButtonNavigation';
 
 export type ColorState = {
   generalRange: number;
@@ -536,13 +537,13 @@ export function DeviceCardPage() {
               // color={state.value.socketStatus === 'connected' ? '#1FFF1B' : '#FF2A16'}
               color={state.value.socketStatus === 'connected' ? '#1FFF1B' : '#ac2015'}
             />
-            <Button
+            <ButtonNavigation
               text="Обновить"
               onClick={() => {
                 pullDriverSettings();
               }}
             />
-            <Button
+            <ButtonNavigation
               text="Сохранить"
               onClick={() => {
                 saveBtnSettings();

@@ -19,6 +19,8 @@ import {
   updateDriversWithRetry,
 } from '../../../store/store';
 import { state, stateUI } from '../../../store/initialState';
+import { SpeakerIcon } from '../../../components/IconComponent/BackIcon/BackIcon';
+import { ButtonNavigation } from '../../../components/ButtonNavigation/ButtonNavigation';
 
 export function DevicesPageMobile() {
   const refTest = useRef<HTMLDivElement>(null);
@@ -189,14 +191,21 @@ export function DevicesPageMobile() {
           </div>
         ) : (
           <>
+            <div
+              onClick={() => {
+                route('/service');
+              }}
+            >
+              <SpeakerIcon height={isMobile400 ? 52 : 56} width={isMobile400 ? 52 : 56} />
+            </div>
             <AroundIcon
               height={isMobile400 ? 52 : 56}
               width={isMobile400 ? 52 : 56}
               className={shouldAnimate ? styles.spin : ''}
               color={state.value.socketStatus === 'connected' ? '#1FFF1B' : '#FF2A16'}
             />
-            <Button text="Обновить" onClick={updateDrivers} />
-            <Button text="Поиск " onClick={handleUpdateDrivers} />
+            <ButtonNavigation text="Обновить" onClick={updateDrivers} />
+            <ButtonNavigation text="Поиск " onClick={handleUpdateDrivers} />
           </>
         )}
       </div>
