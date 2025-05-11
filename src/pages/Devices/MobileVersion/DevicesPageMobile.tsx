@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
-import { sendMessageSocket, setTestingDriverAddress, state, stateUI } from '../../../store/store';
 import { useLocation } from 'preact-iso';
 import { DriverPreview } from '../../../components/DriverPreview/DriverPreview';
 import stylesMobile from './stylesMobile.module.scss';
@@ -8,14 +7,18 @@ import { h } from 'preact';
 import { LoadingDots } from '../../../components/Loader/LoadingDots';
 import styles from '../../Rooms/MobileVersion/stylesMobile.module.scss';
 import { Modal } from '../../../components/Modal/Modal';
-import { delay } from 'rxjs';
 import { delayPreact } from '../../../utils/delay';
-import { RoomCarousel } from '../../../components/Carousel/Carousel';
-import { Loader } from '../../../components/Loader/Loader';
 import { ArrowIcon } from '../../../components/IconComponent/ArrowAction/ArrowIcon';
 import { AroundIcon } from '../../../components/IconComponent/AroundIcon/AroundIcon';
 import { useDeviceDetect } from '../../../hooks/useDeviceDetect';
-import { toastService } from '../../../components/Toast/Toast';
+import {
+  findDeepDrivers,
+  sendMessageSocket,
+  setTestingDriverAddress,
+  startTestDriverWithRetry,
+  updateDriversWithRetry,
+} from '../../../store/store';
+import { state, stateUI } from '../../../store/initialState';
 
 export function DevicesPageMobile() {
   const refTest = useRef<HTMLDivElement>(null);
@@ -35,7 +38,7 @@ export function DevicesPageMobile() {
   }, []);
 
   const updateDrivers = useCallback(() => {
-    sendMessageSocket({ driver: 'update', cmd: 'start' });
+    updateDriversWithRetry();
   }, []);
 
   const startTestDriver = async (address: number) => {
@@ -46,20 +49,21 @@ export function DevicesPageMobile() {
     if (state.value.testingDriverAddress !== undefined) {
       stopTestDriver();
       await delayPreact(500);
-      sendMessageSocket({ driver: 'test', cmd: 'start', addres: +address }, false);
+      startTestDriverWithRetry({ driver: 'test', cmd: 'start', addres: +address });
       setTestingDriverAddress(Number(address));
     } else {
-      sendMessageSocket({ driver: 'test', cmd: 'start', addres: +address }, false);
+      startTestDriverWithRetry({ driver: 'test', cmd: 'start', addres: +address });
       setTestingDriverAddress(Number(address));
     }
   };
 
   const stopTestDriver = () => {
     if (state.value.testingDriverAddress === undefined) return;
-    sendMessageSocket(
-      { driver: 'test', cmd: 'stop', addres: +state.value.testingDriverAddress },
-      false
-    );
+    startTestDriverWithRetry({
+      driver: 'test',
+      cmd: 'stop',
+      addres: +state.value.testingDriverAddress,
+    });
     setTestingDriverAddress(undefined);
   };
 
@@ -96,17 +100,6 @@ export function DevicesPageMobile() {
   }, [state.value.updatedDevices, page, itemsPerPage]);
 
   useEffect(() => {
-    setTimeout(() => {
-      toastService.showSuccess('Первое событие', 4000);
-    }, 3000);
-
-    setTimeout(() => {
-      toastService.showSuccess('Второе событие', 4000);
-    }, 7000);
-
-    setTimeout(() => {
-      toastService.showSuccess('Третье событие', 4000);
-    }, 8000);
     return () => {
       stopTestDriver();
     };
@@ -233,7 +226,7 @@ export function DevicesPageMobile() {
               <Button
                 text="Новый поиск"
                 onClick={() => {
-                  sendMessageSocket({ driver: 'find', cmd: 'start' });
+                  findDeepDrivers();
                   setOpenModalSearch(false);
                 }}
               />

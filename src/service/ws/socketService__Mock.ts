@@ -69,6 +69,10 @@ export class SocketService__Mock {
         //   this.emitMessage({ driver: 'test', cmd: 'on', addres: this.testing });
         //   this.delay(1000);
         // }
+
+        // setTimeout(() => {
+        //   this.emitMessage({ driver: 'test', cmd: 'on', addres: this.testing });
+        // }, 1000);
       }
 
       // Остановка процедуры «Тест драйвера» (client->server):
@@ -307,6 +311,7 @@ export class SocketService__Mock {
       this.emitMessage({
         str: 'Ответ не обработан',
       });
+      // }, 30000);
     }, 2000);
   }
 

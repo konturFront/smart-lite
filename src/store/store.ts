@@ -1,60 +1,45 @@
-import { signal } from '@preact/signals';
 import { socketService } from '../service/ws/socketService';
-import { GLOBAL_WS_URL } from '../global/value';
-import is from '@sindresorhus/is';
-import nan = is.nan;
-import { nanoid } from 'nanoid';
 
-export enum socketStatusEnum {
-  PENDING = 'pending',
-  CONNECTED = 'connected',
-  DISCONNECTED = 'disconnected',
-  ERROR = 'error',
-}
-export type Room = {
-  idRoom: string;
-  roomName: string;
-  drivers: Record<string, number[]>;
-  groups?: {
-    idGroup: string;
-    groupName: string;
-    driverAddresses?: Record<string, number[]>;
-  }[];
+import { toastService } from '../components/Toast/Toast';
+import { RoomsArr, socketStatusEnum } from './types';
+import { state, stateUI } from './initialState';
+
+const timers: Record<
+  | 'findDriver'
+  | 'updateDrivers'
+  | 'saveDrivers'
+  | 'saveSettingsDriver'
+  | 'startTestDriver'
+  | 'saveWIFI'
+  | 'scanWIFI'
+  | string,
+  number
+> = {
+  findDriver: null,
+  updateDrivers: null,
+  saveDrivers: null,
+  saveSettingsDriver: null,
+  startTestDriver: null,
+  saveWIFI: null,
+  scanWIFI: null,
 };
-export type RoomsArr = Room[];
-
-// Тип для состояния устройства
-export interface AppState {
-  socketURL: string;
-  socketStatus: socketStatusEnum;
-  wifiNetworks: string[];
-  groups: boolean[];
-  updatedDevices: Record<string, string[]>;
-  settingsDriver: number[];
-  rooms: RoomsArr | [];
-  countDrivers: string | number;
-  testingDriverAddress: number | undefined;
-}
-
-export interface IStateUI {
-  isActiveMenu: boolean;
-  isLoadingUI: boolean;
-}
-
-// Начальное состояние
-export const state = signal<AppState>({
-  socketURL: window.location.hostname,
-  socketStatus: socketStatusEnum.DISCONNECTED,
-  wifiNetworks: [],
-  settingsDriver: [],
-  updatedDevices: {},
-  rooms: [],
-  groups: Array(16).fill(false),
-  countDrivers: undefined,
-  testingDriverAddress: undefined,
-});
-export const stateUI = signal<IStateUI>({ isActiveMenu: false, isLoadingUI: false });
-
+const retryCounts: Record<
+  | 'updateDrivers'
+  | 'saveDrivers'
+  | 'saveSettingsDriver'
+  | 'startTestDriver'
+  | 'saveWIFI'
+  | 'scanWIFI'
+  | string,
+  number
+> = {
+  updateDrivers: 0,
+  saveDrivers: 0,
+  saveSettingsDriver: 0,
+  startTestDriver: 0,
+  saveWIFI: 0,
+  scanWIFI: 0,
+};
 // Методы обновления состояния
 
 // Реконнетк для изменения урла для сокета
@@ -65,6 +50,329 @@ export const reconnectWS = (url: string) => {
 export const showLoadingStateUI = () => {
   stateUI.value = { ...stateUI.value, isLoadingUI: true };
 };
+
+export const findDeepDrivers = () => {
+  if (timers.findDriver !== null) {
+    clearTimeout(timers.findDriver);
+    timers.findDriver = null;
+  }
+
+  showLoadingStateUI();
+  socketService.send({ driver: 'find', cmd: 'start' });
+
+  timers.findDriver = window.setTimeout(() => {
+    toastService.showError('Нет связи с мастером');
+    hiddenLoadingStateUI();
+    timers.findDriver = null;
+  }, 5 * 60000);
+};
+
+export function updateDriversWithRetry() {
+  if (timers.updateDrivers) {
+    clearTimeout(timers.updateDrivers);
+    timers.updateDrivers = null;
+  }
+  // Инициализируем счётчик, если первый вызов
+  retryCounts.updateDrivers = retryCounts.updateDrivers == null ? 0 : retryCounts.updateDrivers;
+
+  // Шаг 1: отобразить лоадер и отправить команду
+  showLoadingStateUI();
+  socketService.send({ driver: 'update', cmd: 'start' });
+
+  // Шаг 2: поставить таймер на RETRY_DELAY_MS
+  timers.updateDrivers = window.setTimeout(() => {
+    // Если пришёл ответ и список драйверов изменился,
+    // то мы сбросим и таймер, и счётчик в onMessage (см. ниже).
+    // Если же за 30 сек изменений не было — retryCounts[key] увеличится
+    if (retryCounts.updateDrivers < 1) {
+      retryCounts.updateDrivers = retryCounts.updateDrivers + 1;
+      updateDriversWithRetry(); // перезапускаем заново
+    } else {
+      // окончательный провал
+      toastService.showError('Нет связи с мастером при обновлении');
+      hiddenLoadingStateUI();
+      clearTimeout(timers.updateDrivers);
+      timers.updateDrivers = null;
+      retryCounts.updateDrivers = 0;
+    }
+  }, 30000);
+}
+
+export function saveDriversWithRetry(data: any) {
+  if (timers.saveDrivers) {
+    clearTimeout(timers.saveDrivers);
+    timers.saveDrivers = null;
+  }
+  // Инициализируем счётчик, если первый вызов
+  retryCounts.saveDrivers = retryCounts.saveDrivers == null ? 0 : retryCounts.saveDrivers;
+
+  // Шаг 1: отобразить лоадер и отправить команду
+  showLoadingStateUI();
+  socketService.send({ ...data });
+
+  // Шаг 2: поставить таймер на RETRY_DELAY_MS
+  timers.saveDrivers = window.setTimeout(() => {
+    // Если пришёл ответ и список драйверов изменился,
+    // то мы сбросим и таймер, и счётчик в onMessage (см. ниже).
+    // Если же за 30 сек изменений не было — retryCounts[key] увеличится
+    if (retryCounts.saveDrivers < 1) {
+      retryCounts.saveDrivers = retryCounts.saveDrivers + 1;
+      saveDriversWithRetry(data); // перезапускаем заново
+    } else {
+      // окончательный провал
+      toastService.showError('Нет связи с мастером при сохранении');
+      hiddenLoadingStateUI();
+      clearTimeout(timers.saveDrivers);
+      timers.saveDrivers = null;
+      retryCounts.saveDrivers = 0;
+    }
+  }, 10000);
+}
+
+export function updateSettingsDriverWithRetry(data: any) {
+  const key = 'saveSettingsDriver';
+  if (timers[key]) {
+    clearTimeout(timers[key]);
+    timers[key] = null;
+  }
+  retryCounts[key] = retryCounts[key] == null ? 0 : retryCounts[key];
+
+  showLoadingStateUI();
+  socketService.send({ ...data });
+
+  timers[key] = window.setTimeout(() => {
+    if (retryCounts[key] < 1) {
+      retryCounts[key] = retryCounts[key] + 1;
+      updateSettingsDriverWithRetry(data); // перезапускаем заново
+    } else {
+      // окончательный провал
+      toastService.showError('Нет связи при обновлении драйвера');
+      hiddenLoadingStateUI();
+      clearTimeout(timers[key]);
+      timers[key] = null;
+      retryCounts[key] = 0;
+    }
+  }, 10000);
+}
+
+export function startTestDriverWithRetry(data: any) {
+  if (data.cmd === 'stop') {
+    socketService.send({ ...data });
+    clearTimeout(timers.startTestDriver);
+    timers.startTestDriver = null;
+    retryCounts.startTestDriver = 0;
+    // toastService.showSuccess('Тестирование драйвера');
+    setTestingDriverAddress();
+    return;
+  }
+  const key = 'startTestDriver';
+  if (timers[key]) {
+    clearTimeout(timers[key]);
+    timers[key] = null;
+  }
+  // Инициализируем счётчик, если первый вызов
+  retryCounts[key] = retryCounts[key] == null ? 0 : retryCounts[key];
+
+  // Шаг 1: отобразить лоадер и отправить команду
+  socketService.send({ ...data });
+
+  timers[key] = window.setTimeout(() => {
+    if (retryCounts[key] < 1) {
+      retryCounts[key] = retryCounts[key] + 1;
+      startTestDriverWithRetry(data);
+    } else {
+      toastService.showError('Нет связи при тестировании драйвера');
+      hiddenLoadingStateUI();
+      clearTimeout(timers[key]);
+      timers[key] = null;
+      retryCounts[key] = 0;
+    }
+  }, 10000);
+}
+
+export function saveWIFIWithRetry(data: any) {
+  showLoadingStateUI();
+  const key = 'saveWIFI';
+  if (timers[key]) {
+    clearTimeout(timers[key]);
+    timers[key] = null;
+  }
+  // Инициализируем счётчик, если первый вызов
+  retryCounts[key] = retryCounts[key] == null ? 0 : retryCounts[key];
+
+  // Шаг 1: отобразить лоадер и отправить команду
+  socketService.send({ ...data });
+
+  timers[key] = window.setTimeout(() => {
+    if (retryCounts[key] < 1) {
+      retryCounts[key] = retryCounts[key] + 1;
+      saveWIFIWithRetry(data);
+    } else {
+      toastService.showError('Нет связи при сохранеии WiFi настроек');
+      hiddenLoadingStateUI();
+      clearTimeout(timers[key]);
+      timers[key] = null;
+      retryCounts[key] = 0;
+    }
+  }, 10000);
+}
+
+export function scanWIFIWithRetry(data: any) {
+  showLoadingStateUI();
+  const key = 'scanWIFI';
+  if (timers[key]) {
+    clearTimeout(timers[key]);
+    timers[key] = null;
+  }
+  // Инициализируем счётчик, если первый вызов
+  retryCounts[key] = retryCounts[key] == null ? 0 : retryCounts[key];
+
+  // Шаг 1: отобразить лоадер и отправить команду
+  socketService.send({ ...data });
+
+  timers[key] = window.setTimeout(() => {
+    if (retryCounts[key] < 1) {
+      retryCounts[key] = retryCounts[key] + 1;
+      scanWIFIWithRetry(data);
+    } else {
+      toastService.showError('Нет связи при сохранеии WiFi настроек');
+      hiddenLoadingStateUI();
+      clearTimeout(timers[key]);
+      timers[key] = null;
+      retryCounts[key] = 0;
+    }
+  }, 10000);
+}
+
+// Метод для скрытия лоадинг в шапке
+export const hiddenLoadingStateUI = () => {
+  stateUI.value = { ...stateUI.value, isLoadingUI: false };
+};
+
+export const setWifiNetworks = (networks: string[]) => {
+  state.value = { ...state.value, wifiNetworks: networks };
+};
+
+export const setConnectionStatus = (status: socketStatusEnum) => {
+  state.value = { ...state.value, socketStatus: status };
+};
+// Получение списка комнат с драйверами для страницы rooms
+export const setRooms = (rooms: RoomsArr) => {
+  state.value = { ...state.value, rooms: rooms };
+};
+
+// Cеттим тестируемый драйвер
+export const setTestingDriverAddress = (testingDriverAddress?: number) => {
+  state.value = { ...state.value, testingDriverAddress: testingDriverAddress };
+};
+
+// Пример инициализации сокета с подпиской
+socketService.onStatus(status => {
+  setConnectionStatus(status as socketStatusEnum);
+});
+// Отправка данных сокет с возмоностью выключить лоадинг
+export const sendMessageSocket = (data: Record<string | number, unknown>, withLoading = true) => {
+  withLoading && showLoadingStateUI();
+  socketService.send(data);
+};
+
+// ЛОВИМ ===============================================================================================
+socketService.onMessage(data => {
+  // hiddenLoadingStateUI();
+  console.log('onMessage', data);
+
+  if (data.driver === 'find' && data.cmd === 'stop') {
+    if (timers.findDriver !== null) {
+      clearTimeout(timers.findDriver);
+      timers.findDriver = null;
+    }
+    toastService.showSuccess(`Найдено драйверов: ${data.count}`);
+    state.value = { ...state.value, countDrivers: data.count ?? 0 };
+    updateDriversWithRetry();
+  }
+
+  //Пакет данных, передаваемый по окончании процедуры «обновления» драйверов (server->client):
+  if (data.driver === 'update' && data.count !== undefined) {
+    if (timers.updateDrivers) {
+      clearTimeout(timers.updateDrivers);
+      timers.updateDrivers = null;
+    }
+    retryCounts.updateDrivers = 0;
+
+    state.value = { ...state.value, updatedDevices: data.drivers };
+    toastService.showSuccess(`Драйверы обновлены`);
+    hiddenLoadingStateUI();
+  }
+
+  // Тестирование драйвеа
+  if (
+    data.driver === 'test' &&
+    (data.cmd === 'on' || data.cmd === 'off') &&
+    data.addres !== undefined
+  ) {
+    clearTimeout(timers.startTestDriver);
+    timers.startTestDriver = null;
+    retryCounts.startTestDriver = 0;
+    // toastService.showSuccess('Тестирование драйвера');
+    state.value = { ...state.value, testingDriverAddress: data.addres };
+  }
+
+  // Тестирование остановка драйвера
+  if (data.driver === 'test' && data.cmd === 'stop') {
+    clearTimeout(timers.startTestDriver);
+    timers.startTestDriver = null;
+    retryCounts.startTestDriver = 0;
+    // toastService.showSuccess('Тестирование остановлено');
+    setTestingDriverAddress();
+  }
+
+  //Обновление настроке внутри драйвера
+  if (data.driver === 'settyngs' && data.cmd === 'download' && Array.isArray(data.dr_settyngs)) {
+    clearTimeout(timers.saveSettingsDriver);
+    timers.saveSettingsDriver = null;
+    retryCounts.saveSettingsDriver = 0;
+    toastService.showSuccess('Настройки обновлены');
+    state.value = { ...state.value, settingsDriver: data.dr_settyngs };
+    hiddenLoadingStateUI();
+  }
+
+  if (data.driver === 'settyngs' && data.cmd === 'save' && data.state === 'ok') {
+    clearTimeout(timers.saveDrivers);
+    timers.saveDrivers = null;
+    retryCounts.saveDrivers = 0;
+    hiddenLoadingStateUI();
+    toastService.showSuccess('Настройки сохранены');
+    hiddenLoadingStateUI();
+  }
+
+  // Ответное сообщение о перезагрузке «Мастера» (server->client):
+  if (data.master === 'reset' && data.cmd === 'ok') {
+    hiddenLoadingStateUI();
+  }
+
+  // Ответное сообщение о сохранении настроек Wi-Fi (server->client):
+  if (data.master === 'net' && data.cmd === 'ok') {
+    clearTimeout(timers.saveWIFI);
+    timers.saveWIFI = null;
+    retryCounts.saveWIFI = 0;
+    toastService.showSuccess('Настройки WiFi сохранены');
+    hiddenLoadingStateUI();
+  }
+  // Ответное сообщение после сканирования сетей Wi-Fi (server->client):
+  if (data.master === 'scan' && data.cmd === 'stop' && Array.isArray(data.ssid)) {
+    setWifiNetworks(data.ssid);
+    clearTimeout(timers.scanWIFI);
+    timers.scanWIFI = null;
+    retryCounts.scanWIFI = 0;
+    toastService.showSuccess('SSID получены');
+    hiddenLoadingStateUI();
+  }
+  // Ответное сообщение после запроса на получение комнат с драйверами
+  if (data.rooms === 'search' && data.cmd === 'download') {
+    setRooms(data.roomsArr);
+    hiddenLoadingStateUI();
+  }
+});
 
 // Метод для добавления комнаты
 // export const addRoom = (obj?: Room) => {
@@ -140,86 +448,3 @@ export const showLoadingStateUI = () => {
 //     }),
 //   };
 // };
-
-// Метод для скрытия лоадинг в шапке
-export const hiddenLoadingStateUI = () => {
-  stateUI.value = { ...stateUI.value, isLoadingUI: false };
-};
-
-export const setWifiNetworks = (networks: string[]) => {
-  state.value = { ...state.value, wifiNetworks: networks };
-};
-
-export const setConnectionStatus = (status: socketStatusEnum) => {
-  state.value = { ...state.value, socketStatus: status };
-};
-// Получение списка комнат с драйверами для страницы rooms
-export const setRooms = (rooms: RoomsArr) => {
-  state.value = { ...state.value, rooms: rooms };
-};
-
-// Cеттим тестируемый драйвер
-export const setTestingDriverAddress = (testingDriverAddress?: number) => {
-  state.value = { ...state.value, testingDriverAddress: testingDriverAddress };
-};
-
-// Пример инициализации сокета с подпиской
-socketService.onStatus(status => {
-  setConnectionStatus(status as socketStatusEnum);
-});
-// Отправка данных сокет с возмоностью выключить лоадинг
-export const sendMessageSocket = (data: Record<string | number, unknown>, withLoading = true) => {
-  withLoading && showLoadingStateUI();
-  socketService.send(data);
-};
-
-//ЛОВИМ//////// ответы от сервера для стора, для локального состояния используй sendAndWaiFor Response
-socketService.onMessage(data => {
-  // hiddenLoadingStateUI();
-  console.log('onMessage', data);
-
-  if (data.driver === 'find' && data.cmd === 'stop') {
-    state.value = { ...state.value, countDrivers: data.count ?? 0 };
-    sendMessageSocket({ driver: 'update', cmd: 'start' });
-  }
-
-  //Пакет данных, передаваемый по окончании процедуры «обновления» драйверов (server->client):
-  if (data.driver === 'update' && data.count !== undefined) {
-    state.value = { ...state.value, updatedDevices: data.drivers };
-    hiddenLoadingStateUI();
-  }
-
-  // driver: 'test', cmd: 'on', addres: this.testing не доделал
-  if (data.driver === 'test' && data.cmd === 'on') {
-    state.value = { ...state.value, testingDriverAddress: data.addres };
-  }
-
-  if (data.driver === 'settyngs' && data.cmd === 'download' && Array.isArray(data.dr_settyngs)) {
-    state.value = { ...state.value, settingsDriver: data.dr_settyngs };
-    hiddenLoadingStateUI();
-  }
-
-  if (data.driver === 'settyngs' && data.cmd === 'save' && data.state === 'ok') {
-    hiddenLoadingStateUI();
-  }
-
-  // Ответное сообщение о перезагрузке «Мастера» (server->client):
-  if (data.master === 'reset' && data.cmd === 'ok') {
-    hiddenLoadingStateUI();
-  }
-
-  // Ответное сообщение о сохранении настроек Wi-Fi (server->client):
-  if (data.master === 'net' && data.cmd === 'ok') {
-    hiddenLoadingStateUI();
-  }
-  // Ответное сообщение после сканирования сетей Wi-Fi (server->client):
-  if (data.master === 'scan' && data.cmd === 'stop' && Array.isArray(data.ssid)) {
-    setWifiNetworks(data.ssid);
-    hiddenLoadingStateUI();
-  }
-  // Ответное сообщение после запроса на получение комнат с драйверами
-  if (data.rooms === 'search' && data.cmd === 'download') {
-    setRooms(data.roomsArr);
-    hiddenLoadingStateUI();
-  }
-});

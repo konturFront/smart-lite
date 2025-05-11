@@ -1,7 +1,12 @@
 import { useLocation, useRoute } from 'preact-iso';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 import { groupsToMasks, parseGroupMasks } from '../../utils/parseGroupMask';
-import { sendMessageSocket, showLoadingStateUI, state, stateUI } from '../../store/store';
+import {
+  saveDriversWithRetry,
+  sendMessageSocket,
+  showLoadingStateUI,
+  updateSettingsDriverWithRetry,
+} from '../../store/store';
 import { Button } from '../../components/Button/Button';
 import { LoadingDots } from '../../components/Loader/LoadingDots';
 import styles from './styles.module.scss';
@@ -22,6 +27,7 @@ import { RGBType } from '../../components/DriverTypes/RGBType/RGBType';
 import { RGBWType } from '../../components/DriverTypes/RGBWType/RGBWType';
 import { RGBTWType } from '../../components/DriverTypes/RGBTWType/RGBTWType';
 import { ColorSliderGeneral } from '../../components/ColorSliderGeneral/ColorSliderGeneral';
+import { state, stateUI } from '../../store/initialState';
 
 export type ColorState = {
   generalRange: number;
@@ -103,8 +109,7 @@ export function DeviceCardPage() {
 
   const fetchSettings = async id => {
     try {
-      showLoadingStateUI();
-      sendMessageSocket({ driver: 'settyngs', cmd: 'download', addres: +id });
+      updateSettingsDriverWithRetry({ driver: 'settyngs', cmd: 'download', addres: +id });
     } catch (err) {
       console.error(err);
     }
@@ -257,12 +262,12 @@ export function DeviceCardPage() {
       .filter(index => index !== -1);
     const { g07, g815 } = groupsToMasks(activeGroups);
     showLoadingStateUI();
-    sendMessageSocket({
+    saveDriversWithRetry({
       driver: 'settyngs',
       cmd: 'save',
       dr_settyngs: [
         Number(params?.id),
-        typeDriver,
+        // typeDriver, при получении он ест, при отправке его быть не должно, такое требование спеки
         g07,
         g815,
         minLevel,

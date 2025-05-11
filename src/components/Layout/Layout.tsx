@@ -2,11 +2,10 @@ import { useEffect } from 'preact/hooks';
 import { socketService } from '../../service/ws/socketService';
 import { Header } from '../Header/Header';
 import { Wrapper } from '../Wrapper/Wrapper';
-import { state } from '../../store/store';
-import styles from './styles.module.scss';
 import { useDeviceDetect } from '../../hooks/useDeviceDetect';
-import { useLocation, useRoute } from 'preact-iso';
 import { ToastProvider } from '../Toast/Toast';
+import { state, stateUI } from '../../store/initialState';
+import { Loader } from '../Loader/Loader';
 export const Layout = ({ children }: { children?: preact.ComponentChildren }) => {
   const { isMobile, isMobile1100 } = useDeviceDetect();
 
@@ -23,6 +22,7 @@ export const Layout = ({ children }: { children?: preact.ComponentChildren }) =>
         <Header />
         <Wrapper>{children}</Wrapper>
         <ToastProvider />
+        {stateUI.value.isLoadingUI && <Loader />}
       </div>
     );
   }

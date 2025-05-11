@@ -1,7 +1,7 @@
 import styles from './styles.module.scss';
-import { stateUI } from '../../store/store';
 import { useLocation } from 'preact-iso';
 import { useCallback, useEffect, useRef } from 'preact/hooks';
+import { stateUI } from '../../store/initialState';
 
 export const Drawer = () => {
   const { url, route } = useLocation();

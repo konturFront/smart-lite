@@ -1,13 +1,19 @@
 import styles from './styles.module.scss';
 import { useCallback, useState } from 'preact/hooks';
-import { reconnectWS, sendMessageSocket, state } from '../../store/store';
+import {
+  reconnectWS,
+  saveWIFIWithRetry,
+  scanWIFIWithRetry,
+  sendMessageSocket,
+} from '../../store/store';
 import { Button } from '../../components/Button/Button';
 import { Modal } from '../../components/Modal/Modal';
 import { h } from 'preact';
 import { useDeviceDetect } from '../../hooks/useDeviceDetect';
+import { state } from '../../store/initialState';
 
 export const SettingsPage = () => {
-  const [mode, setMode] = useState<'host' | 'up'>('up');
+  const [mode, setMode] = useState<'host' | 'ap'>('ap');
   const [ssid, setSsid] = useState('');
   const [password, setPassword] = useState('');
   const [reUrl, setReUrl] = useState('');
@@ -27,7 +33,7 @@ export const SettingsPage = () => {
 
   const saveSettingsWifi = useCallback(() => {
     if (ssid.trim() && password.trim()) {
-      sendMessageSocket({
+      scanWIFIWithRetry({
         master: 'net',
         cmd: 'save',
         mode,
@@ -150,7 +156,7 @@ export const SettingsPage = () => {
                 sx={{ minWidth: isMobile340 ? '240px' : '270px' }}
                 text="Подключиться к сети"
                 onClick={() => {
-                  setMode('up');
+                  setMode('ap');
                   setOpenModalSearch(false);
                 }}
               />
