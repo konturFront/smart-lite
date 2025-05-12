@@ -3,9 +3,9 @@ import { socketService } from '../../service/ws/socketService';
 import { Header } from '../Header/Header';
 import { Wrapper } from '../Wrapper/Wrapper';
 import { useDeviceDetect } from '../../hooks/useDeviceDetect';
-import { ToastProvider } from '../Toast/Toast';
 import { state, stateUI } from '../../store/initialState';
 import { Loader } from '../Loader/Loader';
+import { ToastProvider } from '../Toast/Toast';
 export const Layout = ({ children }: { children?: preact.ComponentChildren }) => {
   const { isMobile, isMobile1100 } = useDeviceDetect();
 
