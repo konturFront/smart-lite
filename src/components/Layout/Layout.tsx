@@ -22,7 +22,7 @@ export const Layout = ({ children }: { children?: preact.ComponentChildren }) =>
         <Header />
         <Wrapper>{children}</Wrapper>
         <ToastProvider />
-        {stateUI.value.isLoadingUI && <Loader />}
+        {/*{stateUI.value.isLoadingUI && <Loader />}*/}
       </div>
     );
   }
