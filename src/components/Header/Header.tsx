@@ -37,17 +37,25 @@ export function Header() {
             <div className={styles.burgerBtnItem} />
             <div className={styles.burgerBtnItem} />
           </div>
-          <WifiIcon size={30} rate={2} />
         </div>
         <div className={styles.title}>{currentTitle}</div>
         <div
           style={{
             display: 'flex',
-            flexDirection: 'column',
-            flex: '0 0 auto',
+            gap: '8px',
           }}
         >
-          <InfoIcon />
+          <div
+            style={{
+              width: '12px',
+              height: '12px',
+              backgroundColor: 'var(--green-color)',
+              borderRadius: '50%',
+              display: 'flex',
+              alignSelf: 'center',
+            }}
+          ></div>
+          <WifiIcon size={30} rate={2} />
         </div>
       </div>
       <Drawer />

@@ -27,6 +27,7 @@ export interface AppState {
   rooms: RoomsArr | [];
   countDrivers: string | number;
   testingDriverAddress: number | undefined;
+  stateBus: number | undefined;
 }
 
 export interface IStateUI {

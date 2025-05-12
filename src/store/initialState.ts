@@ -12,5 +12,6 @@ export const state = signal<AppState>({
   groups: Array(16).fill(false),
   countDrivers: undefined,
   testingDriverAddress: undefined,
+  stateBus: undefined,
 });
 export const stateUI = signal<IStateUI>({ isActiveMenu: false, isLoadingUI: false });

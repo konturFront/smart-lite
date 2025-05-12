@@ -17,7 +17,7 @@ export const WifiIcon: React.FC<WifiIconProps> = ({ size = 24, rate = 0 }) => {
       xmlns="http://www.w3.org/2000/svg"
       width={size}
       height={size}
-      fill="white" // Все элементы белые
+      fill="var(--green-color)" // Все элементы белые
     >
       <g>
         {/* Уровень 1 (самый слабый сигнал) */}

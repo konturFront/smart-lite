@@ -97,7 +97,7 @@ export class SocketService__Mock {
         this.emitMessage({
           driver: 'settyngs',
           cmd: 'download',
-          dr_settyngs: [data.addres, 98, 156, 156, 30, 50, 30, 50, 5.7, 5.6, 55],
+          dr_settyngs: [data.addres, 98, 156, 156, 30, 50, 30, 50, 15, 14, 55],
         });
       }
 
