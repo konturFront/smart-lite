@@ -7,33 +7,32 @@ import { __DEV__ } from './src/global/value';
 export default defineConfig({
   // viteSingleFile()
   plugins: [preact()],
-  build: __DEV__
-    ? {
-        target: 'esnext',
-        minify: 'esbuild',
-        assetsInlineLimit: Infinity,
-      }
-    : {
-        rollupOptions: {
-          output: {
-            manualChunks(id) {
-              if (id.includes('node_modules')) {
-                return 'vendor'; // Все node_modules в vendor.js
-              }
-
-              if (id.includes('pages/DeviceCard')) {
-                return 'device-card'; // Страница DeviceCard отдельно
-              }
-
-              // Всё остальное идёт в main.js
-              return 'main';
-            },
-            chunkFileNames: '[name].js',
-            entryFileNames: '[name].js',
-            assetFileNames: '[name].[ext]',
-          },
-        },
-      },
+  build: {
+    target: 'esnext',
+    minify: 'esbuild',
+    assetsInlineLimit: Infinity,
+  },
+  // {
+  //    rollupOptions: {
+  //      output: {
+  //        manualChunks(id) {
+  //          if (id.includes('node_modules')) {
+  //            return 'vendor'; // Все node_modules в vendor.js
+  //          }
+  //
+  //          if (id.includes('pages/DeviceCard')) {
+  //            return 'device-card'; // Страница DeviceCard отдельно
+  //          }
+  //
+  //          // Всё остальное идёт в main.js
+  //          return 'main';
+  //        },
+  //        chunkFileNames: '[name].js',
+  //        entryFileNames: '[name].js',
+  //        assetFileNames: '[name].[ext]',
+  //      },
+  //    },
+  //  },
   // server: __DEV__
   //   ? {
   //       host: '0.0.0.0',
