@@ -34,8 +34,10 @@ export default defineConfig({
           },
         },
       },
-  server: __DEV__ && {
-    host: '0.0.0.0',
-    port: 5173,
-  },
+  server: __DEV__
+    ? {
+        host: '0.0.0.0',
+        port: 5173,
+      }
+    : {},
 });
