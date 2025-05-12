@@ -9,7 +9,7 @@ export const dimmingSteps = [
 ].reverse();
 
 export const getFadeRateByIndex = (index: number) => {
-  return dimmingSteps[index] ?? dimmingSteps[0]; // дефолт на случай ошибки
+  return dimmingSteps[index - 1] ?? dimmingSteps[0];
 };
 
 export const getFadeTimeByIndex = (index: number) => {
@@ -17,7 +17,8 @@ export const getFadeTimeByIndex = (index: number) => {
 };
 
 export const getFadeRateIndexByValue = (value: number) => {
-  return dimmingSteps.findIndex(step => step === value);
+  const index = dimmingSteps.findIndex(step => step === value);
+  return index === -1 ? 1 : index + 1;
 };
 
 export const getFadeTimeIndexByValue = (value: number) => {

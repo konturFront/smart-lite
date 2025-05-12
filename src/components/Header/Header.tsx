@@ -1,10 +1,8 @@
 import { Drawer } from '../Drawer/Drawer';
 import styles from './styles.module.scss';
-import { Loader } from '../Loader/Loader';
 import { WifiIcon } from '../IconComponent/Wifi/Wifi';
 import { useLocation, useRoute } from 'preact-iso';
 import { getTitle } from './utils/getTitlePage';
-import { InfoIcon } from '../IconComponent/IconInfo/InfoIcon';
 import { state, stateUI } from '../../store/initialState';
 import { useEffect } from 'preact/hooks';
 import { getStateBusWithRetry } from '../../store/store';
