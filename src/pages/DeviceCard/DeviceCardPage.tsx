@@ -1,5 +1,5 @@
 import { useLocation, useRoute } from 'preact-iso';
-import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { groupsToMasks, parseGroupMasks } from '../../utils/parseGroupMask';
 import {
   saveDriversWithRetry,
@@ -116,7 +116,7 @@ export function DeviceCardPage() {
     }
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const id = +params?.id;
     if (!id) {
       console.error('Неверный id', id);
