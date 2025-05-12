@@ -280,7 +280,17 @@ export function DeviceCardPage() {
       ],
     });
     setFlagPull(true);
-  }, [groups, minLevel, maxLevel, failureLevel, poweronLevel, currentLevel, typeDriver, flagPull]);
+  }, [
+    groups,
+    minLevel,
+    maxLevel,
+    failureLevel,
+    poweronLevel,
+    currentLevel,
+    typeDriver,
+    fadeRate,
+    fadeTime,
+  ]);
 
   const pullDriverSettings = () => {
     fetchSettings(+params.id);

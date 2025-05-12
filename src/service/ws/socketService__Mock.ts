@@ -308,9 +308,9 @@ export class SocketService__Mock {
         });
       }
 
-      this.emitMessage({
-        str: 'Ответ не обработан',
-      });
+      // this.emitMessage({
+      //   str: 'Ответ не обработан',
+      // });
       // }, 30000);
     }, 2000);
   }

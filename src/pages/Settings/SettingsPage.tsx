@@ -62,7 +62,7 @@ export const SettingsPage = () => {
               autoComplete="off"
               type="text"
               readOnly={true}
-              value={mode === 'host' ? 'Создать точку доступа' : 'Подключиться к сети'}
+              value={mode === 'host' ? 'Подключиться к сети' : 'Создать точку доступа'}
               onInput={e => setSsid((e.target as HTMLInputElement).value)}
             />
           </label>
@@ -144,7 +144,7 @@ export const SettingsPage = () => {
             <div className={styles.wrapperBtn}>
               <Button
                 sx={{ minWidth: isMobile340 ? '240px' : '270px' }}
-                text="Создать точку доступа"
+                text="Подключиться к сети"
                 onClick={() => {
                   setMode('host');
                   setOpenModalSearch(false);
@@ -154,7 +154,7 @@ export const SettingsPage = () => {
             <div className={styles.wrapperBtn}>
               <Button
                 sx={{ minWidth: isMobile340 ? '240px' : '270px' }}
-                text="Подключиться к сети"
+                text="Создать точку доступа"
                 onClick={() => {
                   setMode('ap');
                   setOpenModalSearch(false);
