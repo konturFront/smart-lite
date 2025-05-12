@@ -6,7 +6,7 @@ import { __DEV__ } from './src/global/value';
 // https://vitejs.dev/config/
 export default defineConfig({
   // viteSingleFile()
-  plugins: [preact()],
+  plugins: [preact(), viteSingleFile()],
   build: {
     target: 'esnext',
     minify: 'esbuild',
