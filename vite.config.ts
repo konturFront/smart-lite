@@ -4,6 +4,7 @@ import { viteSingleFile } from 'vite-plugin-singlefile';
 import { __DEV__ } from './src/global/value';
 
 // https://vitejs.dev/config/
+// Для публикации в гитхаб pages
 export default defineConfig({
   // viteSingleFile()
   plugins: [preact(), viteSingleFile()],
