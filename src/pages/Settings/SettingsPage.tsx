@@ -33,7 +33,7 @@ export const SettingsPage = () => {
 
   const saveSettingsWifi = useCallback(() => {
     if (ssid.trim() && password.trim()) {
-      scanWIFIWithRetry({
+      saveWIFIWithRetry({
         master: 'net',
         cmd: 'save',
         mode,
@@ -46,7 +46,7 @@ export const SettingsPage = () => {
   }, [ssid, password, mode]);
 
   const scanWifiNet = useCallback(() => {
-    sendMessageSocket({ master: 'scan', cmd: 'start' });
+    scanWIFIWithRetry({ master: 'scan', cmd: 'start' });
   }, []);
 
   return (

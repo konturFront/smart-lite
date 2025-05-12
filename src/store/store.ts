@@ -235,7 +235,7 @@ export function scanWIFIWithRetry(data: any) {
       retryCounts[key] = retryCounts[key] + 1;
       scanWIFIWithRetry(data);
     } else {
-      toastService.showError('Нет связи при сохранеии WiFi настроек');
+      toastService.showError('Нет связи при сканировании WiFi настроек');
       hiddenLoadingStateUI();
       clearTimeout(timers[key]);
       timers[key] = null;

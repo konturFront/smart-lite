@@ -31,23 +31,23 @@
     transform: scale(0.98);
   }
 
-  //@media (max-width: 380px) {
-  //  padding: 10px 10px;  /* Уменьшенные отступы */
-  //  font-size: 14px;    /* Уменьшенный размер шрифта */
-  //  //min-width: 80px;    /* Уменьшенная минимальная ширина */
-  //}
-  //
-  //@media (max-width: 360px) {
-  //  padding: 10px 8px;  /* Уменьшенные отступы */
-  //  font-size: 12px;    /* Уменьшенный размер шрифта */
-  //  //min-width: 68px;    /* Уменьшенная минимальная ширина */
-  //}
-  //
-  //@media (max-width: 340px) {
-  //  padding: 10px 6px;  /* Уменьшенные отступы */
-  //  font-size: 12px;    /* Уменьшенный размер шрифта */
-  //  //min-width: 50px;    /* Уменьшенная минимальная ширина */
-  //}
+  @media (max-width: 380px) {
+    padding: 10px 10px;  /* Уменьшенные отступы */
+    font-size: 14px;    /* Уменьшенный размер шрифта */
+    width: 90px;
+  }
+
+  @media (max-width: 360px) {
+    padding: 10px 8px;  /* Уменьшенные отступы */
+    font-size: 12px;    /* Уменьшенный размер шрифта */
+    width: 86px;
+  }
+
+  @media (max-width: 340px) {
+    padding: 10px 6px;  /* Уменьшенные отступы */
+    font-size: 12px;    /* Уменьшенный размер шрифта */
+    width: 80px; 
+  }
 
 }
 

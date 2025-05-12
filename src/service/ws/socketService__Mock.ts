@@ -312,7 +312,7 @@ export class SocketService__Mock {
         str: 'Ответ не обработан',
       });
       // }, 30000);
-    }, 2000);
+    }, 0);
   }
 
   onMessage(cb: (data: any) => void) {
