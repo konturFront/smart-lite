@@ -56,16 +56,16 @@
   display: flex;
   margin: 0 auto;
   padding: 12px 20px;
-  justify-content: space-between;
+  justify-content: flex-end;
   background: #141414;
   gap: 20px;
   height: 76px;
   position: relative;
   align-items: center;
   align-content: center;
-  @media (max-width: 390px) {
-    gap: 4px;
-  }
+  //@media (max-width: 390px) {
+  //  gap: 4px;
+  //}
 }
 
 .btn {

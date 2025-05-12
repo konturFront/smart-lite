@@ -12,6 +12,7 @@ const timers: Record<
   | 'startTestDriver'
   | 'saveWIFI'
   | 'scanWIFI'
+  | 'stateBus'
   | string,
   number
 > = {
@@ -22,6 +23,7 @@ const timers: Record<
   startTestDriver: null,
   saveWIFI: null,
   scanWIFI: null,
+  stateBus: null,
 };
 const retryCounts: Record<
   | 'updateDrivers'
@@ -244,6 +246,26 @@ export function scanWIFIWithRetry(data: any) {
   }, 10000);
 }
 
+export function getStateBusWithRetry() {
+  const key = 'stateBus';
+
+  // Сброс предыдущего таймера
+  if (timers[key]) {
+    clearTimeout(timers[key]);
+    timers[key] = null;
+  }
+
+  // Отправка запроса
+  socketService.send({ master: 'bus', cmd: 'state' });
+
+  // Установка нового таймера (если не пришёл ответ)
+  timers[key] = window.setTimeout(() => {
+    toastService.showError('Нет связи с мастером шины');
+    hiddenLoadingStateUI();
+    timers[key] = null;
+  }, 9000);
+}
+
 // Метод для скрытия лоадинг в шапке
 export const hiddenLoadingStateUI = () => {
   stateUI.value = { ...stateUI.value, isLoadingUI: false };
@@ -348,6 +370,13 @@ socketService.onMessage(data => {
   // Ответное сообщение о перезагрузке «Мастера» (server->client):
   if (data.master === 'reset' && data.cmd === 'ok') {
     hiddenLoadingStateUI();
+  }
+
+  //Ответное сообщение о состоянии шины
+  if (data.master === 'bus' && data.cmd === 'state') {
+    clearTimeout(timers.stateBus);
+    timers.stateBus = null;
+    state.value = { ...state.value, stateBus: data.state };
   }
 
   // Ответное сообщение о сохранении настроек Wi-Fi (server->client):

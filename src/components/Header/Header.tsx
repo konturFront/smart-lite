@@ -6,12 +6,25 @@ import { useLocation, useRoute } from 'preact-iso';
 import { getTitle } from './utils/getTitlePage';
 import { InfoIcon } from '../IconComponent/IconInfo/InfoIcon';
 import { state, stateUI } from '../../store/initialState';
+import { useEffect } from 'preact/hooks';
+import { getStateBusWithRetry } from '../../store/store';
 
 export function Header() {
   const socketStatus = state.value.socketStatus;
   const location = useLocation();
   const { params } = useRoute();
   const currentTitle = getTitle(location.path);
+
+  useEffect(() => {
+    getStateBusWithRetry(); // запускаем сразу
+
+    const interval = setInterval(() => {
+      getStateBusWithRetry(); // затем каждые 10 сек
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <>
       <div className={styles.header}>
@@ -46,14 +59,11 @@ export function Header() {
           }}
         >
           <div
-            style={{
-              width: '12px',
-              height: '12px',
-              backgroundColor: 'var(--green-color)',
-              borderRadius: '50%',
-              display: 'flex',
-              alignSelf: 'center',
-            }}
+            className={
+              state.value.stateBus === 1
+                ? styles.stateBusIndicatorActive
+                : styles.stateBusIndicatorDisabled
+            }
           ></div>
           <WifiIcon size={30} rate={2} />
         </div>

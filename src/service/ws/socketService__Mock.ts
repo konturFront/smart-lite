@@ -89,6 +89,10 @@ export class SocketService__Mock {
         this.emitMessage({ master: 'net', cmd: 'ok' });
       }
 
+      if (data.master === 'bus' && data.cmd === 'state') {
+        this.emitMessage({ master: 'bus', cmd: 'state', state: 1 });
+      }
+
       if (
         data.driver === 'settyngs' &&
         data.cmd === 'download' &&

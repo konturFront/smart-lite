@@ -5,6 +5,7 @@ import { __DEV__ } from './src/global/value';
 
 // https://vitejs.dev/config/
 // Для публикации в гитхаб pages
+
 export default defineConfig({
   plugins: [preact(), viteSingleFile()],
   build: {

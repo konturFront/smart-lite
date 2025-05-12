@@ -82,6 +82,24 @@
     color: #e74c3c;
 }
 
+.stateBusIndicatorActive{
+  width: 12px;
+  height: 12px;
+  background-color: var(--green-color);
+  border-radius: 50%;
+  display: flex;
+  align-self: center;
+}
+
+.stateBusIndicatorDisabled {
+  width: 12px;
+  height: 12px;
+  background-color: var(--red-color);
+  border-radius: 50%;
+  display: flex;
+  align-self: center;
+}
+
 .title {
    font-size: 22px; color: white;
     text-align: center;

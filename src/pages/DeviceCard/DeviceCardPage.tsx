@@ -540,26 +540,20 @@ export function DeviceCardPage() {
             >
               <SpeakerIcon height={isMobile400 ? 50 : 56} width={isMobile400 ? 50 : 56} />
             </div>
-
-            <AroundIcon
-              height={isMobile400 ? 50 : 56}
-              width={isMobile400 ? 50 : 56}
-              className={shouldAnimate ? styles.spin : ''}
-              // color={state.value.socketStatus === 'connected' ? '#1FFF1B' : '#FF2A16'}
-              color={state.value.socketStatus === 'connected' ? '#1FFF1B' : '#ac2015'}
-            />
-            <ButtonNavigation
-              text="Обновить"
-              onClick={() => {
-                pullDriverSettings();
-              }}
-            />
-            <ButtonNavigation
-              text="Сохранить"
-              onClick={() => {
-                saveBtnSettings();
-              }}
-            />
+            <div style={{ display: 'flex', gap: '20px' }}>
+              <ButtonNavigation
+                text="Обновить"
+                onClick={() => {
+                  pullDriverSettings();
+                }}
+              />
+              <ButtonNavigation
+                text="Сохранить"
+                onClick={() => {
+                  saveBtnSettings();
+                }}
+              />
+            </div>
           </>
         )}
       </div>
