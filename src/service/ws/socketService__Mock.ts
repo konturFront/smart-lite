@@ -81,7 +81,16 @@ export class SocketService__Mock {
       }
 
       if (data.master === 'scan') {
-        const networks = ['MyWiFi', 'OfficeNet', 'Guest123'];
+        const networks = [
+          'MyWiFi',
+          'OfficeNet',
+          'Guest123',
+          'RedmiOne',
+          'Sosedi',
+          'Mazda',
+          'XBOX',
+          'TANK',
+        ];
         this.emitMessage({ master: 'scan', cmd: 'stop', ssid: networks });
       }
 

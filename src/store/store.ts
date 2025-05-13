@@ -13,6 +13,7 @@ const timers: Record<
   | 'saveWIFI'
   | 'scanWIFI'
   | 'stateBus'
+  | 'saveAP'
   | string,
   number
 > = {
@@ -24,6 +25,7 @@ const timers: Record<
   saveWIFI: null,
   scanWIFI: null,
   stateBus: null,
+  saveAP: null,
 };
 const retryCounts: Record<
   | 'updateDrivers'
@@ -32,6 +34,7 @@ const retryCounts: Record<
   | 'startTestDriver'
   | 'saveWIFI'
   | 'scanWIFI'
+  | 'saveAP'
   | string,
   number
 > = {
@@ -41,6 +44,7 @@ const retryCounts: Record<
   startTestDriver: 0,
   saveWIFI: 0,
   scanWIFI: 0,
+  saveAP: 0,
 };
 // Методы обновления состояния
 
@@ -219,6 +223,33 @@ export function saveWIFIWithRetry(data: any) {
   }, 10000);
 }
 
+export function saveAPWithRetry(data: any) {
+  showLoadingStateUI();
+  const key = 'saveAP';
+  if (timers[key]) {
+    clearTimeout(timers[key]);
+    timers[key] = null;
+  }
+  // Инициализируем счётчик, если первый вызов
+  retryCounts[key] = retryCounts[key] == null ? 0 : retryCounts[key];
+
+  // Шаг 1: отобразить лоадер и отправить команду
+  socketService.send({ ...data });
+
+  timers[key] = window.setTimeout(() => {
+    if (retryCounts[key] < 1) {
+      retryCounts[key] = retryCounts[key] + 1;
+      saveAPWithRetry(data);
+    } else {
+      toastService.showError('Нет связи при создании точки доступа ');
+      hiddenLoadingStateUI();
+      clearTimeout(timers[key]);
+      timers[key] = null;
+      retryCounts[key] = 0;
+    }
+  }, 10000);
+}
+
 export function scanWIFIWithRetry(data: any) {
   showLoadingStateUI();
   const key = 'scanWIFI';
@@ -382,11 +413,15 @@ socketService.onMessage(data => {
   // Ответное сообщение о сохранении настроек Wi-Fi (server->client):
   if (data.master === 'net' && data.cmd === 'ok') {
     clearTimeout(timers.saveWIFI);
+    clearTimeout(timers.saveAP);
     timers.saveWIFI = null;
+    timers.saveAP = null;
     retryCounts.saveWIFI = 0;
+    retryCounts.saveAP = 0;
     toastService.showSuccess('Настройки WiFi сохранены');
     hiddenLoadingStateUI();
   }
+
   // Ответное сообщение после сканирования сетей Wi-Fi (server->client):
   if (data.master === 'scan' && data.cmd === 'stop' && Array.isArray(data.ssid)) {
     setWifiNetworks(data.ssid);

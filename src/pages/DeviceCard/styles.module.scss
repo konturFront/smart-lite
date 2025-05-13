@@ -28,6 +28,17 @@ $font-size-xlarge: 24px;
   }
 }
 
+.content {
+  flex: 1 1 auto;
+  display: flex;
+  padding: 0 10px;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 10px;
+  overflow-y: auto;
+}
+
+
 
 .loadingText {
   font-size: $font-size-medium;
@@ -155,16 +166,6 @@ $font-size-xlarge: 24px;
   z-index: 8;
 }
 
-.content {
-  flex: 1 1 auto;
-  display: flex;
-  padding: 0 10px;
-  flex-direction: column;
-  gap: 16px;
-  margin-top: 10px;
-  overflow-y: auto;
-
-}
 
 
 .line {
