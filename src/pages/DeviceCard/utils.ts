@@ -6,7 +6,7 @@ export const dimmingStepsTime = [
 // FR длина 14
 export const dimmingSteps = [
   358, 253, 179, 127, 89.4, 63.3, 44.7, 31.6, 22.4, 15.8, 11.2, 7.9, 5.6, 4.0, 2.8,
-].reverse();
+];
 
 export const getFadeRateByIndex = (index: number) => {
   return dimmingSteps[index - 1] ?? dimmingSteps[0];
