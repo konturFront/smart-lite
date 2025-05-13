@@ -59,7 +59,11 @@ export const ToastProvider = () => {
   return (
     <div className={styles.toastContainer}>
       {list.map(t => (
-        <div key={t.id} className={`${styles.toast} ${styles[t.type]}`}>
+        <div
+          key={t.id}
+          className={`${styles.toast} ${styles[t.type]}`}
+          onClick={() => toastService.hide(t.id)}
+        >
           {t.message}
         </div>
       ))}
