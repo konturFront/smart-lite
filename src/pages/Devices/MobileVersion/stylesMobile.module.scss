@@ -2,7 +2,7 @@
 .driversList {
   flex: 1 1 auto;
   display: flex;
-  padding: 0 20px;
+  padding: 0 10px;
   flex-direction: column;
   gap: 16px;
   margin-top: 8px;
@@ -55,7 +55,7 @@
   width: 100%;
   display: flex;
   margin: 0 auto;
-  padding: 12px 20px;
+  padding: 12px 10px;
   justify-content: flex-end;
   background: #141414;
   gap: 20px;
@@ -190,7 +190,7 @@
   transition: all 0.2s ease;
 
   &:hover {
-    background: #757575;
+    background: var(--grey-color);
   }
 
   &.active {

@@ -1,123 +1,120 @@
 .header {
-    border-bottom: 1px solid #ffffff;
-    padding: 0 30px;
-    gap: 20px;
-    position: fixed;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 46px;
-    background: #141414;
-    transition: all 0.3s ease;
-    z-index: 99;
+  border-bottom: 1px solid #ffffff;
+  padding: 0 10px;
+  gap: 20px;
+  position: fixed;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 46px;
+  background: #141414;
+  transition: all 0.3s ease;
+  z-index: 99;
 
-    @media (max-width: 600px) {
-        padding: 0 10px;
-    }
+  //@media (max-width: 600px) {
+  //  padding: 0 10px;
+  //}
 }
 
 .burgerBtn {
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 30px;
-    height: 20px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 30px;
+  height: 20px;
 
- }
+}
 
 .burgerBtnItem {
-    height: 3px;
-    width: 30px;
-    background: #ffffff;
+  height: 3px;
+  width: 30px;
+  background: #ffffff;
 }
 
 .status {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 16px;
-    font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 16px;
+  font-weight: bold;
 }
 
 .connected .icon {
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-    border: 2px solid #2ecc71;
-    background-color: #2ecc71;
-    color: #2ecc71;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2px solid #2ecc71;
+  background-color: #2ecc71;
+  color: #2ecc71;
 }
 
 .pending .icon {
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-    border: 2px solid #f4c005;
-    background-color:  #f4c005;
-    color: #f4c005;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2px solid #f4c005;
+  background-color: #f4c005;
+  color: #f4c005;
 }
 
 .disconnected .icon {
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-    border: 2px solid #e74c3c;
-    background-color: #e74c3c;
-    color: #e74c3c;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2px solid #e74c3c;
+  background-color: #e74c3c;
+  color: #e74c3c;
 }
 
 .text--connected {
-    color: #2ecc71;
+  color: #2ecc71;
 }
 
 .text--pending {
-    color: #f4c005;
+  color: #f4c005;
 }
 
 .text--disconnected {
-    color: #e74c3c;
+  color: #e74c3c;
 }
 
-.stateBusIndicatorActive{
-  width: 12px;
-  height: 12px;
-  background-color: var(--green-color);
-  border-radius: 50%;
+.stateBusIndicatorActive {
+  color: var(--green-color);
   display: flex;
   align-self: center;
+  font-weight: 900;
 }
 
 .stateBusIndicatorDisabled {
-  width: 12px;
-  height: 12px;
-  background-color: var(--red-color);
-  border-radius: 50%;
+  color: var(--grey-color);
   display: flex;
   align-self: center;
+  font-weight: 900;
 }
 
 .title {
-   font-size: 22px; color: white;
-    text-align: center;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    line-height: 22px;
+  font-size: 22px;
+  color: white;
+  text-align: center;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  line-height: 22px;
   @media (max-width: 380px) {
-     font-size: 20px;
+    font-size: 22px;
   }
 
-    @media (max-width: 360px) {
-        font-size: 18px;
-    }
+  @media (max-width: 360px) {
+    font-size: 20px;
+  }
 
-    @media (max-width: 340px) {
-        font-size: 16px;
-    }
+  @media (max-width: 340px) {
+    font-size: 18px;
+  }
 }
 
 

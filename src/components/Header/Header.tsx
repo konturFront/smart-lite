@@ -1,11 +1,11 @@
 import { Drawer } from '../Drawer/Drawer';
 import styles from './styles.module.scss';
-import { WifiIcon } from '../IconComponent/Wifi/Wifi';
 import { useLocation, useRoute } from 'preact-iso';
 import { getTitle } from './utils/getTitlePage';
 import { state, stateUI } from '../../store/initialState';
 import { useEffect } from 'preact/hooks';
 import { getStateBusWithRetry } from '../../store/store';
+import { InfoIcon } from '../IconComponent/IconInfo/InfoIcon';
 
 export function Header() {
   const socketStatus = state.value.socketStatus;
@@ -14,10 +14,10 @@ export function Header() {
   const currentTitle = getTitle(location.path);
 
   useEffect(() => {
-    getStateBusWithRetry(); // запускаем сразу
+    getStateBusWithRetry();
 
     const interval = setInterval(() => {
-      getStateBusWithRetry(); // затем каждые 10 сек
+      getStateBusWithRetry();
     }, 10000);
 
     return () => clearInterval(interval);
@@ -29,41 +29,54 @@ export function Header() {
         <div
           style={{
             display: 'flex',
+            justifyContent: 'space-between',
             alignItems: 'center',
-            justifyContent: 'flex-start',
-            gap: '14px',
-            flex: '0 0 auto',
+            width: '100%',
+            maxWidth: '500px',
+            margin: '0 auto',
           }}
         >
           <div
-            className={styles.burgerBtn}
-            onClick={() => {
-              stateUI.value = {
-                ...stateUI.value,
-                isActiveMenu: !stateUI.value.isActiveMenu,
-              };
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-start',
+              gap: '14px',
+              flex: '0 0 auto',
             }}
           >
-            <div className={styles.burgerBtnItem} />
-            <div className={styles.burgerBtnItem} />
-            <div className={styles.burgerBtnItem} />
+            <div
+              className={styles.burgerBtn}
+              onClick={() => {
+                stateUI.value = {
+                  ...stateUI.value,
+                  isActiveMenu: !stateUI.value.isActiveMenu,
+                };
+              }}
+            >
+              <div className={styles.burgerBtnItem} />
+              <div className={styles.burgerBtnItem} />
+              <div className={styles.burgerBtnItem} />
+            </div>
           </div>
-        </div>
-        <div className={styles.title}>{currentTitle}</div>
-        <div
-          style={{
-            display: 'flex',
-            gap: '8px',
-          }}
-        >
+          <div className={styles.title}>{currentTitle}</div>
           <div
-            className={
-              state.value.stateBus === 1
-                ? styles.stateBusIndicatorActive
-                : styles.stateBusIndicatorDisabled
-            }
-          ></div>
-          <WifiIcon size={30} rate={2} />
+            style={{
+              display: 'flex',
+              gap: '8px',
+            }}
+          >
+            <div
+              className={
+                state.value.stateBus === 1
+                  ? styles.stateBusIndicatorActive
+                  : styles.stateBusIndicatorDisabled
+              }
+            >
+              {'DALI'}
+            </div>
+            <InfoIcon />
+          </div>
         </div>
       </div>
       <Drawer />

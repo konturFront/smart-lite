@@ -151,7 +151,7 @@
   transition: all 0.2s ease;
 
   &:hover {
-    background: #757575;
+    background: var(--grey-color);
   }
 
   &.active {

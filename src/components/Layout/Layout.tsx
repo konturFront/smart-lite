@@ -6,6 +6,8 @@ import { useDeviceDetect } from '../../hooks/useDeviceDetect';
 import { state, stateUI } from '../../store/initialState';
 import { Loader } from '../Loader/Loader';
 import { ToastProvider } from '../Toast/Toast';
+import styles from './styles.module.scss';
+
 export const Layout = ({ children }: { children?: preact.ComponentChildren }) => {
   const { isMobile, isMobile1100 } = useDeviceDetect();
 
@@ -16,9 +18,9 @@ export const Layout = ({ children }: { children?: preact.ComponentChildren }) =>
     };
   }, []);
 
-  if (isMobile1100) {
+  if (true) {
     return (
-      <div>
+      <div className={styles.layoutContainer}>
         <Header />
         <Wrapper>{children}</Wrapper>
         <ToastProvider />
@@ -27,7 +29,7 @@ export const Layout = ({ children }: { children?: preact.ComponentChildren }) =>
     );
   }
 
-  if (!isMobile) {
-    return <div style={{ fontSize: '40px' }}>Only Mobile Version</div>;
-  }
+  // if (!isMobile) {
+  //   return <div style={{ fontSize: '40px' }}>Only Mobile Version</div>;
+  // }
 };

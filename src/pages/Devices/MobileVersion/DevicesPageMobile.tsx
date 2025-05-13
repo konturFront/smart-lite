@@ -125,7 +125,6 @@ export function DevicesPageMobile() {
   const totalDrivers = Object.keys(state.value.updatedDevices).length;
   return (
     <div className={stylesMobile.devices}>
-      <div id={'line'} className={stylesMobile.line}></div>
       <div id="drivers-list" className={stylesMobile.driversList} ref={refTest}>
         {currentItems.map(key => (
           <DriverPreview
