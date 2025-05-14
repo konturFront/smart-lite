@@ -34,7 +34,7 @@ export class SocketService__Mock {
     this.connect('');
   }
 
-  send(data: Record<string | number, unknown>) {
+  send(data: Record<string | number, unknown> | string) {
     console.log('[MockSocket] Sending:', data);
 
     setTimeout(() => {
@@ -45,12 +45,12 @@ export class SocketService__Mock {
       // “cmd”: “stop”,
       // “count”: 0..63,
       // }
-      if (data.driver === 'find' && data.cmd === 'start') {
+      if (data?.driver === 'find' && data?.cmd === 'start') {
         this.emitMessage({ driver: 'find', cmd: 'stop', count: 64 });
       }
 
       // Пакет данных, передаваемый по окончании процедуры «обновления» драйверов (server->client):
-      if (data.driver === 'update') {
+      if (data?.driver === 'update') {
         const types = [2, 4, 6, 7, 96, 98, 128];
         const drivers = Object.fromEntries(
           Array.from({ length: 13 }, (_, i) => [
@@ -63,8 +63,8 @@ export class SocketService__Mock {
       }
 
       // Запуск процедуры «Тест драйвера» (client->server):
-      if (data.driver === 'test' && data.cmd === 'start' && data.addres !== undefined) {
-        this.testing = data.addres;
+      if (data?.driver === 'test' && data?.cmd === 'start' && data?.addres !== undefined) {
+        this.testing = data?.addres;
         // while (!!this.testing) {
         //   this.emitMessage({ driver: 'test', cmd: 'on', addres: this.testing });
         //   this.delay(1000);
@@ -76,15 +76,20 @@ export class SocketService__Mock {
       }
 
       // Остановка процедуры «Тест драйвера» (client->server):
-      if (data.driver === 'test' && data.cmd === 'stop' && data.addres !== undefined) {
+      if (data?.driver === 'test' && data?.cmd === 'stop' && data?.addres !== undefined) {
         this.testing = null;
       }
 
-      if (data.master === 'scan') {
+      if (data?.master === 'scan') {
         const networks = [
           'MyWiFi',
           'OfficeNet',
           'Guest123',
+          'RedmiOasdasdasdasdasdne',
+          'Sosedi',
+          'Mazda',
+          'XBOXasdasdasdasd',
+          'TANK',
           'RedmiOne',
           'Sosedi',
           'Mazda',
@@ -94,27 +99,30 @@ export class SocketService__Mock {
         this.emitMessage({ master: 'scan', cmd: 'stop', ssid: networks });
       }
 
-      if (data.master === 'net') {
+      if (data?.master === 'net') {
         this.emitMessage({ master: 'net', cmd: 'ok' });
       }
+      if (data === 'Connected') {
+        this.emitMessage('Connected');
+      }
 
-      if (data.master === 'bus' && data.cmd === 'state') {
+      if (data?.master === 'bus' && data?.cmd === 'state') {
         this.emitMessage({ master: 'bus', cmd: 'state', state: 1 });
       }
 
       if (
-        data.driver === 'settyngs' &&
-        data.cmd === 'download' &&
-        typeof data.addres === 'number'
+        data?.driver === 'settyngs' &&
+        data?.cmd === 'download' &&
+        typeof data?.addres === 'number'
       ) {
         this.emitMessage({
           driver: 'settyngs',
           cmd: 'download',
-          dr_settyngs: [data.addres, 98, 156, 156, 30, 50, 30, 50, 0, 5, 55],
+          dr_settyngs: [data?.addres, 98, 156, 156, 30, 50, 30, 50, 0, 5, 55],
         });
       }
 
-      if (data.driver === 'settyngs' && data.cmd === 'save') {
+      if (data?.driver === 'settyngs' && data?.cmd === 'save') {
         this.emitMessage({
           driver: 'settyngs',
           cmd: 'save',
@@ -123,7 +131,7 @@ export class SocketService__Mock {
       }
 
       // запрос по комнатам
-      if (data.rooms === 'search' && data.cmd === 'start') {
+      if (data?.rooms === 'search' && data?.cmd === 'start') {
         this.emitMessage({
           rooms: 'search',
           cmd: 'download',
@@ -222,7 +230,7 @@ export class SocketService__Mock {
         });
       }
 
-      if (data.rooms === 'search' && data.cmd === 'start') {
+      if (data?.rooms === 'search' && data?.cmd === 'start') {
         this.emitMessage({
           rooms: 'search',
           cmd: 'download',

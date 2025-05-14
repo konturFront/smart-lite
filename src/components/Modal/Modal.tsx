@@ -59,6 +59,21 @@ export function Modal({
     singleButtonAction ? singleButtonAction() : onClose();
   };
 
+  useEffect(() => {
+    if (open) {
+      // Блокируем прокрутку фона
+      document.body.style.overflow = 'hidden';
+    } else {
+      // Возвращаем прокрутку
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      // Обязательно очищаем при размонтировании или переключении
+      document.body.style.overflow = '';
+    };
+  }, [open]);
+
   return (
     <div className={styles.overlay} onClick={onClose}>
       <div

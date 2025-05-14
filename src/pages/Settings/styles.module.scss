@@ -1,3 +1,9 @@
+// Подключение переменных
+$font-size-small: 16px;
+$font-size-medium: 18px;
+$font-size-large: 22px;
+$font-size-xlarge: 24px;
+
 .settings {
   border-radius: 8px;
   padding: 10px 20px 0 20px;
@@ -12,7 +18,8 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
-  margin-bottom: 30px;
+  //margin-bottom: 30px;
+  padding-top: 15px;
 
   label {
     display: flex;
@@ -98,11 +105,29 @@
   color: #707070;
 }
 
+//.wifiNetworks {
+//  display: flex;
+//  justify-content: left;
+//  gap: 12px;
+//  flex-wrap: nowrap;
+//  overflow-x: scroll;
+//  margin-top: 20px;
+//  padding-bottom: 12px;
+//}
+
+.wifiNetworksWrapper {
+  /* если хочешь скролл вниз при переполнении */
+  //overflow-y: auto;
+  padding-right: 4px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
 .wifiNetworks {
   display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-top: 20px;
+  flex-wrap: nowrap;
+  overflow-y: scroll;
+  gap: 8px;
 }
 
 .wsUrlWrapper {
@@ -217,6 +242,7 @@
   margin-top: 10px;
   overflow-y: auto;
 }
+
 .suggestions {
   position: absolute;
   top: 100%;
@@ -227,7 +253,7 @@
   border-radius: 6px;
   margin-top: 4px;
   z-index: 10;
-  max-height: 20dvh ;
+  max-height: 20dvh;
   overflow-y: auto;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   padding-right: 70px; // для пространства под кнопку
@@ -292,4 +318,76 @@
   display: inline-block;
   //margin-right: 8px;
   animation: spin 1s linear infinite;
+}
+
+.settingsAndGroupWrapper {
+  .buttonTabs {
+    display: flex;
+  }
+
+  .buttonTabItemSettings,
+  .buttonTabItemGroup {
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+    border-top: 1px solid #7c7c7c;
+    border-left: 1px solid #7c7c7c;
+    padding: 6px 6px;
+    justify-content: center;
+    color: var(--grey-color);
+    background-color: #525252;
+    font-size: $font-size-medium;
+    display: flex;
+    width: 50%;
+    border-bottom: 1px solid #7c7c7c;
+    border-right: 1px solid #7c7c7c;
+    text-align: center;
+    @media (max-width: 340px) {
+      font-size: 16px;
+    }
+    @media (max-width: 280px) {
+      font-size: 14px;
+    }
+  }
+
+  .buttonTabItemActiveSettings,
+  .buttonTabItemActiveGroup {
+    background-color: #3a3a3a;
+    color: #ffffff;
+    border-top: 1px solid #7c7c7c;
+    border-left: 1px solid #7c7c7c;
+    border-right: 1px solid #7c7c7c;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+    padding: 6px 6px;
+    justify-content: center;
+    font-size: $font-size-medium;
+    display: flex;
+    width: 50%;
+    text-align: center;
+    @media (max-width: 340px) {
+      font-size: 16px;
+    }
+    @media (max-width: 280px) {
+      font-size: 14px;
+    }
+  }
+
+  .contentBody {
+    background-color: #3a3a3a;
+    border-bottom: 1px solid #7c7c7c;
+    border-left: 1px solid #7c7c7c;
+    border-right: 1px solid #7c7c7c;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    padding: 0 10px;
+    height: 65dvh;
+  }
+
+  .paddingSettings {
+    padding: 0 12px 12px 20px;
+  }
+
+  .paddingGroups {
+    padding: 0 12px 12px 12px;
+  }
 }

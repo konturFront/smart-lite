@@ -301,9 +301,7 @@ export function DeviceCardPage() {
     <div className={styles.devices}>
       {isOpenRGB && <div className={styles.backdrop} />}
       <div id={'line'} className={styles.line}></div>
-
       <div id="drivers-list" className={styles.content}>
-        {/*вот сюда враппер который внизу закомичен*/}
         <div className={styles.settingsAndGroupWrapper}>
           <div className={styles.buttonTabs}>
             <div

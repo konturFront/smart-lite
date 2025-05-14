@@ -6,22 +6,13 @@ import { state, stateUI } from '../../store/initialState';
 import { useEffect } from 'preact/hooks';
 import { getStateBusWithRetry } from '../../store/store';
 import { InfoIcon } from '../IconComponent/IconInfo/InfoIcon';
+import { socketStatusEnum } from '../../store/types';
 
 export function Header() {
   const socketStatus = state.value.socketStatus;
   const location = useLocation();
   const { params } = useRoute();
   const currentTitle = getTitle(location.path);
-
-  useEffect(() => {
-    getStateBusWithRetry();
-
-    const interval = setInterval(() => {
-      getStateBusWithRetry();
-    }, 10000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   return (
     <>
@@ -68,13 +59,11 @@ export function Header() {
           >
             <div
               className={
-                state.value.stateBus === 1
+                state.value.socketStatus === socketStatusEnum.CONNECTED
                   ? styles.stateBusIndicatorActive
                   : styles.stateBusIndicatorDisabled
               }
-            >
-              {'DALI'}
-            </div>
+            ></div>
             <InfoIcon />
           </div>
         </div>

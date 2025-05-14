@@ -324,7 +324,10 @@ socketService.onStatus(status => {
   setConnectionStatus(status as socketStatusEnum);
 });
 // Отправка данных сокет с возмоностью выключить лоадинг
-export const sendMessageSocket = (data: Record<string | number, unknown>, withLoading = true) => {
+export const sendMessageSocket = (
+  data: Record<string | number, unknown> | string,
+  withLoading = true
+) => {
   withLoading && showLoadingStateUI();
   socketService.send(data);
 };

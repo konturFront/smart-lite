@@ -15,6 +15,9 @@ import { state, stateUI } from '../../store/initialState';
 import { LoadingDots } from '../../components/Loader/LoadingDots';
 import { SpeakerIcon } from '../../components/IconComponent/BackIcon/BackIcon';
 import { ButtonNavigation } from '../../components/ButtonNavigation/ButtonNavigation';
+import classNames from 'classnames';
+import { ArrowIcon } from '../../components/IconComponent/ArrowAction/ArrowIcon';
+import { __DEV__, GLOBAL_WS_URL } from '../../global/value';
 
 export const SettingsPage = () => {
   const [mode, setMode] = useState<'host' | 'ap'>('ap');
@@ -22,12 +25,9 @@ export const SettingsPage = () => {
   const [password, setPassword] = useState('');
   const [reUrl, setReUrl] = useState('');
   const [isOpenModalSearch, setOpenModalSearch] = useState(false);
-  const { isMobile340, isMobile380, isMobile400 } = useDeviceDetect();
+  const { isMobile340, isMobile380, isMobile400, isMobile440 } = useDeviceDetect();
   const isLoading = stateUI.value.isLoadingUI;
-  const [filteredNetworks, setFilteredNetworks] = useState<string[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
   const ssidLabelRef = useRef<HTMLDivElement>(null);
-  const [showPassword, setShowPassword] = useState(false);
 
   const resetMaster = useCallback(() => {
     sendMessageSocket({ master: 'reset', cmd: 'start' });
@@ -40,29 +40,10 @@ export const SettingsPage = () => {
     }
   }, [reUrl]);
 
-  // Обработчик кликов вне поля
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (ssidLabelRef.current && !ssidLabelRef.current.contains(event.target as Node)) {
-        setShowSuggestions(false);
-      }
-    };
-
-    document.addEventListener('click', handleClickOutside);
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-    };
-  }, []);
-
-  useEffect(() => {
-    setFilteredNetworks(
-      state.value.wifiNetworks.filter(net => net.toLowerCase().includes(ssid.toLowerCase()))
-    );
-  }, [state.value.wifiNetworks, ssid]);
-
   const saveSettingsWifi = useCallback(() => {
     if (mode === 'host') {
       if (ssid.trim() && password.trim()) {
+        setOpenModalSearch(true);
         saveWIFIWithRetry({
           master: 'net',
           cmd: 'save',
@@ -75,6 +56,8 @@ export const SettingsPage = () => {
         alert('Пожалуйста, введите SSID и пароль');
       }
     } else if (mode == 'ap') {
+      setOpenModalSearch(true);
+
       saveAPWithRetry({
         master: 'net',
         cmd: 'save',
@@ -91,97 +74,109 @@ export const SettingsPage = () => {
 
   return (
     <div className={styles.devices}>
-      <div className={styles.content}>
-        <div className={styles.panel}>
-          <label>
-            Режим подключения:
-            <input
-              onClick={() => {
-                setOpenModalSearch(true);
-              }}
-              autoComplete="off"
-              type="text"
-              readOnly={true}
-              value={mode === 'host' ? 'Подключиться к сети' : 'Создать точку доступа'}
-              onInput={e => setSsid((e.target as HTMLInputElement).value)}
-            />
-          </label>
-          {mode === 'host' && (
-            <>
-              <div style={{ display: 'flex', flexDirection: 'column', fontSize: '20px' }}>
-                <div> Имя сети:</div>
-                <div ref={ssidLabelRef} style={{ position: 'relative' }}>
+      <div id="drivers-list" className={styles.content}>
+        <div className={styles.settingsAndGroupWrapper}>
+          <div className={styles.buttonTabs}>
+            <div
+              className={classNames(
+                mode === 'ap' ? styles.buttonTabItemActiveSettings : styles.buttonTabItemSettings
+              )}
+              onClick={() => setMode('ap')}
+            >
+              {isMobile440 ? (
+                <span>
+                  Создать точку
+                  <br /> доступа
+                </span>
+              ) : (
+                <span> Создать точку доступа</span>
+              )}
+            </div>
+            <div
+              className={classNames(
+                mode === 'host' ? styles.buttonTabItemActiveGroup : styles.buttonTabItemGroup
+              )}
+              onClick={() => setMode('host')}
+            >
+              {isMobile440 ? (
+                <span>
+                  {' '}
+                  Подключиться
+                  <br /> к WiFi
+                </span>
+              ) : (
+                <span> Подключиться к WiFi</span>
+              )}
+            </div>
+          </div>
+          {/* Точка доступа */}
+          <div className={styles.contentBody}>
+            {mode === 'host' && (
+              <div className={styles.panel}>
+                <div style={{ display: 'flex', flexDirection: 'column', fontSize: '20px' }}>
+                  <div> Имя сети:</div>
+                  <div ref={ssidLabelRef} style={{ position: 'relative' }}>
+                    <input
+                      autoComplete="off"
+                      type="text"
+                      id="wifi-ssid"
+                      placeholder="Введите имя сети"
+                      value={ssid}
+                      onInput={e => {
+                        const value = (e.target as HTMLInputElement).value;
+                        setSsid(value);
+                      }}
+                    />
+                  </div>
+                </div>
+                <label>
+                  Пароль:
                   <input
                     autoComplete="off"
-                    type="text"
-                    id="wifi-ssid"
-                    placeholder="Введите имя сети"
-                    value={ssid}
-                    onClick={() => {
-                      setShowSuggestions(true);
-                      setFilteredNetworks(state.value.wifiNetworks);
-                    }}
-                    onInput={e => {
-                      const value = (e.target as HTMLInputElement).value;
-                      setSsid(value);
-                      setFilteredNetworks(
-                        state.value.wifiNetworks.filter(net =>
-                          net.toLowerCase().includes(value.toLowerCase())
-                        )
-                      );
-                    }}
+                    type={'text'}
+                    id="wifi-password"
+                    placeholder="Введите пароль"
+                    value={password}
+                    onInput={e => setPassword((e.target as HTMLInputElement).value)}
                   />
-
-                  {showSuggestions && (
-                    <div className={styles.suggestions}>
-                      <button className={styles.scanButton} onClick={scanWifiNet} type="button">
-                        <span className={isLoading ? styles.spinner : ''}>🔄</span> Сканировать
-                      </button>
-
-                      {filteredNetworks.length > 0 ? (
-                        filteredNetworks.map((net, i) => (
-                          <div
-                            key={i}
-                            className={styles.suggestionItem}
-                            onClick={() => {
-                              setSsid(net);
-                              setShowSuggestions(false);
-                            }}
-                          >
-                            {net}
-                          </div>
-                        ))
-                      ) : (
-                        <div className={styles.noNetworks}>Нет доступных сетей</div>
-                      )}
-                    </div>
-                  )}
+                </label>
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
+                  <ButtonNavigation
+                    text="Сканировать WiFi"
+                    onClick={scanWifiNet}
+                    sx={{ width: 'auto' }}
+                  />
+                </div>
+                <div className={styles.wifiNetworksWrapper}>
+                  <div className={styles.wifiNetworks}>
+                    {state.value.wifiNetworks.map(item => (
+                      <ButtonNavigation
+                        text={item}
+                        onClick={() => setSsid(item)}
+                        sx={{ width: 'auto' }}
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
-              <label>
-                Пароль:
-                <input
-                  autoComplete="off"
-                  type={'text'}
-                  id="wifi-password"
-                  placeholder="Введите пароль"
-                  value={password}
-                  onInput={e => setPassword((e.target as HTMLInputElement).value)}
-                />
-              </label>
-            </>
-          )}
+            )}
+            {/* Точка доступа */}
+            {mode === 'ap' && <></>}
+          </div>
         </div>
       </div>
       <Modal
         maxWidth="md"
         open={isOpenModalSearch}
         onClose={() => {}}
-        buttonsType="single"
+        buttonsType="none"
         singleButtonText="Отмена"
         showCloseButton={false}
         singleButtonAction={() => {
-          setOpenModalSearch(false);
+          if (__DEV__) {
+            setOpenModalSearch(false);
+          } else {
+          }
         }}
       >
         <>
@@ -195,26 +190,72 @@ export const SettingsPage = () => {
               marginBottom: '20px',
             }}
           >
-            <div className={styles.btnChoose}>
-              <Button
-                sx={{ minWidth: isMobile340 ? '240px' : '270px' }}
-                text="Подключиться к сети"
-                onClick={() => {
-                  setMode('host');
-                  setOpenModalSearch(false);
-                }}
-              />
-            </div>
-            <div className={styles.btnChoose}>
-              <Button
-                sx={{ minWidth: isMobile340 ? '240px' : '270px' }}
-                text="Создать точку доступа"
-                onClick={() => {
-                  setMode('ap');
-                  setOpenModalSearch(false);
-                }}
-              />
-            </div>
+            {mode === 'ap' ? (
+              <div style={{ fontSize: '20px', fontWeight: '600', textAlign: 'center' }}>
+                Режим точки доступа запущен.
+                <br />
+                Переподключитесь на сеть DALI Master по адресу:
+                <p>
+                  <a
+                    href={`http://${GLOBAL_WS_URL}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ textDecoration: 'none', color: 'white' }}
+                  >
+                    {`http://${GLOBAL_WS_URL}`}
+                  </a>
+                </p>
+                <button
+                  onClick={() => {
+                    window.location.href = `http://${GLOBAL_WS_URL}`;
+                  }}
+                  style={{
+                    marginTop: '20px',
+                    padding: '12px 24px',
+                    backgroundColor: '#444',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Перейти сейчас
+                </button>
+              </div>
+            ) : (
+              <div style={{ fontSize: '20px', fontWeight: '600', textAlign: 'center' }}>
+                Подключитесь к WiFi
+                <br />
+                Переподключитесь на сеть DALI Master по адресу:
+                <p>
+                  <a
+                    href={`http://${GLOBAL_WS_URL}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ textDecoration: 'none', color: 'white' }}
+                  >
+                    {`http://${GLOBAL_WS_URL}`}
+                  </a>
+                </p>
+                <p style={{ marginTop: '10px' }}></p>
+                <button
+                  onClick={() => {
+                    window.location.href = `http://${GLOBAL_WS_URL}`;
+                  }}
+                  style={{
+                    marginTop: '20px',
+                    padding: '12px 24px',
+                    backgroundColor: '#444',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Перейти сейчас
+                </button>
+              </div>
+            )}
           </div>
         </>
       </Modal>
@@ -229,7 +270,9 @@ export const SettingsPage = () => {
               <ButtonNavigation
                 text={mode === 'ap' ? 'Создать точку доступа' : 'Подключиться к сети'}
                 sx={{ width: 'auto' }}
-                onClick={saveSettingsWifi}
+                onClick={() => {
+                  saveSettingsWifi();
+                }}
               />
               {/*<ButtonNavigation text="Сканировать сети" sx={{ width: '150px' }} />*/}
             </div>

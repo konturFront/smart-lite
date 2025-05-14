@@ -67,8 +67,8 @@ class SocketService {
     };
   }
 
-  send(data: Record<string | number, unknown>) {
-    const message = JSON.stringify(data);
+  send(data: Record<string | number, unknown> | string) {
+    const message = typeof data === 'string' ? data : JSON.stringify(data);
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       this.socket.send(message);
     } else {
