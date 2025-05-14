@@ -45,7 +45,8 @@ export const SettingsPage = () => {
     if (mode === 'host') {
       if (ssid.trim() && password.trim()) {
         setOpenModalSearch(true);
-        saveWIFIWithRetry({
+        const _fnWithCheck = withControllerCheck(saveWIFIWithRetry);
+        _fnWithCheck({
           master: 'net',
           cmd: 'save',
           memory: 'yes',
@@ -58,8 +59,8 @@ export const SettingsPage = () => {
       }
     } else if (mode == 'ap') {
       setOpenModalSearch(true);
-
-      saveAPWithRetry({
+      const _fnWithCheckREW = withControllerCheck(saveWIFIWithRetry);
+      _fnWithCheckREW({
         master: 'net',
         cmd: 'save',
         memory: 'yes',
