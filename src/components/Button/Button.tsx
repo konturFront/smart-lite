@@ -16,7 +16,13 @@ type ButtonProps = {
   sx?: React.CSSProperties;
 };
 
-export const Button = ({ text = 'Кнопка', onClick, sx, lampVisible = false }: ButtonProps) => {
+export const Button = ({
+  text = 'Кнопка',
+  onClick,
+  sx,
+  lampVisible = false,
+  disabled = false,
+}: ButtonProps) => {
   const { isMobile380, isMobile360, isMobile340 } = useDeviceDetect();
   const size = () => {
     if (isMobile340) {
@@ -36,7 +42,9 @@ export const Button = ({ text = 'Кнопка', onClick, sx, lampVisible = false
       style={{ ...sx }}
       id="device-btn-update"
       onClick={event => {
-        onClick?.(event);
+        if (!disabled) {
+          onClick?.(event);
+        }
       }}
     >
       <span style={{ visibility: lampVisible ? 'hidden' : 'visible' }}> {`${text}`}</span>

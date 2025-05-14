@@ -57,7 +57,7 @@ class SocketService {
     this.socket.onmessage = event => {
       let data: any;
       try {
-        data = JSON.parse(event.data);
+        data = typeof data === 'string' ? data : JSON.parse(event.data);
       } catch (error) {
         console.warn('[SocketService] Failed to parse message:', error);
         data = event.data;

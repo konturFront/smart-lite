@@ -18,6 +18,7 @@ import { ButtonNavigation } from '../../components/ButtonNavigation/ButtonNaviga
 import classNames from 'classnames';
 import { ArrowIcon } from '../../components/IconComponent/ArrowAction/ArrowIcon';
 import { __DEV__, GLOBAL_WS_URL } from '../../global/value';
+import { scanWIFIWithCheck, withControllerCheck } from '../../store/ensureControllerFree';
 
 export const SettingsPage = () => {
   const [mode, setMode] = useState<'host' | 'ap'>('ap');
@@ -69,7 +70,8 @@ export const SettingsPage = () => {
 
   const scanWifiNet = useCallback(() => {
     setSsid('');
-    scanWIFIWithRetry({ master: 'scan', cmd: 'start' });
+    const _fnWithCheck = withControllerCheck(scanWIFIWithRetry);
+    _fnWithCheck({ master: 'scan', cmd: 'start' });
   }, []);
 
   return (

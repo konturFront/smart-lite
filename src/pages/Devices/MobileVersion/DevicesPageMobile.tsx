@@ -21,6 +21,7 @@ import {
 import { state, stateUI } from '../../../store/initialState';
 import { SpeakerIcon } from '../../../components/IconComponent/BackIcon/BackIcon';
 import { ButtonNavigation } from '../../../components/ButtonNavigation/ButtonNavigation';
+import { withControllerCheck } from '../../../store/ensureControllerFree';
 
 export function DevicesPageMobile() {
   const refTest = useRef<HTMLDivElement>(null);
@@ -40,7 +41,8 @@ export function DevicesPageMobile() {
   }, []);
 
   const updateDrivers = useCallback(() => {
-    updateDriversWithRetry();
+    const fnWithCkeck = withControllerCheck(updateDriversWithRetry);
+    fnWithCkeck();
   }, []);
 
   const startTestDriver = async (address: number) => {
@@ -50,23 +52,23 @@ export function DevicesPageMobile() {
     }
     if (state.value.testingDriverAddress !== undefined) {
       stopTestDriver();
-      await delayPreact(500);
-      startTestDriverWithRetry({ driver: 'test', cmd: 'start', addres: +address });
-      setTestingDriverAddress(Number(address));
+      await delayPreact(200);
+      const _fnWithCkeckKKWQ = withControllerCheck(startTestDriverWithRetry);
+      _fnWithCkeckKKWQ({ driver: 'test', cmd: 'start', addres: +address });
     } else {
-      startTestDriverWithRetry({ driver: 'test', cmd: 'start', addres: +address });
-      setTestingDriverAddress(Number(address));
+      const _fnWithCkeckKKW = withControllerCheck(startTestDriverWithRetry);
+      _fnWithCkeckKKW({ driver: 'test', cmd: 'start', addres: +address });
     }
   };
 
   const stopTestDriver = () => {
     if (state.value.testingDriverAddress === undefined) return;
-    startTestDriverWithRetry({
+    const fnWithCkeckQWE = withControllerCheck(startTestDriverWithRetry);
+    fnWithCkeckQWE({
       driver: 'test',
       cmd: 'stop',
       addres: +state.value.testingDriverAddress,
     });
-    setTestingDriverAddress(undefined);
   };
 
   // Вычисляем, сколько драйверов влезает по высоте
@@ -128,11 +130,17 @@ export function DevicesPageMobile() {
       <div id="drivers-list" className={stylesMobile.driversList} ref={refTest}>
         {currentItems.map(key => (
           <DriverPreview
+            disabled={stateUI.value.isLoadingUI}
             key={state.value.updatedDevices[key][0]}
             lampVisible={+state.value.updatedDevices[key][0] === state.value.testingDriverAddress}
             type={state.value.updatedDevices[key][1]}
             address={state.value.updatedDevices[key][0]}
-            onClickSettings={() => route(`/service/devices/${state.value.updatedDevices[key][0]}`)}
+            onClickSettings={() => {
+              const _fnWithCkeck = withControllerCheck(route);
+              _fnWithCkeck(`/service/devices/${state.value.updatedDevices[key][0]}`);
+
+              // route(`/service/devices/${state.value.updatedDevices[key][0]}`);
+            }}
             onClickTest={() => {
               startTestDriver(+state.value.updatedDevices[key][0]);
             }}
@@ -221,7 +229,8 @@ export function DevicesPageMobile() {
               <Button
                 text="Новый поиск"
                 onClick={() => {
-                  findDeepDrivers();
+                  const fnWithCheck = withControllerCheck(findDeepDrivers);
+                  fnWithCheck();
                   setOpenModalSearch(false);
                 }}
               />

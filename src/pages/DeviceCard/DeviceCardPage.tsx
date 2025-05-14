@@ -2,6 +2,7 @@ import { useLocation, useRoute } from 'preact-iso';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { groupsToMasks, parseGroupMasks } from '../../utils/parseGroupMask';
 import {
+  findDeepDrivers,
   saveDriversWithRetry,
   sendMessageSocket,
   showLoadingStateUI,
@@ -36,6 +37,7 @@ import {
   getFadeTimeIndexByValue,
 } from './utils';
 import { dimmingSteps, dimmingStepsTime } from './utils';
+import { withControllerCheck } from '../../store/ensureControllerFree';
 
 export type ColorState = {
   generalRange: number;
@@ -109,7 +111,8 @@ export function DeviceCardPage() {
 
   const fetchSettings = async id => {
     try {
-      updateSettingsDriverWithRetry({ driver: 'settyngs', cmd: 'download', addres: +id });
+      const fnWithCheck = withControllerCheck(updateSettingsDriverWithRetry);
+      fnWithCheck({ driver: 'settyngs', cmd: 'download', addres: +id });
     } catch (err) {
       console.error(err);
     }
@@ -262,7 +265,8 @@ export function DeviceCardPage() {
       .filter(index => index !== -1);
     const { g07, g815 } = groupsToMasks(activeGroups);
     showLoadingStateUI();
-    saveDriversWithRetry({
+    const fnWithCheck = withControllerCheck(saveDriversWithRetry);
+    fnWithCheck({
       driver: 'settyngs',
       cmd: 'save',
       dr_settyngs: [

@@ -65,19 +65,18 @@ export class SocketService__Mock {
       // Запуск процедуры «Тест драйвера» (client->server):
       if (data?.driver === 'test' && data?.cmd === 'start' && data?.addres !== undefined) {
         this.testing = data?.addres;
-        // while (!!this.testing) {
-        //   this.emitMessage({ driver: 'test', cmd: 'on', addres: this.testing });
-        //   this.delay(1000);
-        // }
 
-        // setTimeout(() => {
-        //   this.emitMessage({ driver: 'test', cmd: 'on', addres: this.testing });
-        // }, 1000);
+        this.emitMessage({ driver: 'test', cmd: 'on', addres: data?.addres });
+      }
+
+      // Запуск проверки свободен ли драйвер
+      if (data === 'status') {
+        this.emitMessage('free');
       }
 
       // Остановка процедуры «Тест драйвера» (client->server):
       if (data?.driver === 'test' && data?.cmd === 'stop' && data?.addres !== undefined) {
-        this.testing = null;
+        this.emitMessage({ driver: 'test', cmd: 'stoptest', addres: data?.addres });
       }
 
       if (data?.master === 'scan') {
@@ -333,19 +332,27 @@ export class SocketService__Mock {
       //   str: 'Ответ не обработан',
       // });
       // }, 30000);
-    }, 2000);
+    }, 1000);
   }
 
-  onMessage(cb: (data: any) => void) {
+  // на вот такой:
+  onMessage(cb: (data: any) => void): () => void {
     this.messageSubscribers.push(cb);
+    return () => {
+      this.messageSubscribers = this.messageSubscribers.filter(fn => fn !== cb);
+    };
+  }
+
+  // Точно так же для onStatus:
+  onStatus(cb: (status: any) => void): () => void {
+    this.statusSubscribers.push(cb);
+    return () => {
+      this.statusSubscribers = this.statusSubscribers.filter(fn => fn !== cb);
+    };
   }
 
   delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  onStatus(cb: (status: any) => void) {
-    this.statusSubscribers.push(cb);
   }
 
   private notifyStatus(status: any) {

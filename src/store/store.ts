@@ -164,6 +164,7 @@ export function updateSettingsDriverWithRetry(data: any) {
 export function startTestDriverWithRetry(data: any) {
   if (data.cmd === 'stop') {
     socketService.send({ ...data });
+    setTestingDriverAddress(undefined);
     clearTimeout(timers.startTestDriver);
     timers.startTestDriver = null;
     retryCounts.startTestDriver = 0;
@@ -171,6 +172,7 @@ export function startTestDriverWithRetry(data: any) {
     setTestingDriverAddress();
     return;
   }
+
   const key = 'startTestDriver';
   if (timers[key]) {
     clearTimeout(timers[key]);
@@ -181,6 +183,7 @@ export function startTestDriverWithRetry(data: any) {
 
   // Шаг 1: отобразить лоадер и отправить команду
   socketService.send({ ...data });
+  setTestingDriverAddress(Number(data?.address));
 
   timers[key] = window.setTimeout(() => {
     if (retryCounts[key] < 1) {
@@ -369,16 +372,18 @@ socketService.onMessage(data => {
     clearTimeout(timers.startTestDriver);
     timers.startTestDriver = null;
     retryCounts.startTestDriver = 0;
+    hiddenLoadingStateUI();
     // toastService.showSuccess('Тестирование драйвера');
     state.value = { ...state.value, testingDriverAddress: data.addres };
   }
 
   // Тестирование остановка драйвера
-  if (data.driver === 'test' && data.cmd === 'stop') {
+  if (data.driver === 'test' && data.cmd === 'stoptest') {
     clearTimeout(timers.startTestDriver);
     timers.startTestDriver = null;
     retryCounts.startTestDriver = 0;
-    // toastService.showSuccess('Тестирование остановлено');
+    toastService.showSuccess('Тестирование остановлено');
+    hiddenLoadingStateUI();
     setTestingDriverAddress();
   }
 

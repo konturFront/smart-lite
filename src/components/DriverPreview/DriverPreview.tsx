@@ -13,6 +13,7 @@ type Props = {
   onClickTest?: () => void;
   editPencil?: boolean;
   lampVisible?: boolean;
+  disabled?: boolean;
 } & JSX.HTMLAttributes<HTMLDivElement>;
 
 const lampColorsMap: Record<string, string[] | string> = {
@@ -34,6 +35,7 @@ export function DriverPreview({
   onClickTest,
   onClickSettings,
   lampVisible,
+  disabled = false,
   ...rest
 }: Props) {
   const colors = lampColorsMap[`${type}`];
@@ -52,6 +54,7 @@ export function DriverPreview({
         {colors === 'group' && <GroupIcon />}
       </div>
       <Button
+        disabled={disabled}
         text="Настройки"
         sx={{ padding: '9px 7px' }}
         onClick={event => {
@@ -60,6 +63,7 @@ export function DriverPreview({
         }}
       />
       <Button
+        disabled={disabled}
         text="Тест"
         lampVisible={lampVisible}
         sx={{ padding: '9px 7px' }}
