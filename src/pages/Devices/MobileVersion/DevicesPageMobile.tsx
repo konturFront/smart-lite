@@ -33,8 +33,10 @@ export function DevicesPageMobile() {
   const [itemsPerPage, setItemsPerPage] = useState(8);
   const { isMobile340, isMobile380, isMobile400 } = useDeviceDetect();
   const [shouldAnimate, setShouldAnimate] = useState(false);
-  const isLoading = stateUI.value.isLoadingUI;
+  const isLoading = stateUI.value.isLoadingUI || stateUI.value.isLoadingIntervalStatus;
   const socketStatus = state.value.socketStatus;
+  // console.log('isloading', stateUI.value.isLoadingUI);
+  // console.log('isLoadingIntervalStatus', stateUI.value.isLoadingIntervalStatus);
 
   const handleUpdateDrivers = useCallback(() => {
     setOpenModalSearch(true);
@@ -130,7 +132,7 @@ export function DevicesPageMobile() {
       <div id="drivers-list" className={stylesMobile.driversList} ref={refTest}>
         {currentItems.map(key => (
           <DriverPreview
-            disabled={stateUI.value.isLoadingUI}
+            disabled={isLoading}
             key={state.value.updatedDevices[key][0]}
             lampVisible={+state.value.updatedDevices[key][0] === state.value.testingDriverAddress}
             type={state.value.updatedDevices[key][1]}

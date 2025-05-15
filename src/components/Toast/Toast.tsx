@@ -3,6 +3,8 @@ import { h } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
 import { signal } from '@preact/signals';
 import styles from './styles.module.scss';
+import { state } from '../../store/initialState';
+import { socketStatusEnum } from '../../store/types';
 
 // Типы тостов
 export type ToastType = 'success' | 'warning' | 'error';
@@ -36,7 +38,11 @@ export class ToastService {
   }
 
   showError(message: string, duration?: number) {
-    this.create(message, 'error', duration);
+    if (state.value.socketStatus === socketStatusEnum.CONNECTED) {
+      this.create(message, 'error', duration);
+    } else {
+      this.create('Нет связи с мастером', 'error', duration);
+    }
   }
 
   hide(id: number) {

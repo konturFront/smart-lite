@@ -1,12 +1,10 @@
 //Фцнкция которая делает запросы проверки контролера прежде чем сделать запрос
 import { socketService } from '../service/ws/socketService';
-import {
-  getStateBusWithRetry,
-  hiddenLoadingStateUI,
-  scanWIFIWithRetry,
-  showLoadingStateUI,
-} from './store';
+import { hiddenLoadingStateUI, scanWIFIWithRetry, showLoadingStateUI } from './store';
 import { toastService } from '../components/Toast/Toast';
+import { state } from './initialState';
+import { socketStatusEnum } from './types';
+
 //Главная функция
 export function ensureControllerFree(timeoutMs = 5000): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -16,25 +14,17 @@ export function ensureControllerFree(timeoutMs = 5000): Promise<void> {
     const timer = window.setTimeout(() => {
       if (!handled) {
         unsubscribe?.();
-        reject(new Error('таймаут проверки контроллера'));
+        reject(new Error('таймаут проверки мастера'));
       }
     }, timeoutMs);
 
     // Обработчик входящих сообщений
     const handler = (data: any) => {
       if (data === 'free') {
-        console.log('Контролер free');
         clearTimeout(timer);
         unsubscribe?.();
         handled = true;
-        data === 'free' ? resolve() : reject(new Error('контроллер занят'));
-      }
-      if (data === 'busy') {
-        console.log('Контролер busy');
-        clearTimeout(timer);
-        unsubscribe?.();
-        handled = true;
-        data === 'busy' && reject(new Error('контроллер занят'));
+        data === 'free' ? resolve() : null;
       }
     };
 
@@ -59,8 +49,8 @@ export function withControllerCheck<T extends (...args: any[]) => void>(fn: T): 
       })
       .catch(err => {
         hiddenLoadingStateUI();
-        toastService.showError('Контроллер занят, попробуйте чуть позже');
-        console.warn('Контроллер не свободен для', fn.name, err);
+        toastService.showError('Мастер занят, попробуйте чуть позже');
+        console.log('Мастер не свободен для', fn.name, err);
       });
   }) as T;
 }
@@ -78,7 +68,7 @@ export function scanWIFIWithCheck(data: any) {
     .catch(err => {
       // Контроллер занят или таймаут
       hiddenLoadingStateUI();
-      toastService.showError('Невозможно выполнить — контроллер занят');
+      toastService.showError('Невозможно выполнить — мастер занят');
       console.warn('getStateBusWithCheck:', err);
     });
 }

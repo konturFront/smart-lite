@@ -11,7 +11,12 @@ export const state = signal<AppState>({
   rooms: [],
   groups: Array(16).fill(false),
   countDrivers: undefined,
+  onlineCountDrivers: undefined,
   testingDriverAddress: undefined,
   stateBus: undefined,
 });
-export const stateUI = signal<IStateUI>({ isActiveMenu: false, isLoadingUI: false });
+export const stateUI = signal<IStateUI>({
+  isActiveMenu: false,
+  isLoadingUI: false,
+  isLoadingIntervalStatus: false,
+});

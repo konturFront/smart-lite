@@ -6,6 +6,7 @@ import {
   saveWIFIWithRetry,
   scanWIFIWithRetry,
   sendMessageSocket,
+  updateSettingsDriverWithRetry,
 } from '../../store/store';
 import { Button } from '../../components/Button/Button';
 import { Modal } from '../../components/Modal/Modal';
@@ -27,8 +28,9 @@ export const SettingsPage = () => {
   const [reUrl, setReUrl] = useState('');
   const [isOpenModalSearch, setOpenModalSearch] = useState(false);
   const { isMobile340, isMobile380, isMobile400, isMobile440 } = useDeviceDetect();
-  const isLoading = stateUI.value.isLoadingUI;
+  const isLoading = stateUI.value.isLoadingUI || stateUI.value.isLoadingIntervalStatus;
   const ssidLabelRef = useRef<HTMLDivElement>(null);
+  const [flagPull, setFlagPull] = useState(false);
 
   const resetMaster = useCallback(() => {
     sendMessageSocket({ master: 'reset', cmd: 'start' });
@@ -44,7 +46,7 @@ export const SettingsPage = () => {
   const saveSettingsWifi = useCallback(() => {
     if (mode === 'host') {
       if (ssid.trim() && password.trim()) {
-        setOpenModalSearch(true);
+        setFlagPull(true);
         const _fnWithCheck = withControllerCheck(saveWIFIWithRetry);
         _fnWithCheck({
           master: 'net',
@@ -58,7 +60,7 @@ export const SettingsPage = () => {
         alert('Пожалуйста, введите SSID и пароль');
       }
     } else if (mode == 'ap') {
-      setOpenModalSearch(true);
+      setFlagPull(true);
       const _fnWithCheckREW = withControllerCheck(saveWIFIWithRetry);
       _fnWithCheckREW({
         master: 'net',
@@ -71,9 +73,20 @@ export const SettingsPage = () => {
 
   const scanWifiNet = useCallback(() => {
     setSsid('');
-    const _fnWithCheck = withControllerCheck(scanWIFIWithRetry);
-    _fnWithCheck({ master: 'scan', cmd: 'start' });
-  }, []);
+    if (!isLoading) {
+      const _fnWithCheck = withControllerCheck(scanWIFIWithRetry);
+      _fnWithCheck({ master: 'scan', cmd: 'start' });
+    }
+  }, [isLoading]);
+
+  useEffect(() => {
+    if (flagPull && !isLoading) {
+      setTimeout(() => {
+        setOpenModalSearch(true);
+        setFlagPull(false);
+      }, 0);
+    }
+  }, [flagPull, isLoading]);
 
   return (
     <div className={styles.devices}>

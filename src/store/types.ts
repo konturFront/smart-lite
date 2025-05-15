@@ -26,6 +26,7 @@ export interface AppState {
   settingsDriver: number[];
   rooms: RoomsArr | [];
   countDrivers: string | number;
+  onlineCountDrivers: unknown;
   testingDriverAddress: number | undefined;
   stateBus: number | undefined;
 }
@@ -33,4 +34,5 @@ export interface AppState {
 export interface IStateUI {
   isActiveMenu: boolean;
   isLoadingUI: boolean;
+  isLoadingIntervalStatus: boolean;
 }

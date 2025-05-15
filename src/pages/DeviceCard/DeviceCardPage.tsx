@@ -64,7 +64,7 @@ export function DeviceCardPage() {
   const [driverSettings, setDriverSettings] = useState<number[] | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const debounceAllBrightRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isLoading = stateUI.value.isLoadingUI;
+  const isLoading = stateUI.value.isLoadingUI || stateUI.value.isLoadingIntervalStatus;
   const [isOpenRGB, setIsOpenRGB] = useState(false);
   const [tab, setTab] = useState<'settings' | 'group'>('settings');
   const { isMobile340, isMobile380, isMobile400 } = useDeviceDetect();
@@ -250,10 +250,12 @@ export function DeviceCardPage() {
       setFadeTime(dimmingStepsTime[currentIndex - 1]);
     }
   };
+
   useEffect(() => {
     if (flagPull && !isLoading) {
       setTimeout(() => {
-        fetchSettings(+params.id).then();
+        const id = +params?.id;
+        updateSettingsDriverWithRetry({ driver: 'settyngs', cmd: 'download', addres: +id });
         setFlagPull(false);
       }, 0);
     }

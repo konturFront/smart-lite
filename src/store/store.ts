@@ -57,6 +57,21 @@ export const showLoadingStateUI = () => {
   stateUI.value = { ...stateUI.value, isLoadingUI: true };
 };
 
+// Метод для появляется лоадинг в шапке
+export const setOnlineCountDrivers = (data?: unknown) => {
+  state.value = { ...state.value, onlineCountDrivers: data };
+};
+
+// Метод для появляется лоадинг в шапке
+export const hideLoadingStateUIInterval = () => {
+  stateUI.value = { ...stateUI.value, isLoadingIntervalStatus: false };
+};
+
+// Метод для появляется лоадинг в шапке
+export const showLoadingStateUIInterval = () => {
+  stateUI.value = { ...stateUI.value, isLoadingIntervalStatus: true };
+};
+
 export const findDeepDrivers = () => {
   if (timers.findDriver !== null) {
     clearTimeout(timers.findDriver);
@@ -403,7 +418,6 @@ socketService.onMessage(data => {
     retryCounts.saveDrivers = 0;
     hiddenLoadingStateUI();
     toastService.showSuccess('Настройки сохранены');
-    hiddenLoadingStateUI();
   }
 
   // Ответное сообщение о перезагрузке «Мастера» (server->client):
