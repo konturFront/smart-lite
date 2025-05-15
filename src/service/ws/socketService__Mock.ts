@@ -76,7 +76,7 @@ export class SocketService__Mock {
 
       // Остановка процедуры «Тест драйвера» (client->server):
       if (data?.driver === 'test' && data?.cmd === 'stop' && data?.addres !== undefined) {
-        this.emitMessage({ driver: 'test', cmd: 'stoptest', addres: data?.addres });
+        this.emitMessage({ driver: 'test', cmd: 'stop', status: 'ok' });
       }
 
       if (data?.master === 'scan') {

@@ -378,7 +378,7 @@ socketService.onMessage(data => {
   }
 
   // Тестирование остановка драйвера
-  if (data.driver === 'test' && data.cmd === 'stoptest') {
+  if (data.driver === 'test' && data.cmd === 'stop' && data.status === 'ok') {
     clearTimeout(timers.startTestDriver);
     timers.startTestDriver = null;
     retryCounts.startTestDriver = 0;
