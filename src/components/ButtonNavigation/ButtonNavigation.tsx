@@ -3,6 +3,9 @@ import styles from './styles.module.scss';
 import React from 'react';
 import { LightBulbIcon } from '../IconComponent/LightBulbIcon/LightBulbIcon';
 import { useDeviceDetect } from '../../hooks/useDeviceDetect';
+import { state } from '../../store/initialState';
+import { socketStatusEnum } from '../../store/types';
+import { toastService } from '../Toast/Toast';
 
 type ButtonProps = {
   text?: string;
@@ -30,7 +33,11 @@ export const ButtonNavigation = ({
       style={{ ...sx }}
       id="device-btn-update"
       onClick={event => {
-        onClick?.(event);
+        if (state.value.socketStatus !== socketStatusEnum.CONNECTED) {
+          toastService.showError('Нет связи с мастером');
+        } else {
+          onClick?.(event);
+        }
       }}
     >
       <span style={{ visibility: lampVisible ? 'hidden' : 'visible' }}> {`${text}`}</span>
