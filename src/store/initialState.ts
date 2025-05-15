@@ -13,5 +13,6 @@ export const state = signal<AppState>({
   countDrivers: undefined,
   testingDriverAddress: undefined,
   stateBus: undefined,
+  isSearchDeepDrivers: false,
 });
 export const stateUI = signal<IStateUI>({ isActiveMenu: false, isLoadingUI: false });

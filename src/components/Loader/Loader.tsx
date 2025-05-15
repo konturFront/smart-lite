@@ -7,7 +7,7 @@ export const Loader = () => {
 };
 
 type Props = {
-  count: number;
+  count: number | string;
   searching: boolean;
 };
 

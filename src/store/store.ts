@@ -57,6 +57,10 @@ export const showLoadingStateUI = () => {
   stateUI.value = { ...stateUI.value, isLoadingUI: true };
 };
 
+export const changeIsSearchDeepDrivers = (flag: boolean) => {
+  state.value = { ...state.value, isSearchDeepDrivers: flag };
+};
+
 export const findDeepDrivers = () => {
   if (timers.findDriver !== null) {
     clearTimeout(timers.findDriver);
@@ -64,6 +68,8 @@ export const findDeepDrivers = () => {
   }
 
   showLoadingStateUI();
+  state.value = { ...state.value, updatedDevices: {} };
+  changeIsSearchDeepDrivers(true);
   socketService.send({ driver: 'find', cmd: 'start' });
 
   timers.findDriver = window.setTimeout(() => {
@@ -346,6 +352,7 @@ socketService.onMessage(data => {
       timers.findDriver = null;
     }
     toastService.showSuccess(`Найдено драйверов: ${data.count}`);
+    changeIsSearchDeepDrivers(false);
     state.value = { ...state.value, countDrivers: data.count ?? 0 };
     updateDriversWithRetry();
   }

@@ -126,12 +126,17 @@ export function DevicesPageMobile() {
   }, [state.value.socketStatus]); // Зависимость от статуса соединения
 
   const totalDrivers = Object.keys(state.value.updatedDevices).length;
+  console.log('isSEACR', state.value.isSearchDeepDrivers);
+  console.log('updatedDevices', state.value.updatedDevices);
   return (
     <div className={stylesMobile.devices}>
       <div id="drivers-list" className={stylesMobile.driversList} ref={refTest}>
-        <div className={stylesMobile.statusBar}>
-          <DeviceSearchStatus count={10} searching={true} />
-        </div>
+        {state.value.isSearchDeepDrivers && (
+          <div className={stylesMobile.statusBar}>
+            <DeviceSearchStatus count={state.value.countDrivers} searching={true} />
+          </div>
+        )}
+
         {currentItems.map(key => (
           <DriverPreview
             disabled={stateUI.value.isLoadingUI}

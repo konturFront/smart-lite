@@ -28,6 +28,7 @@ export interface AppState {
   countDrivers: string | number;
   testingDriverAddress: number | undefined;
   stateBus: number | undefined;
+  isSearchDeepDrivers: boolean;
 }
 
 export interface IStateUI {
