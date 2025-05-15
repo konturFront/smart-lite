@@ -22,7 +22,7 @@ import { state, stateUI } from '../../../store/initialState';
 import { SpeakerIcon } from '../../../components/IconComponent/BackIcon/BackIcon';
 import { ButtonNavigation } from '../../../components/ButtonNavigation/ButtonNavigation';
 import { withControllerCheck } from '../../../store/ensureControllerFree';
-import { Loader } from '../../../components/Loader/Loader';
+import { DeviceSearchStatus, Loader } from '../../../components/Loader/Loader';
 
 export function DevicesPageMobile() {
   const refTest = useRef<HTMLDivElement>(null);
@@ -130,8 +130,7 @@ export function DevicesPageMobile() {
     <div className={stylesMobile.devices}>
       <div id="drivers-list" className={stylesMobile.driversList} ref={refTest}>
         <div className={stylesMobile.statusBar}>
-          <Loader />
-          {/*<div>64</div>*/}
+          <DeviceSearchStatus count={10} searching={true} />
         </div>
         {currentItems.map(key => (
           <DriverPreview
