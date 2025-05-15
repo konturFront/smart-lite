@@ -19,16 +19,31 @@ export const Layout = ({ children }: { children?: preact.ComponentChildren }) =>
     };
   }, []);
 
-  //Каждые 30 шлем сообщение для того чтобы сокет не закрылся
-  // useEffect(() => {
-  //   const intervalId = setInterval(() => {
-  //     sendMessageSocket('Connected', false);
-  //   }, 30000);
-  //
-  //   return () => {
-  //     clearInterval(intervalId);
-  //   };
-  // }, []);
+  // Каждые 3секундны опрашиваем статус занял или нет
+  // Если занят блокируем showloading
+
+  useEffect(() => {
+    // 1) Подписываемся на все входящие сообщения от сокета
+    const unsubscribe = socketService.onMessage(data => {
+      if (data === 'free') {
+        stateUI.value = { ...stateUI.value, isLoadingUI: false };
+      }
+      if (data === 'busy') {
+        stateUI.value = { ...stateUI.value, isLoadingUI: true };
+      }
+    });
+
+    // 2) Запускаем интервал, который раз в 3 секунды шлёт запрос «status»
+    const intervalId = window.setInterval(() => {
+      socketService.send('status');
+    }, 3000);
+
+    // 3) При анмаунте — отписка и очистка интервала
+    return () => {
+      unsubscribe();
+      clearInterval(intervalId);
+    };
+  }, []);
 
   if (true) {
     return (
