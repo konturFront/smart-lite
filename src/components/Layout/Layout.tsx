@@ -20,15 +20,15 @@ export const Layout = ({ children }: { children?: preact.ComponentChildren }) =>
   }, []);
 
   //Каждые 30 шлем сообщение для того чтобы сокет не закрылся
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      sendMessageSocket('Connected', false);
-    }, 30000);
-
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, []);
+  // useEffect(() => {
+  //   const intervalId = setInterval(() => {
+  //     sendMessageSocket('Connected', false);
+  //   }, 30000);
+  //
+  //   return () => {
+  //     clearInterval(intervalId);
+  //   };
+  // }, []);
 
   if (true) {
     return (
