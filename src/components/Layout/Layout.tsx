@@ -38,7 +38,7 @@ export const Layout = ({ children }: { children?: preact.ComponentChildren }) =>
         hideLoadingStateUIInterval();
       }
 
-      if (data === 'busy' || data !== 'free') {
+      if (data === 'busy') {
         showLoadingStateUIInterval();
       }
 
@@ -56,11 +56,11 @@ export const Layout = ({ children }: { children?: preact.ComponentChildren }) =>
         setOnlineCountDrivers(n);
       }
 
-      // на всякий случай: если ни один из вариантов не сработал и это не чистый "free"
-      if (data !== 'free' && !data?.startsWith('sfd') && !data?.startsWith('sfs')) {
-        showLoadingStateUIInterval();
-        toastService.showError(`Неизвестный статус ${data}`);
-      }
+      // // на всякий случай: если ни один из вариантов не сработал и это не чистый "free"
+      // if (data !== 'free' && !data?.startsWith('sfd') && !data?.startsWith('sfs')) {
+      //   showLoadingStateUIInterval();
+      //   toastService.showError(`Неизвестный статус ${data}`);
+      // }
     });
 
     // 2) Запускаем интервал, который раз в 3 секунды шлёт запрос «status»
