@@ -68,11 +68,23 @@ export const BroadcastPage = () => {
           addres: 255,
         });
       }
+      if (_driverMode === EDriverMode.TW) {
+        const fnWithCheck = withControllerCheck(levelBroadcastWithRetry, false);
+        fnWithCheck({
+          driver: 'tw',
+          cmd: 'broatcast',
+          mode: 'table',
+          temperature: colors.light,
+          addres: 255,
+          brightness: colors.generalRange,
+        });
+      }
     }, 300);
 
     return () => clearTimeout(timer); // <--- вызывается ПЕРЕД НОВЫМ запуском useEffect
   }, [colors]);
 
+  console.log('drivermode', driverMode);
   return (
     <div className={styles.devices}>
       <div id="drivers-list" className={styles.content}>
@@ -179,7 +191,7 @@ export const BroadcastPage = () => {
             Выберите тип драйвера
           </h3>
           {/*{(['LEVEL', 'TW', 'RGB', 'RGBW', 'RGB+TW'] as const).map(mode => (*/}
-          {(['LEVEL'] as const).map(mode => (
+          {(['LEVEL', 'TW'] as const).map(mode => (
             <Button
               key={mode}
               sx={{
@@ -190,7 +202,7 @@ export const BroadcastPage = () => {
               }}
               text={mode.toUpperCase()}
               onClick={() => {
-                // setDriverMode(mode);
+                setDriverMode(mode);
                 setOpenDriverModeModal(false);
               }}
             />

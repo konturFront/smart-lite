@@ -13,6 +13,7 @@ import {
   setOnlineCountDrivers,
   showLoadingStateUIInterval,
 } from '../../store/store';
+import { __DELAY_STATUS_REQUEST } from '../../global/value';
 
 export const Layout = ({ children }: { children?: preact.ComponentChildren }) => {
   const { isMobile, isMobile1100 } = useDeviceDetect();
@@ -66,7 +67,7 @@ export const Layout = ({ children }: { children?: preact.ComponentChildren }) =>
     // 2) Запускаем интервал, который раз в 3 секунды шлёт запрос «status»
     const intervalId = window.setInterval(() => {
       socketService.send('status');
-    }, 3000);
+    }, __DELAY_STATUS_REQUEST);
 
     // 3) При анмаунте — отписка и очистка интервала
     return () => {
