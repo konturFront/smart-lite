@@ -22,6 +22,7 @@ import { scanWIFIWithCheck, withControllerCheck } from '../../store/ensureContro
 import { ButtonOnOff } from '../../components/IconComponent/ButtonOnOff/ButtonOnOff';
 import { ColorSlider } from '../../components/ColorSlider/ColorSlider';
 import { ColorSliderGeneral } from '../../components/ColorSliderGeneral/ColorSliderGeneral';
+import { BROADCAST } from '../../global/value';
 export const initialColors = {
   generalRange: 0,
   r: 0,
@@ -72,10 +73,9 @@ export const BroadcastPage = () => {
         const fnWithCheck = withControllerCheck(levelBroadcastWithRetry, false);
         fnWithCheck({
           driver: 'tw',
-          cmd: 'broatcast',
-          mode: 'table',
-          temperature: colors.light,
+          cmd: BROADCAST,
           addres: 255,
+          temperature: colors.light,
           brightness: colors.generalRange,
         });
       }
@@ -190,7 +190,7 @@ export const BroadcastPage = () => {
             Выберите тип драйвера
           </h3>
           {/*{(['LEVEL', 'TW', 'RGB', 'RGBW', 'RGB+TW'] as const).map(mode => (*/}
-          {(['LEVEL', 'TW'] as const).map(mode => (
+          {([EDriverMode.LEVEL, EDriverMode.TW] as const).map(mode => (
             <Button
               key={mode}
               sx={{
