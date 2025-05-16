@@ -210,7 +210,7 @@ export const SettingsPage = () => {
               <div style={{ fontSize: '20px', fontWeight: '600', textAlign: 'center' }}>
                 Режим точки доступа запущен.
                 <br />
-                Переподключитесь на сеть DALI Master по адресу:
+                Подключитесь к сети DALI Master по адресу:
                 <p>
                   <a
                     href={`http://${GLOBAL_WS_URL}`}
@@ -240,36 +240,7 @@ export const SettingsPage = () => {
               </div>
             ) : (
               <div style={{ fontSize: '20px', fontWeight: '600', textAlign: 'center' }}>
-                Подключитесь к WiFi
-                <br />
-                Переподключитесь на сеть DALI Master по адресу:
-                <p>
-                  <a
-                    href={`http://${GLOBAL_WS_URL}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ textDecoration: 'none', color: 'white' }}
-                  >
-                    {`http://${GLOBAL_WS_URL}`}
-                  </a>
-                </p>
-                <p style={{ marginTop: '10px' }}></p>
-                <button
-                  onClick={() => {
-                    window.location.href = `http://${GLOBAL_WS_URL}`;
-                  }}
-                  style={{
-                    marginTop: '20px',
-                    padding: '12px 24px',
-                    backgroundColor: '#444',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '6px',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Перейти сейчас
-                </button>
+                Подключитесь к сети, которая указана на Мастер дисплее.
               </div>
             )}
           </div>

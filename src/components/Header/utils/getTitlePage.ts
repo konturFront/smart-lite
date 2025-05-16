@@ -7,6 +7,7 @@ export const getTitle = (pathname: string) => {
   // Страница со всеми устройствами
   if (pathname === '/service/devices') return 'Поиск драйверов';
   if (pathname === '/service/sensors') return 'Сенсоры';
+  if (pathname === '/broadcast') return 'Broadcast';
 
   // Страница конкретного устройства (startsWith = '/service/devices/')
   if (pathname.startsWith('/service/devices/')) {

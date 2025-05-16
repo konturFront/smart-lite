@@ -41,6 +41,12 @@ export const Drawer = () => {
         >
           {'Wi-Fi'}
         </div>
+        <div
+          className={url === '/broadcast' ? styles.activeLink : ''}
+          onClick={() => handlerChangeRoute('/broadcast')}
+        >
+          {'Broadcast'}
+        </div>
       </div>
     </div>
   );

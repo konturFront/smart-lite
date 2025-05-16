@@ -14,6 +14,7 @@ const timers: Record<
   | 'scanWIFI'
   | 'stateBus'
   | 'saveAP'
+  | 'levelBR'
   | string,
   number
 > = {
@@ -26,6 +27,7 @@ const timers: Record<
   scanWIFI: null,
   stateBus: null,
   saveAP: null,
+  levelBR: null,
 };
 const retryCounts: Record<
   | 'updateDrivers'
@@ -35,6 +37,7 @@ const retryCounts: Record<
   | 'saveWIFI'
   | 'scanWIFI'
   | 'saveAP'
+  | 'levelBR'
   | string,
   number
 > = {
@@ -45,6 +48,7 @@ const retryCounts: Record<
   saveWIFI: 0,
   scanWIFI: 0,
   saveAP: 0,
+  levelBR: 0,
 };
 // Методы обновления состояния
 
@@ -295,26 +299,32 @@ export function scanWIFIWithRetry(data: any) {
   }, 10000);
 }
 
-export function getStateBusWithRetry() {
-  const key = 'stateBus';
+//Яркость на всех устройствах
+export function levelBroadcastWithRetry(data: any) {
+  // const key = 'levelBR';
+  // if (timers[key]) {
+  //   clearTimeout(timers[key]);
+  //   timers[key] = null;
+  // }
+  // Инициализируем счётчик, если первый вызов
+  // retryCounts[key] = retryCounts[key] == null ? 0 : retryCounts[key];
 
-  // Сброс предыдущего таймера
-  if (timers[key]) {
-    clearTimeout(timers[key]);
-    timers[key] = null;
-  }
+  // Шаг 1: отобразить лоадер и отправить команду
+  socketService.send({ ...data });
 
-  // Отправка запроса
-  socketService.send({ master: 'bus', cmd: 'state' });
-
-  // Установка нового таймера (если не пришёл ответ)
-  timers[key] = window.setTimeout(() => {
-    toastService.showError('Нет связи с мастером шины');
-    hiddenLoadingStateUI();
-    timers[key] = null;
-  }, 9000);
+  // timers[key] = window.setTimeout(() => {
+  //   if (retryCounts[key] < 1) {
+  //     retryCounts[key] = retryCounts[key] + 1;
+  //     levelBroadcastWithRetry(data);
+  //   } else {
+  //     toastService.showError('Нет связи при broadcast level ');
+  //     hiddenLoadingStateUI();
+  //     clearTimeout(timers[key]);
+  //     timers[key] = null;
+  //     retryCounts[key] = 0;
+  //   }
+  // }, 10000);
 }
-
 // Метод для скрытия лоадинг в шапке
 export const hiddenLoadingStateUI = () => {
   stateUI.value = { ...stateUI.value, isLoadingUI: false };
@@ -414,8 +424,11 @@ socketService.onMessage(data => {
 
   if (data.driver === 'settyngs' && data.cmd === 'save' && data.state === 'ok') {
     clearTimeout(timers.saveDrivers);
+    clearTimeout(timers.levelBR);
     timers.saveDrivers = null;
+    timers.levelBR = null;
     retryCounts.saveDrivers = 0;
+    retryCounts.levelBR = 0;
     hiddenLoadingStateUI();
     toastService.showSuccess('Настройки сохранены');
   }

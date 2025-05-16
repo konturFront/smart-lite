@@ -1,0 +1,392 @@
+// Подключение переменных
+$font-size-small: 16px;
+$font-size-medium: 18px;
+$font-size-large: 22px;
+$font-size-xlarge: 24px;
+
+.settings {
+  border-radius: 8px;
+  padding: 10px 20px 0 20px;
+
+  h2 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  //margin-bottom: 30px;
+  padding-top: 15px;
+
+  label {
+    display: flex;
+    flex-direction: column;
+    font-size: 20px;
+    color: #ffffff;
+  }
+
+  input,
+  select {
+    /* Общие стили */
+    margin-top: 6px;
+    width: 100%;
+    max-width: 240px;
+    padding: 12px 36px 12px 12px;
+    font-size: 20px;
+    border: 2px solid #444;
+    border-radius: 6px;
+    background-color: #2d2d2d;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    /* Фиксированная высота */
+    height: 48px;
+    min-height: 48px;
+    line-height: normal;
+
+    /* Убираем стандартный вид */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    /* Кастомная стрелка */
+    //background-image: url("data:image/svg+xml,%3Csvg...");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+
+    @media (max-width: 768px) {
+      font-size: 16px;
+      height: 44px;
+      min-height: 44px;
+    }
+  }
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-top: 6px;
+}
+
+.btn {
+  background-color: #515151;
+  color: #fff;
+  border: none;
+  max-width: 300px;
+  padding: 12px 20px;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+
+  &:hover {
+    background-color: #444;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+  }
+
+  &:active {
+    background-color: #222;
+    transform: scale(0.98);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+  }
+}
+
+.btnDisabled {
+  @extend .btn;
+  background-color: #191919;
+  color: #707070;
+}
+
+//.wifiNetworks {
+//  display: flex;
+//  justify-content: left;
+//  gap: 12px;
+//  flex-wrap: nowrap;
+//  overflow-x: scroll;
+//  margin-top: 20px;
+//  padding-bottom: 12px;
+//}
+
+.wifiNetworksWrapper {
+  /* если хочешь скролл вниз при переполнении */
+  //overflow-y: auto;
+  padding-right: 4px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.wifiNetworks {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-y: scroll;
+  gap: 8px;
+}
+
+.wsUrlWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+
+.wifiTag {
+  background-color: #333;
+  color: white;
+  padding: 12px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #444;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+@media (max-width: 768px) {
+  .settings {
+    max-width: 100%;
+
+    h2 {
+      font-size: 20px;
+    }
+  }
+
+  .panel {
+    gap: 12px;
+
+    label {
+      font-size: 20px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      max-width: unset;
+      font-size: 18px;
+    }
+  }
+
+  .wsUrlWrapper {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn {
+    width: 100%;
+    max-width: unset;
+    padding: 14px;
+  }
+}
+
+
+//=========================================
+.devices {
+  display: flex;
+  flex-direction: column;
+  height: calc(100dvh - 46px);
+  position: relative;
+  z-index: 7;
+}
+
+.wrapperBtn {
+  width: 100%;
+  display: flex;
+  margin: 0 auto;
+  padding: 12px 10px;
+  justify-content: center;
+  background: #141414;
+  gap: 20px;
+  height: 76px;
+  position: relative;
+  align-items: center;
+  align-content: center;
+  @media (max-width: 390px) {
+    gap: 4px;
+  }
+}
+
+.btnChoose {
+  width: 100%;
+  display: flex;
+  margin: 0 auto;
+  padding: 12px 10px;
+  justify-content: center;
+  gap: 20px;
+  height: 76px;
+  position: relative;
+  align-items: center;
+  align-content: center;
+  @media (max-width: 390px) {
+    gap: 4px;
+  }
+}
+
+.content {
+  flex: 1 1 auto;
+  display: flex;
+  padding: 0 10px;
+  flex-direction: column;
+  gap: 16px;
+  font-size: 18px;
+  margin-top: 10px;
+  overflow-y: auto;
+}
+
+.suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background-color: #2d2d2d;
+  border: 1px solid #444;
+  border-radius: 6px;
+  margin-top: 4px;
+  z-index: 10;
+  max-height: 20dvh;
+  overflow-y: auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  padding-right: 70px; // для пространства под кнопку
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.suggestionItem {
+  padding: 10px 12px;
+  font-size: 16px;
+  color: white;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #3c3c3c;
+  }
+
+  &:active {
+    background-color: #1f1f1f;
+  }
+}
+
+.noNetworks {
+  padding: 10px 12px;
+  font-size: 16px;
+  color: #aaa;
+}
+
+.scanButton {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 11;
+  background: #444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 14px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #555;
+  }
+
+  &:active {
+    background-color: #222;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  display: inline-block;
+  //margin-right: 8px;
+  animation: spin 1s linear infinite;
+}
+
+.sliderWrapper {
+  width: 100%;
+  border-top: 1px solid #7c7c7c;
+  background-color: #3a3a3a;
+  padding: 10px 0;
+  position: relative;
+  align-content: center;
+  z-index: 9;
+
+}
+
+.buttonOnOff {
+  border: 2px solid #2b2b2b;
+  background-color: #525252;
+  padding: 10px 16px;
+  display: flex;
+  border-radius: 4px;
+
+  &:active {
+    transform: translateY(2px); /* Эффект "вдавливания" */
+    background-color: #424242;
+    border-color: #1a1a1a;
+  }
+
+}
+
+.sliderValue {
+  color: #fff;
+  font-size: 22px;
+}
+
+.sliderValueInactive {
+  color: #aeaeae;
+  font-size: 22px;
+}
+
+.buttonOnOffActive {
+  background-color: rgba(248, 238, 128, 0.87); // мягкий тёплый жёлтый
+  border-color: rgba(255, 242, 122, 0.85); // золотистая окантовка
+  box-shadow:
+          inset 0 0 8px rgba(255, 220, 40, 0.6),
+          0 0 12px rgba(255, 220, 40, 0.8);
+}
+
+.rgbPanel {
+  margin-top: 12px;
+  flex-direction: column;
+  display: flex;
+  gap: 12px;
+  align-content: center;
+  align-items: center;
+  padding: 0 12px 36px 10px;
+  background-color: #3a3a3a;
+  width: 100%;
+  border-top: none ;
+  z-index: 9;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+
+  &.open {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+}
+
+

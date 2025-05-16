@@ -36,13 +36,12 @@ export function ensureControllerFree(timeoutMs = 5000): Promise<void> {
   });
 }
 
-/**
- * Декоратор, который обернёт любую функцию в предварительную проверку контроллера.
- * @param fn — исходная функция (например, getStateBusWithRetry)
- */
-export function withControllerCheck<T extends (...args: any[]) => void>(fn: T): T {
+export function withControllerCheck<T extends (...args: any[]) => void>(
+  fn: T,
+  withShowLoading = true
+): T {
   return ((...args: any[]) => {
-    showLoadingStateUI();
+    withShowLoading && showLoadingStateUI();
     ensureControllerFree()
       .then(() => {
         fn(...args);

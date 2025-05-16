@@ -4,7 +4,7 @@ import { useLocation, useRoute } from 'preact-iso';
 import { getTitle } from './utils/getTitlePage';
 import { state, stateUI } from '../../store/initialState';
 import { useEffect } from 'preact/hooks';
-import { getStateBusWithRetry } from '../../store/store';
+
 import { InfoIcon } from '../IconComponent/IconInfo/InfoIcon';
 import { socketStatusEnum } from '../../store/types';
 

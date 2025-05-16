@@ -10,6 +10,7 @@ import { DevicesPage } from './pages/Devices/DevicesPage';
 import { RoomsPage } from './pages/Rooms/RoomsPage';
 import { SensorsPage } from './pages/Sensors/SensorsPage';
 import { Home } from './pages/Home/Home';
+import { BroadcastPage } from './pages/Broadcast/BroadcastPage';
 
 export function App() {
   return (
@@ -20,6 +21,7 @@ export function App() {
           <Route path="/service/devices" component={DevicesPage} />
           <Route path="/service/devices/:id" component={DeviceCardPage} />
           <Route path="/settings" component={SettingsPage} />
+          <Route path="/broadcast" component={BroadcastPage} />
           <Route default component={_404} />
         </Router>
       </Layout>

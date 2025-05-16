@@ -9,6 +9,7 @@ import { toastService } from '../Toast/Toast';
 
 type ButtonProps = {
   text?: string;
+  textGerenal?: string;
   className?: string;
   id?: string;
   disabled?: boolean;
@@ -22,6 +23,7 @@ type ButtonProps = {
 export const Button = ({
   text = 'Кнопка',
   onClick,
+  textGerenal,
   sx,
   lampVisible = false,
   disabled = false,
@@ -54,7 +56,8 @@ export const Button = ({
         }
       }}
     >
-      <span style={{ visibility: lampVisible ? 'hidden' : 'visible' }}> {`${text}`}</span>
+      <span style={{ visibility: lampVisible ? 'hidden' : 'visible' }}> {`${text} `}</span>
+      {textGerenal && <span className={styles.textGerenal}>{textGerenal}</span>}
       {lampVisible && (
         <div className={styles.lampWrapper}>
           <LightBulbIcon
