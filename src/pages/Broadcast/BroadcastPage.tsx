@@ -84,7 +84,6 @@ export const BroadcastPage = () => {
     return () => clearTimeout(timer); // <--- вызывается ПЕРЕД НОВЫМ запуском useEffect
   }, [colors]);
 
-  console.log('drivermode', driverMode);
   return (
     <div className={styles.devices}>
       <div id="drivers-list" className={styles.content}>
